@@ -11,10 +11,11 @@ body {
 }
 
 .sidebar {
-  width: 250px;
+  width: 280px;
   padding: 1rem;
   background: #f0f0f0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .sidebar h1 {
@@ -22,14 +23,15 @@ body {
 }
 
 .sidebar input {
-  width: 100%;
   padding: 6px;
+  font-size: 1rem;
   margin-bottom: 1rem;
 }
 
 .main {
   flex-grow: 1;
   padding: 1rem 2rem;
+  box-sizing: border-box;
 }
 
 .alert {
@@ -54,4 +56,27 @@ table {
 th, td {
   padding: 0.5rem;
   border: 1px solid #ccc;
+}
+
+/* NEW: Side-by-side dropdown styling */
+.selectors {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.selector-group {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.selector-group label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.selector-group input {
+  padding: 6px;
+  font-size: 1rem;
 }
