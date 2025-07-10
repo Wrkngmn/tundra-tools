@@ -1,38 +1,135 @@
-<aside class="sidebar">
-  <h2>Select Your Region</h2>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  color: #111;
+}
 
-  <div class="selectors-row">
-    <div class="selector-group">
-      <label for="regionSelect">Region</label>
-      <input list="regions" id="regionSelect" placeholder="Start typing region..." />
-      <datalist id="regions">
-        <!-- Add real region options dynamically or manually -->
-        <option value="Interior">
-        <option value="Southcentral">
-        <option value="Southeast">
-        <option value="Western">
-        <option value="Northern">
-        <option value="Southwest">
-      </datalist>
-    </div>
+.container {
+  display: flex;
+  height: 100vh;
+}
 
-    <div class="selector-group">
-      <label for="townSelect">Town</label>
-      <input list="towns" id="townSelect" placeholder="Start typing town..." />
-      <datalist id="towns">
-        <!-- Add real town options dynamically or manually -->
-        <option value="Anchorage">
-        <option value="Fairbanks">
-        <option value="Juneau">
-        <option value="Wasilla">
-        <option value="Homer">
-        <option value="Nome">
-      </datalist>
-    </div>
-  </div>
+.sidebar {
+  width: 280px;
+  padding: 1rem;
+  background: #f0f0f0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
 
-  <label style="display:block; margin-top:10px;">
-    <input type="checkbox" id="setZone" />
-    Set This As My Zone
-  </label>
-</aside>
+.sidebar h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.main {
+  flex-grow: 1;
+  padding: 1rem 2rem;
+  box-sizing: border-box;
+}
+
+.alert {
+  background: #ffe9b3;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border-left: 5px solid #e5c100;
+}
+
+.map {
+  height: 300px;
+  width: 100%;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+}
+
+.selectors-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.selector-group {
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+}
+
+.selector-group label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.selector-group input {
+  padding: 6px;
+  font-size: 1rem;
+}
+
+/* Snow Data Table */
+#snowDataContainer {
+  width: 25%;
+  margin: 30px auto 0 auto;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+#snowData {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#snowData th,
+#snowData td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+#snowData tbody tr:hover {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+/* Conditional Row Highlighting */
+.snow-medium {
+  background-color: #fff6d1;
+}
+
+.snow-high {
+  background-color: #fbe6e6;
+}
+
+/* Legend Styling */
+#legend {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+}
+
+.legend-box.default {
+  background-color: #fff;
+}
+
+.legend-box.medium {
+  background-color: #fff6d1;
+}
+
+.legend-box.high {
+  background-color: #fbe6e6;
+}
