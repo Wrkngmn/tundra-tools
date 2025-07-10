@@ -21,22 +21,21 @@
   }
 };
 
-const regionSelect = document.getElementById("region");
-const townSelect = document.getElementById("town");
-const snowBody = document.getElementById("snowBody");
-const statusBox = document.getElementById("regionStatus");
-
-let map;
-let marker;
+let regionSelect, townSelect, snowBody, statusBox, map, marker;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize map
+  regionSelect = document.getElementById("region");
+  townSelect = document.getElementById("town");
+  snowBody = document.getElementById("snowBody");
+  statusBox = document.getElementById("regionStatus");
+
+  // === Initialize map
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // === Populate region options before initializing Tom Select
+  // === Populate and activate region dropdown
   Object.keys(fakeData).forEach(region => {
     const option = document.createElement("option");
     option.value = region;
@@ -44,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
     regionSelect.appendChild(option);
   });
 
-  // === Initialize Tom Select for region
   new TomSelect("#region", {
     maxItems: 1,
     placeholder: "Select a region...",
@@ -54,40 +52,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ⛔ Do NOT initialize Tom Select for #town here — it will be handled later
+  // === Delay town init — empty at first
+  new TomSelect("#town", {
+    maxItems: 1,
+    placeholder: "Select a town...",
+    onChange: (town) => {
+      const region = regionSelect.value;
+      updateSnowTable(region, town);
+      panMap(region, town);
+    }
+  });
 });
 
 function populateTowns(region) {
-  const oldTownSelect = document.getElementById("town");
+  const townSelectInstance = TomSelect.instances.town;
 
-  // Destroy any existing TomSelect instance
-  if (TomSelect.instances.town) {
-    TomSelect.instances.town.destroy();
-  }
-
-  // Create a new <select> element
-  const newTownSelect = document.createElement("select");
-  newTownSelect.id = "town";
-  newTownSelect.name = "town";
-  oldTownSelect.replaceWith(newTownSelect);
+  townSelect.innerHTML = "";
 
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
       option.value = town;
       option.textContent = town;
-      newTownSelect.appendChild(option);
+      townSelect.appendChild(option);
     });
 
-    // Initialize Tom Select on the new town select
-    new TomSelect("#town", {
-      maxItems: 1,
-      placeholder: "Select a town...",
-      onChange: (town) => {
-        updateSnowTable(region, town);
-        panMap(region, town);
-      }
-    });
+    // Rebuild TomSelect for updated list
+    townSelectInstance.clearOptions();
+    townSelectInstance.addOptions([...townSelect.options].map(opt => ({
+      value: opt.value,
+      text: opt.textContent
+    })));
+    townSelectInstance.clear();
+    townSelectInstance.refreshOptions(false);
   }
 }
 
