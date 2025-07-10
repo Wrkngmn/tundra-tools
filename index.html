@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Snow Depth Tracker</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
   <div class="container">
@@ -12,10 +14,24 @@
       <h2>Select Your Region</h2>
 
       <label for="regionInput">Region</label>
-      <input id="regionInput" type="text" placeholder="Start typing region..." />
+      <input id="regionInput" list="regionList" placeholder="Start typing region..." />
+      <datalist id="regionList">
+        <option value="Interior">
+        <option value="Southcentral">
+        <option value="Southeast">
+        <option value="Southwest">
+        <option value="Arctic">
+      </datalist>
 
       <label for="townInput">Town</label>
-      <input id="townInput" type="text" placeholder="Start typing town..." />
+      <input id="townInput" list="townList" placeholder="Start typing town..." />
+      <datalist id="townList">
+        <option value="Fairbanks">
+        <option value="Anchorage">
+        <option value="Juneau">
+        <option value="North Pole">
+        <option value="Bethel">
+      </datalist>
 
       <label><input type="checkbox" id="saveZone" /> Set This As My Zone</label>
 
@@ -43,7 +59,7 @@
       <h1>Snow Depth Tracker</h1>
       <p>Select a town to see updates.</p>
 
-      <div id="map" class="map-placeholder">[Map goes here]</div>
+      <div id="map" class="map-box"></div>
     </main>
   </div>
 
