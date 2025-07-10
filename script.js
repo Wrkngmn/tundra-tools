@@ -201,4 +201,8 @@ window.TomSelect.instances['townSelect'] = townSelectInstance;
 
   // === Initial call ===
   populateRegions();
+  // Force-enable dropdown after page load
+if (townSelectInstance) {
+  townSelectInstance.enable();
+}
 });
