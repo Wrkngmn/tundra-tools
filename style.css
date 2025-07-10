@@ -17,14 +17,10 @@ body {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar select {
+.sidebar input[type="text"] {
   width: 100%;
   margin-bottom: 15px;
   padding: 5px;
-}
-
-.zone-check {
-  margin: 10px 0 20px 0;
 }
 
 #infoBox {
@@ -34,8 +30,16 @@ body {
   font-size: 0.95em;
 }
 
+.map-area {
+  margin: 10px 0;
+  height: 400px;
+  background: #dbeeff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
 #legend {
-  margin-top: 10px;
+  margin: 10px 20px;
   font-size: 0.85em;
 }
 
@@ -56,40 +60,12 @@ main {
   padding: 20px;
 }
 
-.map-container {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-.map-area {
-  width: 100%;
-  height: 45vh;         /* Or something like 400px */
-  display: block;
-  border-radius: 6px;
-}
-
-#expandMap {
-  margin-bottom: 10px;
-  padding: 6px 12px;
-  background-color: #007acc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#expandMap:hover {
-  background-color: #005fa3;
-}
-
 h2 {
   margin-top: 0;
 }
 
 table {
   width: 100%;
-  table-layout: fixed;
   border-collapse: collapse;
   margin-top: 20px;
 }
@@ -98,9 +74,6 @@ th, td {
   border: 1px solid #ccc;
   padding: 6px 10px;
   text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 tbody tr:hover {
