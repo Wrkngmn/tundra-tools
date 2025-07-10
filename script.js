@@ -20,19 +20,18 @@ const snowData = [
 ];
 
 function getSnowColor(inches) {
-  if (inches <= 6) return "#d2f8d2";         // light green
-  if (inches <= 12) return "#d0ebff";        // light blue
-  if (inches <= 24) return "#ffe5b4";        // light orange
-  return "#ffcccc";                          // light red
+  if (inches <= 6) return "#d2f8d2";
+  if (inches <= 12) return "#d0ebff";
+  if (inches <= 24) return "#ffe5b4";
+  return "#ffcccc";
 }
 
 function populateDropdown(id, data) {
   const select = document.getElementById(id);
-  select.innerHTML = ""; // Clear options
-
+  select.innerHTML = "";
   data.forEach(item => {
     const option = document.createElement("option");
-    option.value = item === "-- Select a Region --" ? "" : item;
+    option.value = item;
     option.textContent = item;
     select.appendChild(option);
   });
@@ -61,53 +60,40 @@ document.addEventListener("DOMContentLoaded", () => {
     placeholder: "Select a Town"
   });
 
-  // Start with empty town list
-  townTomSelect.clearOptions();
+  townTomSelect.clearOptions(); // Start with no towns
 
-  // 🧠 Update snow depth chart when a town is selected
+  townTomSelect.on("change", (value) => {
+    const selectedRegion = regionSelectTomSelect.getValue();
+    const validTowns = regionTownMap[selectedRegion] || [];
+
+    if (value && validTowns.includes(value)) {
+      const match = snowData.find(entry => entry.town === value);
+      renderSnowTable(match ? [match] : []);
+    } else {
+      const filtered = snowData.filter(entry => validTowns.includes(entry.town));
+      renderSnowTable(filtered);
+    }
+  });
+});
+
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
 
-  // Clear previous town list and selection
-  townTomSelect.clearOptions();
-  townTomSelect.clear();             // Clears selection
-  townTomSelect.refreshOptions(false);  // Prevent flicker
-
-  // Add new towns for selected region
-  towns.forEach(town => {
-    townTomSelect.addOption({ value: town, text: town });
-  });
-
-  // 👇 This is the missing key: force clearing of selection value internally
-  setTimeout(() => {
-    townTomSelect.setValue("");   // Reset selection after update
-  }, 0);
-
-  // Show all towns in this region
-  const filtered = snowData.filter(entry => towns.includes(entry.town));
-  renderSnowTable(filtered);
-}
-
-
-unction updateTownDropdown(region) {
-  const towns = regionTownMap[region] || [];
-
-  // Reset the Town dropdown entirely
-  townTomSelect.clear(true);            // Clear any existing input
-  townTomSelect.clearOptions();         // Clear all prior options
-  townTomSelect.addOption({ value: "", text: "Select a Town" }); // Placeholder
+  townTomSelect.clear(true);            // Clear UI and dropdown
+  townTomSelect.clearOptions();         // Remove old towns
+  townTomSelect.refreshOptions(false);  // Refresh before adding
 
   towns.forEach(town => {
     townTomSelect.addOption({ value: town, text: town });
   });
 
-  townTomSelect.setValue("");           // Reset selection
-  townTomSelect.refreshOptions(false);  // Refresh UI
+  townTomSelect.setValue("");           // Reset selected value
+  townTomSelect.refreshOptions(false);  // Final refresh
 
-  // Render table for region-level view
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
 }
+
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
   if (!data.length) {
