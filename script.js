@@ -1,114 +1,97 @@
-const snowData = {
-  "Southcentral": {
-    "Anchorage": 4,
-    "Palmer": 8,
-    "Wasilla": 6
-  },
-  "Interior": {
-    "Fairbanks": 12,
-    "North Pole": 15
-  },
-  "Southeast": {
-    "Juneau": 10,
-    "Sitka": 14
-  }
-};
 
-const regionSelect = document.getElementById('regionSelect');
-const townSelect = document.getElementById('townSelect');
-const snowTableBody = document.querySelector('#snowTable tbody');
+document.addEventListener('DOMContentLoaded', function () {
+  const snowData = {
+    "Southcentral": {
+      "Anchorage": 4,
+      "Palmer": 8,
+      "Wasilla": 6
+    },
+    "Interior": {
+      "Fairbanks": 12,
+      "North Pole": 15
+    },
+    "Southeast": {
+      "Juneau": 10,
+      "Sitka": 14
+    }
+  };
 
-const map = L.map('map').setView([61.17, -149.9], 6);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+  const regionSelect = document.getElementById('regionSelect');
+  const townSelect = document.getElementById('townSelect');
+  const snowTableBody = document.querySelector('#snowTable tbody');
 
-const regionCenters = {
-  "Southcentral": [61.17, -149.9],
-  "Interior": [64.84, -147.72],
-  "Southeast": [58.3, -134.42]
-};
+  const map = L.map('map').setView([61.17, -149.9], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 
-let marker;
+  const regionCenters = {
+    "Southcentral": [61.17, -149.9],
+    "Interior": [64.84, -147.72],
+    "Southeast": [58.3, -134.42]
+  };
 
-// === Initialize Town dropdown first ===
-const townSelectInstance = new TomSelect('#townSelect', {
-  create: false,
-  sortField: 'text',
-  placeholder: 'Select a town'
-});
+  let marker;
 
-// === Initialize Region dropdown next ===
-new TomSelect('#regionSelect', {
-  create: false,
-  sortField: 'text',
-  placeholder: 'Select a region'
-});
-
-// === Populate Regions after initializing selects ===
-populateRegions();
-
-function populateRegions() {
-  regionSelect.innerHTML = `
-    <option value="">Select a region</option>
-    <option value="ALL_REGIONS">Show All Regions</option>
-  `;
-  Object.keys(snowData).forEach(region => {
-    const opt = document.createElement('option');
-    opt.value = region;
-    opt.textContent = region;
-    regionSelect.appendChild(opt);
+  // === Initialize Tom Select dropdowns after DOM is ready ===
+  const townSelectInstance = new TomSelect('#townSelect', {
+    create: false,
+    sortField: 'text',
+    placeholder: 'Select a town'
   });
-}
 
-function populateTowns(region) {
-  if (!region || !snowData[region]) {
-    townSelectInstance.disable();
+  new TomSelect('#regionSelect', {
+    create: false,
+    sortField: 'text',
+    placeholder: 'Select a region'
+  });
+
+  // === Populate Region options ===
+  function populateRegions() {
+    regionSelect.innerHTML = `
+      <option value="">Select a region</option>
+      <option value="ALL_REGIONS">Show All Regions</option>
+    `;
+    Object.keys(snowData).forEach(region => {
+      const opt = document.createElement('option');
+      opt.value = region;
+      opt.textContent = region;
+      regionSelect.appendChild(opt);
+    });
+  }
+
+  // === Populate Town options ===
+  function populateTowns(region) {
+    if (!region || !snowData[region]) {
+      townSelectInstance.disable();
+      townSelectInstance.clearOptions();
+      townSelectInstance.addOption({ value: '', text: 'Select a town' });
+      townSelectInstance.refreshOptions();
+      townSelectInstance.setValue('');
+      return;
+    }
+
+    townSelectInstance.enable();
     townSelectInstance.clearOptions();
-    townSelectInstance.addOption({ value: '', text: 'Select a town' });
+    townSelectInstance.addOption({ value: '', text: 'All towns in region' });
+
+    Object.keys(snowData[region]).forEach(town => {
+      townSelectInstance.addOption({ value: town, text: town });
+    });
+
     townSelectInstance.refreshOptions();
     townSelectInstance.setValue('');
-    return;
   }
 
-  townSelectInstance.enable();
-  townSelectInstance.clearOptions();
-  townSelectInstance.addOption({ value: '', text: 'All towns in region' });
+  // === Snow Table for selected region and town ===
+  function updateSnowTable(region, specificTown = "") {
+    snowTableBody.innerHTML = '';
+    if (!region || !snowData[region]) return;
 
-  Object.keys(snowData[region]).forEach(town => {
-    townSelectInstance.addOption({ value: town, text: town });
-  });
+    const towns = snowData[region];
+    for (const [town, depth] of Object.entries(towns)) {
+      if (specificTown && town !== specificTown) continue;
 
-  townSelectInstance.refreshOptions();
-  townSelectInstance.setValue('');
-}
-
-function updateSnowTable(region, specificTown = "") {
-  snowTableBody.innerHTML = '';
-  if (!region || !snowData[region]) return;
-
-  const towns = snowData[region];
-  for (const [town, depth] of Object.entries(towns)) {
-    if (specificTown && town !== specificTown) continue;
-
-    const row = document.createElement('tr');
-    const townCell = document.createElement('td');
-    townCell.textContent = town;
-
-    const depthCell = document.createElement('td');
-    depthCell.textContent = `${depth}"`;
-    depthCell.style.backgroundColor = getSnowColor(depth);
-
-    row.appendChild(townCell);
-    row.appendChild(depthCell);
-    snowTableBody.appendChild(row);
-  }
-}
-
-function updateSnowTableAllRegions() {
-  snowTableBody.innerHTML = '';
-  for (const region in snowData) {
-    for (const [town, depth] of Object.entries(snowData[region])) {
       const row = document.createElement('tr');
       const townCell = document.createElement('td');
       townCell.textContent = town;
@@ -122,74 +105,96 @@ function updateSnowTableAllRegions() {
       snowTableBody.appendChild(row);
     }
   }
-}
 
-function getSnowColor(depth) {
-  if (depth <= 6) return 'green';
-  if (depth <= 12) return 'lightblue';
-  if (depth <= 24) return 'orange';
-  return 'red';
-}
+  // === Snow Table for all regions ===
+  function updateSnowTableAllRegions() {
+    snowTableBody.innerHTML = '';
+    for (const region in snowData) {
+      for (const [town, depth] of Object.entries(snowData[region])) {
+        const row = document.createElement('tr');
+        const townCell = document.createElement('td');
+        townCell.textContent = town;
 
-// === Region Select Change Handler ===
-regionSelect.addEventListener('change', e => {
-  const region = e.target.value;
+        const depthCell = document.createElement('td');
+        depthCell.textContent = `${depth}"`;
+        depthCell.style.backgroundColor = getSnowColor(depth);
 
-  if (region === "ALL_REGIONS") {
-    townSelectInstance.disable();
-    updateSnowTableAllRegions();
-    map.setView([62.5, -150], 4);
-    if (marker) {
-      map.removeLayer(marker);
-      marker = null;
+        row.appendChild(townCell);
+        row.appendChild(depthCell);
+        snowTableBody.appendChild(row);
+      }
     }
-    return;
   }
 
-  populateTowns(region);
-  updateSnowTable(region);
-
-  if (regionCenters[region]) {
-    map.setView(regionCenters[region], 7);
+  function getSnowColor(depth) {
+    if (depth <= 6) return 'green';
+    if (depth <= 12) return 'lightblue';
+    if (depth <= 24) return 'orange';
+    return 'red';
   }
 
-  if (marker) {
-    map.removeLayer(marker);
-    marker = null;
-  }
-});
+  // === Event Listeners ===
+  regionSelect.addEventListener('change', e => {
+    const region = e.target.value;
 
-// === Town Select Change Handler ===
-townSelect.addEventListener('change', e => {
-  const region = regionSelect.value;
-  const selectedTown = e.target.value;
+    if (region === "ALL_REGIONS") {
+      townSelectInstance.disable();
+      updateSnowTableAllRegions();
+      map.setView([62.5, -150], 4);
+      if (marker) {
+        map.removeLayer(marker);
+        marker = null;
+      }
+      return;
+    }
 
-  if (!region || !snowData[region]) return;
-
-  if (selectedTown === "") {
+    populateTowns(region);
     updateSnowTable(region);
+
+    if (regionCenters[region]) {
+      map.setView(regionCenters[region], 7);
+    }
+
     if (marker) {
       map.removeLayer(marker);
       marker = null;
     }
-    return;
-  }
+  });
 
-  updateSnowTable(region, selectedTown);
+  townSelect.addEventListener('change', e => {
+    const region = regionSelect.value;
+    const selectedTown = e.target.value;
 
-  const coords = {
-    "Anchorage": [61.2181, -149.9003],
-    "Palmer": [61.5996, -149.1128],
-    "Wasilla": [61.5814, -149.4412],
-    "Fairbanks": [64.8378, -147.7164],
-    "North Pole": [64.7511, -147.3494],
-    "Juneau": [58.3019, -134.4197],
-    "Sitka": [57.0531, -135.3300]
-  };
+    if (!region || !snowData[region]) return;
 
-  if (coords[selectedTown]) {
-    if (marker) map.removeLayer(marker);
-    marker = L.marker(coords[selectedTown]).addTo(map);
-    map.setView(coords[selectedTown], 9);
-  }
+    if (selectedTown === "") {
+      updateSnowTable(region);
+      if (marker) {
+        map.removeLayer(marker);
+        marker = null;
+      }
+      return;
+    }
+
+    updateSnowTable(region, selectedTown);
+
+    const coords = {
+      "Anchorage": [61.2181, -149.9003],
+      "Palmer": [61.5996, -149.1128],
+      "Wasilla": [61.5814, -149.4412],
+      "Fairbanks": [64.8378, -147.7164],
+      "North Pole": [64.7511, -147.3494],
+      "Juneau": [58.3019, -134.4197],
+      "Sitka": [57.0531, -135.3300]
+    };
+
+    if (coords[selectedTown]) {
+      if (marker) map.removeLayer(marker);
+      marker = L.marker(coords[selectedTown]).addTo(map);
+      map.setView(coords[selectedTown], 9);
+    }
+  });
+
+  // === Initial call ===
+  populateRegions();
 });
