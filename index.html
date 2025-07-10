@@ -3,40 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Snow Depth Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="styles.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>Alaska Snow Depth Tracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <h2>Snow Depth Tracker</h2>
-      <p id="regionStatus">Select a Town or Region to see updates.</p>
-      <input type="text" id="region" placeholder="Region...">
-      <input type="text" id="town" placeholder="Town...">
-      <table>
-        <thead>
-          <tr><th>Area</th><th>Snow Depth (inches)</th></tr>
-        </thead>
-        <tbody id="snowBody">
-          <tr><td>–</td><td>–</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <main>
-      <div id="mainMap" class="map-area"></div>
-    </main>
-  </div>
+  <div id="container">
+    <div id="sidebar">
+      <h2>Select Your Region</h2>
+      <select id="regionSelect" placeholder="Select a region"></select>
+      <select id="townSelect" placeholder="Select a town" disabled></select>
 
-  <div id="legend">
-    <span class="legend-swatch green"></span>0–6"&nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="legend-swatch yellow"></span>7–18"&nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="legend-swatch red"></span>19+"
+      <div id="snowInfoBox">
+        <h3>Snow Depth by Area</h3>
+        <table id="snowTable">
+          <thead>
+            <tr><th>Town</th><th>Snow Depth</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="legend">
+        <strong>Legend:</strong><br/>
+        0–6"&nbsp;&nbsp;&nbsp;&nbsp;<span class="legend-box" style="background-color: green;"></span><br/>
+        6–12"&nbsp;&nbsp;&nbsp;&nbsp;<span class="legend-box" style="background-color: lightblue;"></span><br/>
+        12–24"&nbsp;&nbsp;&nbsp;&nbsp;<span class="legend-box" style="background-color: orange;"></span><br/>
+        24+" &nbsp;&nbsp;&nbsp;&nbsp;<span class="legend-box" style="background-color: red;"></span>
+      </div>
+    </div>
+
+    <div id="map"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
