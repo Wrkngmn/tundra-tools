@@ -54,4 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     updateTable(filtered);
   });
+
+  // === Map ===
+  const map = L.map("map").setView([64.2008, -149.4937], 4); // Centered on Alaska
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
 });
