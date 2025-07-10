@@ -1,73 +1,121 @@
-const fakeData = {
-  "Southcentral": { "Anchorage": 12, "Wasilla": 6, "Palmer": 9 },
-  "Interior": { "Fairbanks": 20, "North Pole": 16 },
-  "Southeast": { "Juneau": 7, "Sitka": 4 },
-  "Western": { "Nome": 10, "Bethel": 3 },
-  "Northern": { "Utqiagvik": 25 }
-};
-
-const regionSelect = document.getElementById("region");
-const townSelect = document.getElementById("town");
-const snowBody = document.getElementById("snowBody");
-const statusBox = document.getElementById("regionStatus");
-
-function updateTownOptions(region) {
-  townSelect.innerHTML = "";
-  if (fakeData[region]) {
-    Object.keys(fakeData[region]).forEach(town => {
-      const option = document.createElement("option");
-      option.value = town;
-      option.textContent = town;
-      townSelect.appendChild(option);
-    });
-  }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fff;
 }
 
-function updateSnowTable(region, town) {
-  snowBody.innerHTML = "";
-  if (region && town && fakeData[region] && fakeData[region][town] !== undefined) {
-    const depth = fakeData[region][town];
-    const row = document.createElement("tr");
-    const level = depth <= 6 ? "light" : depth <= 18 ? "moderate" : "heavy";
-    row.setAttribute("data-depth", level);
-    row.innerHTML = `<td>${town}</td><td>${depth}</td>`;
-    snowBody.appendChild(row);
-    statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
-  } else {
-    snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
-    statusBox.textContent = `Select a Town or Region to see updates.`;
-  }
+.container {
+  display: flex;
+  min-height: 100vh;
 }
 
-regionSelect.addEventListener("change", () => {
-  const selectedRegion = regionSelect.value;
-  updateTownOptions(selectedRegion);
-  updateSnowTable(null, null);
-});
+.sidebar {
+  background: #f0f0f0;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
 
-townSelect.addEventListener("change", () => {
-  const region = regionSelect.value;
-  const town = townSelect.value;
-  updateSnowTable(region, town);
-});
+.sidebar select {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 5px;
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  new TomSelect("#region", {
-    create: false,
-    maxItems: 1,
-    placeholder: "Select a region..."
-  });
+.zone-check {
+  margin: 10px 0 20px 0;
+}
 
-  new TomSelect("#town", {
-    create: false,
-    maxItems: 1,
-    placeholder: "Select a town..."
-  });
+#infoBox {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
 
-  Object.keys(fakeData).forEach(region => {
-    const option = document.createElement("option");
-    option.value = region;
-    option.textContent = region;
-    regionSelect.appendChild(option);
-  });
-});
+#legend {
+  margin-top: 10px;
+  font-size: 0.85em;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0 4px;
+  border-radius: 2px;
+}
+
+.legend-swatch.green { background-color: #b6e7a6; }
+.legend-swatch.yellow { background-color: #fbe996; }
+.legend-swatch.red { background-color: #f5b3b3; }
+
+main {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.map-container {
+  position: relative;
+  max-width: 90%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.map-area {
+  width: 100%;
+  height: 45vh;
+  background-color: #cce5ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+#expandMap {
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#expandMap:hover {
+  background-color: #005fa3;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+tr[data-depth="moderate"] {
+  background-color: #fbe996;
+}
+
+tr[data-depth="heavy"] {
+  background-color: #f5b3b3;
+}
+
+tr[data-depth="light"] {
+  background-color: #b6e7a6;
+}
