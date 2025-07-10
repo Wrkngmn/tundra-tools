@@ -65,22 +65,28 @@ document.addEventListener("DOMContentLoaded", () => {
   townTomSelect.clearOptions();
 
   // 🧠 Update snow depth chart when a town is selected
-  townTomSelect.on("change", function (value) {
-    const selectedTown = value;
-    const selectedRegion = regionSelectTomSelect.getValue();
+function updateTownDropdown(region) {
+  const towns = regionTownMap[region] || [];
 
-    const validTowns = regionTownMap[selectedRegion] || [];
+  // Clear previous town list and selection
+  townTomSelect.clearOptions();
+  townTomSelect.clear();             // Clears selection
+  townTomSelect.refreshOptions(false);  // Prevent flicker
 
-    if (selectedTown && validTowns.includes(selectedTown)) {
-      const match = snowData.find(entry => entry.town === selectedTown);
-      renderSnowTable(match ? [match] : []);
-    } else {
-      // No town selected or invalid town → show region towns
-      const filtered = snowData.filter(entry => validTowns.includes(entry.town));
-      renderSnowTable(filtered);
-    }
+  // Add new towns for selected region
+  towns.forEach(town => {
+    townTomSelect.addOption({ value: town, text: town });
   });
-});
+
+  // 👇 This is the missing key: force clearing of selection value internally
+  setTimeout(() => {
+    townTomSelect.setValue("");   // Reset selection after update
+  }, 0);
+
+  // Show all towns in this region
+  const filtered = snowData.filter(entry => towns.includes(entry.town));
+  renderSnowTable(filtered);
+}
 
 
 unction updateTownDropdown(region) {
