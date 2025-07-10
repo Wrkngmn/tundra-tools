@@ -3,42 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tundra Tools – Snow Tracker</title>
-
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <title>Tundra Tools - Snow Tracker</title>
+  <link href="style.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet" />
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Select Your Region</h2>
-    <select id="regionSelect" placeholder="Select a region"></select>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Snow Report Filters</h2>
+      <label for="region-select">Select Your Region</label>
+      <select id="region-select" placeholder="Type or select region..."></select>
 
-    <h2>Select a Town</h2>
-    <select id="townSelect" placeholder="Select a town" disabled></select>
+      <label for="town-select">Select a Town</label>
+      <select id="town-select" placeholder="Type or select town..."></select>
+    </div>
 
-    <div id="legend">
-      <strong>Legend:</strong><br/>
-      0–6"     <span class="legend-box green"></span> Low<br/>
-      7–12"   <span class="legend-box blue"></span> Moderate<br/>
-      13–24" <span class="legend-box orange"></span> Heavy<br/>
-      25"+     <span class="legend-box red"></span> Extreme<br/>
+    <div class="main">
+      <div id="map">Loading map...</div>
+
+      <div id="legend">
+        <h3>Snow Depth Legend</h3>
+        <ul>
+          <li><span class="legend-box" style="background-color: green;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–6" Light Snow</li>
+          <li><span class="legend-box" style="background-color: blue;"></span>&nbsp;&nbsp;&nbsp;&nbsp;7–12" Moderate Snow</li>
+          <li><span class="legend-box" style="background-color: orange;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Heavy Snow</li>
+          <li><span class="legend-box" style="background-color: red;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25"+ Extreme Snow</li>
+        </ul>
+      </div>
+
+      <div id="snow-depth-data">
+        <h3>Snow Depth by Area</h3>
+        <div id="data-container">Loading data...</div>
+      </div>
     </div>
   </div>
 
-  <div class="main">
-    <h1>Snow Depth by Area</h1>
-    <table>
-      <thead>
-        <tr><th>Town</th><th>Snow Depth</th></tr>
-      </thead>
-      <tbody id="snowTable"></tbody>
-    </table>
-    <div id="map"></div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
