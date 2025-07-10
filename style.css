@@ -57,16 +57,15 @@ main {
 }
 
 .map-container {
-  position: relative;
-  max-width: 90%;
-  margin: 20px auto;
-  text-align: center;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
-
 .map-area {
   width: 100%;
-  height: 45vh;
-  Display: block;
+  height: 45vh;         /* Or something like 400px */
+  display: block;
   border-radius: 6px;
 }
 
