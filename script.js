@@ -193,6 +193,32 @@ populateDropdown("region-select", Object.keys(regionTownMap));
 
   // ✅ Initialize Leaflet map centered on Anchorage
   map = L.map('map').setView([61.2176, -149.8997], 6);
+regionSelectTomSelect.on("change", (value) => {
+  if (value === "all") {
+    const allTowns = Object.values(regionTownMap).flat().sort();
+
+    townTomSelect.clear(true);
+    townTomSelect.clearOptions();
+    townTomSelect.disable();
+
+    renderSnowTable(allTowns.map(town => {
+      const match = snowData.find(entry => entry.town === town);
+      return match || { town: town, depth: null }; // fallback if no data
+    }));
+
+    if (townMarker) {
+      map.removeLayer(townMarker);
+      townMarker = null;
+    }
+
+    map.setView([61.2176, -149.8997], 5); // Zoom out
+  } else {
+    const towns = regionTownMap[value] || [];
+
+    townTomSelect.enable();
+    updateTownDropdown(value);
+  }
+});
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
