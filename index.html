@@ -11,15 +11,17 @@
   <div class="container">
     <div class="sidebar">
       <h2>Snow Report Filters</h2>
+
       <label for="region-select">Select Your Region</label>
       <select id="region-select" placeholder="Type or select region..."></select>
 
       <label for="town-select">Select a Town</label>
       <select id="town-select" placeholder="Type or select town..."></select>
-    </div>
 
-    <div class="main">
-      <div id="map">Loading map...</div>
+      <div id="snow-depth-data">
+        <h3>Snow Depth by Area</h3>
+        <div id="data-container">Loading data...</div>
+      </div>
 
       <div id="legend">
         <h3>Snow Depth Legend</h3>
@@ -30,11 +32,10 @@
           <li><span class="legend-box" style="background-color: red;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25"+ Extreme Snow</li>
         </ul>
       </div>
+    </div>
 
-      <div id="snow-depth-data">
-        <h3>Snow Depth by Area</h3>
-        <div id="data-container">Loading data...</div>
-      </div>
+    <div class="main">
+      <div id="map">Loading map...</div>
     </div>
   </div>
 
