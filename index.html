@@ -3,55 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tundra Tools – Snow Depth Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Snow Depth Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 300px;
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-sizing: border-box;
+      border-right: 1px solid #ccc;
+    }
+
+    .main {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0 16px 0;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    #setZone {
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    .map-box {
+      background-color: #cce5ff;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .legend {
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
+    .legend span {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-left: 4px;
+      vertical-align: middle;
+      border: 1px solid #aaa;
+    }
+
+    .legend-item {
+      margin-top: 6px;
+    }
+
+    .legend-label {
+      display: inline-block;
+      min-width: 65px;
+    }
+
+    .table-container {
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    .snow-depth-box {
+      width: 100%;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <aside class="sidebar">
+    <div class="sidebar">
       <h2>Select Your Region</h2>
+
       <label for="region">Region</label>
-      <input type="text" id="region" placeholder="Start typing region..." list="regionList" />
-      <datalist id="regionList"></datalist>
+      <input type="text" id="region" placeholder="Start typing region..." />
 
       <label for="town">Town</label>
-      <input type="text" id="town" placeholder="Start typing town..." list="townList" />
-      <datalist id="townList"></datalist>
+      <input type="text" id="town" placeholder="Start typing town..." />
 
-      <div class="zone-check">
-        <input type="checkbox" id="setZone" />
-        <label for="setZone">Set This As My Zone</label>
+      <div id="setZone">
+        <input type="checkbox" id="zone" />
+        <label for="zone">Set This As My Zone</label>
       </div>
 
-      <div id="infoBox">
-        <h2>Snow Depth Tracker</h2>
-        <p id="regionStatus">Select a town to see updates.</p>
-        <div id="map" class="map-area">Map loading...</div>
-        <div id="legend">
-          <strong>Legend:</strong><br />
-          0–6"    <span class="legend-swatch green"></span>  Light snow<br />
-          7–18"   <span class="legend-swatch yellow"></span>  Moderate snow<br />
-          19+"    <span class="legend-swatch red"></span>  Heavy snow
+      <div class="snow-depth-box">
+        <h3>Snow Depth Tracker</h3>
+        <p>Select a town to see updates.</p>
+        <div class="map-box">Map loading...</div>
+      </div>
+
+      <div class="legend">
+        <strong>Legend:</strong><br />
+        <div class="legend-item">
+          <span class="legend-label">0–6"</span>      <span style="background-color: #7cfc00;"></span> Light snow
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">7–18"</span>      <span style="background-color: #fdd835;"></span> Moderate snow
+        </div>
+        <div class="legend-item">
+          <span class="legend-label">19+"</span>      <span style="background-color: #ef5350;"></span> Heavy snow
         </div>
       </div>
-    </aside>
 
-    <main>
-      <h2>Snow Depth by Area</h2>
-      <table id="snowTable">
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th>Snow Depth (in)</th>
-          </tr>
-        </thead>
-        <tbody id="snowBody">
-          <tr><td>–</td><td>–</td></tr>
-        </tbody>
-      </table>
-    </main>
+      <div class="table-container">
+        <h3>Snow Depth by Area</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Snow Depth (in)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>–</td>
+              <td>–</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="main">
+      <div id="mainMap" class="map-box" style="height: 90vh;">
+        Map loading...
+      </div>
+    </div>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
