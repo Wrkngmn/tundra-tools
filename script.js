@@ -38,7 +38,7 @@ function populateDropdown(id, data) {
   });
 }
 
-let regionSelect, townSelect, townTomSelect;
+let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 
 document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region-select");
