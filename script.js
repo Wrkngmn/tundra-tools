@@ -33,11 +33,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let marker;
 
- const townSelectInstance = new TomSelect('#townSelect', {
+const townSelectInstance = new TomSelect('#townSelect', {
   create: false,
   sortField: 'text',
   placeholder: 'Select a town'
 });
+
+// 🟢 Make the instance globally available for debugging
+window.townSelectInstance = townSelectInstance;
 window.TomSelect.instances = window.TomSelect.instances || {};
 window.TomSelect.instances['townSelect'] = townSelectInstance;
 
