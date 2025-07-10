@@ -65,14 +65,27 @@ document.addEventListener("DOMContentLoaded", () => {
   townTomSelect.clearOptions();
 
   // Hook into town selection
-  townTomSelect.on("change", function(value) {
-    const selectedTown = value;
-    if (selectedTown) {
-      const match = snowData.find(entry => entry.town === selectedTown);
-      renderSnowTable(match ? [match] : []);
-    }
-  });
+ townTomSelect.on("change", function(value) {
+  const selectedTown = value;
+  const selectedRegion = regionSelect.value;
+
+  if (!selectedRegion) {
+    renderSnowTable([]); // No region, don't show anything
+    return;
+  }
+
+  const validTowns = regionTownMap[selectedRegion] || [];
+
+  if (selectedTown && validTowns.includes(selectedTown)) {
+    const match = snowData.find(entry => entry.town === selectedTown);
+    renderSnowTable(match ? [match] : []);
+  } else {
+    // If town is cleared or invalid, show region-level data
+    const filtered = snowData.filter(entry => validTowns.includes(entry.town));
+    renderSnowTable(filtered);
+  }
 });
+
 
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
