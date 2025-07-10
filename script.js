@@ -21,40 +21,63 @@ const fakeData = {
   }
 };
 
-const regionInput = document.getElementById("region");
-const townInput = document.getElementById("town");
-const regionList = document.getElementById("regionList");
-const townList = document.getElementById("townList");
+const regionSelect = document.getElementById("region");
+const townSelect = document.getElementById("town");
 const snowBody = document.getElementById("snowBody");
 const statusBox = document.getElementById("regionStatus");
 
 let map;
 let marker;
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
+
+  populateDropdowns();
 });
 
 function populateDropdowns() {
   Object.keys(fakeData).forEach(region => {
-    const option = document.createElement("option");
-    option.value = region;
-    regionList.appendChild(option);
+    const regionOption = document.createElement("option");
+    regionOption.value = region;
+    regionOption.textContent = region;
+    regionSelect.appendChild(regionOption);
+  });
+
+  new TomSelect("#region", {
+    maxItems: 1,
+    placeholder: "Select a region...",
+    onChange: value => {
+      updateTownOptions(value);
+      updateSnowTable(null, null);
+    }
+  });
+
+  new TomSelect("#town", {
+    maxItems: 1,
+    placeholder: "Select a town...",
+    onChange: value => {
+      const region = regionSelect.value;
+      const town = value;
+      updateSnowTable(region, town);
+      panMap(region, town);
+    }
   });
 }
 
 function updateTownOptions(region) {
-  townList.innerHTML = "";
+  townSelect.innerHTML = "";
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
       option.value = town;
-      townList.appendChild(option);
+      option.textContent = town;
+      townSelect.appendChild(option);
     });
+    TomSelect.instances.town.sync();
   }
 }
 
@@ -64,8 +87,7 @@ function updateSnowTable(region, town) {
     region &&
     town &&
     fakeData[region] &&
-    fakeData[region][town] &&
-    fakeData[region][town].depth !== undefined
+    fakeData[region][town]
   ) {
     const depth = fakeData[region][town].depth;
     const row = document.createElement("tr");
@@ -76,7 +98,7 @@ function updateSnowTable(region, town) {
     statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
   } else {
     snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
-    statusBox.textContent = `Select a town to see updates.`;
+    statusBox.textContent = `Select a Town or Region to see updates.`;
   }
 }
 
@@ -90,27 +112,9 @@ function panMap(region, town) {
   ) {
     const coords = fakeData[region][town].coords;
     map.setView(coords, 9);
-
     if (marker) {
       map.removeLayer(marker);
     }
-
     marker = L.marker(coords).addTo(map).bindPopup(town).openPopup();
   }
 }
-
-regionInput.addEventListener("input", () => {
-  const selectedRegion = regionInput.value;
-  updateTownOptions(selectedRegion);
-  updateSnowTable(null, null);
-});
-
-townInput.addEventListener("input", () => {
-  const region = regionInput.value;
-  const town = townInput.value;
-  updateSnowTable(region, town);
-  panMap(region, town); // ✅ this is essential
-});
-
-populateDropdowns();
-
