@@ -68,6 +68,7 @@ body {
 /* Snow Data Table */
 #snowDataContainer {
   width: 25%;
+  min-width: 280px;
   margin: 30px auto 0 auto;
   background: #ffffff;
   border: 1px solid #ccc;
@@ -133,3 +134,4 @@ body {
 .legend-box.high {
   background-color: #fbe6e6;
 }
+
