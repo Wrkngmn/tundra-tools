@@ -1,4 +1,4 @@
-
+let townSelectInstance;
 document.addEventListener('DOMContentLoaded', function () {
   const snowData = {
     "Southcentral": {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let marker;
 
-const townSelectInstance = new TomSelect('#townSelect', {
+townSelectInstance = new TomSelect('#townSelect', {
   create: false,
   sortField: 'text',
   placeholder: 'Select a town'
