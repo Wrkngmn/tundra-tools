@@ -2,85 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tundra Tools - Snow Depth Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snow Depth Tracker</title>
   <link rel="stylesheet" href="style.css" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
       <h2>Select Your Region</h2>
 
-      <div class="selectors-row">
-        <div class="selector-group">
-          <label for="regionSelect">Region</label>
-          <input list="regions" id="regionSelect" placeholder="Start typing region..." />
-          <datalist id="regions">
-            <option value="Southcentral">
-            <option value="Interior">
-            <option value="Southeast">
-            <option value="Southwest">
-            <option value="North Slope">
-            <option value="Aleutians">
-          </datalist>
-        </div>
+      <label for="regionInput">Region</label>
+      <input id="regionInput" type="text" placeholder="Start typing region..." />
 
-        <div class="selector-group">
-          <label for="townSelect">Town</label>
-          <input list="towns" id="townSelect" placeholder="Start typing town..." />
-          <datalist id="towns">
-            <option value="Wasilla">
-            <option value="Anchorage">
-            <option value="Fairbanks">
-            <option value="Nome">
-            <option value="Bethel">
-          </datalist>
-        </div>
-      </div>
+      <label for="townInput">Town</label>
+      <input id="townInput" type="text" placeholder="Start typing town..." />
 
-      <label style="display:block; margin-top:10px;">
-        <input type="checkbox" id="setZone" />
-        Set This As My Zone
-      </label>
-    </aside>
+      <label><input type="checkbox" id="saveZone" /> Set This As My Zone</label>
 
-    <main class="main">
-      <h1>Snow Depth Tracker</h1>
-      <div id="alert" class="alert">Select a town to see updates.</div>
-
-      <div id="map" class="map"></div>
-
-      <!-- Snow Data Table -->
-      <div id="snowDataContainer">
-        <h2>Snow Depth by Area</h2>
-        <table id="snowData">
+      <div id="snowDepthInfo" class="snow-depth-box">
+        <h3>Snow Depth by Area</h3>
+        <table id="snowDepthTable">
           <thead>
-            <tr>
-              <th>Area</th>
-              <th>Snow Depth (in)</th>
-            </tr>
+            <tr><th>Area</th><th>Snow Depth (in)</th></tr>
           </thead>
-          <tbody id="snowTable">
+          <tbody>
             <tr><td>–</td><td>–</td></tr>
           </tbody>
         </table>
 
-        <!-- Legend -->
-        <div id="legend">
-          <p><strong>Legend:</strong></p>
-          <div class="legend-item"><span class="legend-box default"></span> 0–6" (No highlight)</div>
-          <div class="legend-item"><span class="legend-box medium"></span> 7–18" (Moderate snow)</div>
-          <div class="legend-item"><span class="legend-box high"></span> 19+ inches (Heavy snow)</div>
+        <div class="legend">
+          <strong>Legend:</strong><br>
+          0–6" (No highlight)<br>
+          7–18" <span class="moderate">Moderate snow</span><br>
+          19"+ <span class="heavy">Heavy snow</span>
         </div>
       </div>
+    </aside>
+
+    <main class="main-content">
+      <h1>Snow Depth Tracker</h1>
+      <p>Select a town to see updates.</p>
+
+      <div id="map" class="map-placeholder">[Map goes here]</div>
     </main>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
