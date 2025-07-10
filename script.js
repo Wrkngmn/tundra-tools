@@ -1,48 +1,44 @@
 const fakeData = {
-  "Southcentral": {
-    "Anchorage": 12,
-    "Wasilla": 6,
-    "Palmer": 9
-  },
-  "Interior": {
-    "Fairbanks": 20,
-    "North Pole": 16
-  },
-  "Southeast": {
-    "Juneau": 7,
-    "Sitka": 4
-  },
-  "Western": {
-    "Nome": 10,
-    "Bethel": 3
-  },
-  "Northern": {
-    "Utqiagvik": 25
-  }
+  "Southcentral": { "Anchorage": 12, "Wasilla": 6, "Palmer": 9 },
+  "Interior": { "Fairbanks": 20, "North Pole": 16 },
+  "Southeast": { "Juneau": 7, "Sitka": 4 },
+  "Western": { "Nome": 10, "Bethel": 3 },
+  "Northern": { "Utqiagvik": 25 }
 };
 
-const regionInput = document.getElementById("region");
-const townInput = document.getElementById("town");
-const regionList = document.getElementById("regionList");
-const townList = document.getElementById("townList");
+const regionSelect = document.getElementById("region");
+const townSelect = document.getElementById("town");
 const snowBody = document.getElementById("snowBody");
 const statusBox = document.getElementById("regionStatus");
 
-function populateDropdowns() {
-  Object.keys(fakeData).forEach(region => {
-    const option = document.createElement("option");
-    option.value = region;
-    regionList.appendChild(option);
-  });
-}
+// === Populate Region Dropdown ===
+Object.keys(fakeData).forEach(region => {
+  const option = document.createElement("option");
+  option.value = region;
+  option.textContent = region;
+  regionSelect.appendChild(option);
+});
+
+regionSelect.addEventListener("change", () => {
+  const selectedRegion = regionSelect.value;
+  updateTownOptions(selectedRegion);
+  updateSnowTable(null, null);
+});
+
+townSelect.addEventListener("change", () => {
+  const region = regionSelect.value;
+  const town = townSelect.value;
+  updateSnowTable(region, town);
+});
 
 function updateTownOptions(region) {
-  townList.innerHTML = "";
+  townSelect.innerHTML = "";
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
       option.value = town;
-      townList.appendChild(option);
+      option.textContent = town;
+      townSelect.appendChild(option);
     });
   }
 }
@@ -59,20 +55,28 @@ function updateSnowTable(region, town) {
     statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
   } else {
     snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
-    statusBox.textContent = `Select a town to see updates.`;
+    statusBox.textContent = `Select a Town or Region to see updates.`;
   }
 }
 
-regionInput.addEventListener("input", () => {
-  const selectedRegion = regionInput.value;
-  updateTownOptions(selectedRegion);
-  updateSnowTable(null, null);
-});
+// === Initialize Tom Select after DOM loads ===
+document.addEventListener("DOMContentLoaded", () => {
+  new TomSelect("#region", {
+    create: false,
+    maxItems: 1,
+    placeholder: "Select a region..."
+  });
 
-townInput.addEventListener("input", () => {
-  const region = regionInput.value;
-  const town = townInput.value;
-  updateSnowTable(region, town);
-});
+  new TomSelect("#town", {
+    create: false,
+    maxItems: 1,
+    placeholder: "Select a town..."
+  });
 
-populateDropdowns();
+  // Populate dropdowns
+  Object.keys(fakeData).forEach(region => {
+    const option = document.createElement("option");
+    option.value = region;
+    regionSelect.appendChild(option);
+  });
+});
