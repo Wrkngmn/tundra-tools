@@ -59,10 +59,13 @@
     </main>
   </div>
 
+  <!-- JS Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-o9N1jlk0dEtfy3Gfktd9wOQWXBzyNQKnbMH1ZIsG+5w="
     crossorigin=""></script>
+
+  <!-- App Scripts -->
   <script src="script.js"></script>
   <script>
     const expandBtn = document.getElementById('expandMap');
@@ -76,18 +79,19 @@
       }
     });
 
-    // === Initialize Leaflet map ===
-    const map = L.map('mainMap').setView([61.2176, -149.8997], 5); // Anchorage center
+    document.addEventListener("DOMContentLoaded", () => {
+      const map = L.map('mainMap').setView([61.2176, -149.8997], 5); // Anchorage
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
 
-    L.marker([61.2176, -149.8997])
-      .addTo(map)
-      .bindPopup('Anchorage')
-      .openPopup();
+      L.marker([61.2176, -149.8997])
+        .addTo(map)
+        .bindPopup('Anchorage')
+        .openPopup();
+    });
   </script>
 </body>
 </html>
