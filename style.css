@@ -1,53 +1,118 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+const snowData = {
+  "Southcentral": {
+    "Anchorage": 4,
+    "Palmer": 8,
+    "Wasilla": 6
+  },
+  "Interior": {
+    "Fairbanks": 12,
+    "North Pole": 15
+  },
+  "Southeast": {
+    "Juneau": 10,
+    "Sitka": 14
+  }
+};
+
+const regionSelect = document.getElementById('regionSelect');
+const townSelect = document.getElementById('townSelect');
+const snowTableBody = document.querySelector('#snowTable tbody');
+
+const map = L.map('map').setView([61.17, -149.9], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const regionCenters = {
+  "Southcentral": [61.17, -149.9],
+  "Interior": [64.84, -147.72],
+  "Southeast": [58.3, -134.42]
+};
+
+let marker;
+
+function populateRegions() {
+  regionSelect.innerHTML = '<option value="">Select a region</option>';
+  Object.keys(snowData).forEach(region => {
+    const opt = document.createElement('option');
+    opt.value = region;
+    opt.textContent = region;
+    regionSelect.appendChild(opt);
+  });
 }
 
-#container {
-  display: flex;
-  height: 100vh;
+function populateTowns(region) {
+  townSelect.innerHTML = '<option value="">Select a town</option>';
+  if (!region || !snowData[region]) {
+    townSelect.disabled = true;
+    return;
+  }
+
+  Object.keys(snowData[region]).forEach(town => {
+    const opt = document.createElement('option');
+    opt.value = town;
+    opt.textContent = town;
+    townSelect.appendChild(opt);
+  });
+  townSelect.disabled = false;
 }
 
-#sidebar {
-  width: 25%;
-  padding: 16px;
-  box-sizing: border-box;
-  background: #f5f5f5;
-  overflow-y: auto;
+function updateSnowTable(region) {
+  snowTableBody.innerHTML = '';
+  if (!region || !snowData[region]) return;
+
+  Object.entries(snowData[region]).forEach(([town, depth]) => {
+    const row = document.createElement('tr');
+    const townCell = document.createElement('td');
+    townCell.textContent = town;
+    const depthCell = document.createElement('td');
+    depthCell.textContent = `${depth}"`;
+    depthCell.style.backgroundColor = getSnowColor(depth);
+    row.appendChild(townCell);
+    row.appendChild(depthCell);
+    snowTableBody.appendChild(row);
+  });
 }
 
-#map {
-  flex: 1;
+function getSnowColor(depth) {
+  if (depth <= 6) return 'green';
+  if (depth <= 12) return 'lightblue';
+  if (depth <= 24) return 'orange';
+  return 'red';
 }
 
-select {
-  width: 100%;
-  margin-bottom: 10px;
-}
+regionSelect.addEventListener('change', e => {
+  const region = e.target.value;
+  populateTowns(region);
+  updateSnowTable(region);
 
-#snowInfoBox {
-  margin-top: 20px;
-}
+  if (regionCenters[region]) {
+    map.setView(regionCenters[region], 7);
+  }
+});
 
-#snowTable {
-  width: 100%;
-  border-collapse: collapse;
-}
+townSelect.addEventListener('change', e => {
+  const region = regionSelect.value;
+  const town = e.target.value;
+  if (!region || !town || !snowData[region][town]) return;
 
-#snowTable th, #snowTable td {
-  border: 1px solid #ccc;
-  padding: 6px;
-  text-align: left;
-}
+  const coords = {
+    "Anchorage": [61.2181, -149.9003],
+    "Palmer": [61.5996, -149.1128],
+    "Wasilla": [61.5814, -149.4412],
+    "Fairbanks": [64.8378, -147.7164],
+    "North Pole": [64.7511, -147.3494],
+    "Juneau": [58.3019, -134.4197],
+    "Sitka": [57.0531, -135.3300]
+  };
 
-#snowTable tr:hover {
-  background-color: #eef;
-}
+  if (marker) map.removeLayer(marker);
+  marker = L.marker(coords[town]).addTo(map);
+  map.setView(coords[town], 9);
+});
 
-.legend-box {
-  display: inline-block;
-  width: 20px;
-  height: 14px;
-  margin-left: 5px;
-  border: 1px solid #999;
-}
+populateRegions();
+new TomSelect('#regionSelect', { create: false, sortField: 'text' });
+new TomSelect('#townSelect', { create: false, sortField: 'text' });
+
