@@ -1,69 +1,59 @@
-let map;
-let marker; // Move this up so it's global
 const fakeData = {
   "Southcentral": {
-    "Anchorage": { depth: 12, coords: [61.2176, -149.8997] },
-    "Wasilla": { depth: 6, coords: [61.5807, -149.4523] },
-    "Palmer": { depth: 9, coords: [61.6008, -149.1128] }
+    "Anchorage": { depth: 12, coords: [61.2176, -149.8584] },
+    "Wasilla":   { depth: 6, coords: [61.5814, -149.4522] },
+    "Palmer":    { depth: 9, coords: [61.5996, -149.1128] }
   },
   "Interior": {
-    "Fairbanks": { depth: 20, coords: [64.8378, -147.7164] },
+    "Fairbanks":  { depth: 20, coords: [64.8378, -147.7164] },
     "North Pole": { depth: 16, coords: [64.7511, -147.3494] }
   },
   "Southeast": {
     "Juneau": { depth: 7, coords: [58.3019, -134.4197] },
-    "Sitka": { depth: 4, coords: [57.0531, -135.3300] }
+    "Sitka":  { depth: 4, coords: [57.0531, -135.3300] }
   },
   "Western": {
-    "Nome": { depth: 10, coords: [64.5011, -165.4064] },
-    "Bethel": { depth: 3, coords: [60.7922, -161.7558] }
+    "Nome":   { depth: 10, coords: [64.5011, -165.4064] },
+    "Bethel": { depth: 3,  coords: [60.7922, -161.7558] }
   },
   "Northern": {
     "Utqiagvik": { depth: 25, coords: [71.2906, -156.7886] }
   }
 };
 
-const regionSelect = document.getElementById("region");
-const townSelect = document.getElementById("town");
+const regionInput = document.getElementById("region");
+const townInput = document.getElementById("town");
+const regionList = document.getElementById("regionList");
+const townList = document.getElementById("townList");
 const snowBody = document.getElementById("snowBody");
 const statusBox = document.getElementById("regionStatus");
 
-let map, marker;
+let map;
+let marker;
 
-function populateRegionOptions() {
+document.addEventListener("DOMContentLoaded", function () {
+  map = L.map("mainMap").setView([61.2176, -149.8584], 6);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+});
+
+function populateDropdowns() {
   Object.keys(fakeData).forEach(region => {
     const option = document.createElement("option");
     option.value = region;
-    option.textContent = region;
-    regionSelect.appendChild(option);
-  });
-
-  new TomSelect("#region", {
-    create: false,
-    maxItems: 1,
-    placeholder: "Select a region..."
+    regionList.appendChild(option);
   });
 }
 
 function updateTownOptions(region) {
-  townSelect.innerHTML = "";
-
+  townList.innerHTML = "";
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
       option.value = town;
-      option.textContent = town;
-      townSelect.appendChild(option);
-    });
-
-    // Re-init TomSelect on town dropdown
-    if (TomSelect.instances.hasOwnProperty("town")) {
-      TomSelect.instances.town.destroy();
-    }
-    new TomSelect("#town", {
-      create: false,
-      maxItems: 1,
-      placeholder: "Select a town..."
+      townList.appendChild(option);
     });
   }
 }
@@ -71,9 +61,11 @@ function updateTownOptions(region) {
 function updateSnowTable(region, town) {
   snowBody.innerHTML = "";
   if (
-    region && town &&
+    region &&
+    town &&
     fakeData[region] &&
-    fakeData[region][town]
+    fakeData[region][town] &&
+    fakeData[region][town].depth !== undefined
   ) {
     const depth = fakeData[region][town].depth;
     const row = document.createElement("tr");
@@ -84,13 +76,14 @@ function updateSnowTable(region, town) {
     statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
   } else {
     snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
-    statusBox.textContent = `Select a Town or Region to see updates.`;
+    statusBox.textContent = `Select a town to see updates.`;
   }
 }
 
 function panMap(region, town) {
   if (
-    region && town &&
+    region &&
+    town &&
     fakeData[region] &&
     fakeData[region][town] &&
     fakeData[region][town].coords
@@ -106,33 +99,18 @@ function panMap(region, town) {
   }
 }
 
-regionSelect.addEventListener("change", () => {
-  const region = regionSelect.value;
-  updateTownOptions(region);
+regionInput.addEventListener("input", () => {
+  const selectedRegion = regionInput.value;
+  updateTownOptions(selectedRegion);
   updateSnowTable(null, null);
 });
 
-townSelect.addEventListener("change", () => {
-  const region = regionSelect.value;
-  const town = townSelect.value;
+townInput.addEventListener("input", () => {
+  const region = regionInput.value;
+  const town = townInput.value;
   updateSnowTable(region, town);
-  panMap(region, town);
+  panMap(region, town); // ✅ this is essential
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Populate region and init Tom Selects
-  populateRegionOptions();
+populateDropdowns();
 
-  // Init map globally so other functions can use it
-  map = L.map('mainMap').setView([61.2176, -149.8997], 5); // Anchorage
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-  marker = L.marker([61.2176, -149.8997])
-    .addTo(map)
-    .bindPopup('Anchorage')
-    .openPopup();
-});
