@@ -18,7 +18,7 @@ const regionSelect = document.getElementById('regionSelect');
 const townSelect = document.getElementById('townSelect');
 const snowTableBody = document.querySelector('#snowTable tbody');
 
-const map = L.map('map').setView([61.17, -149.9], 6); // Default to Anchorage
+const map = L.map('map').setView([61.17, -149.9], 6);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
@@ -97,7 +97,6 @@ townSelect.addEventListener('change', e => {
   const town = e.target.value;
   if (!region || !town || !snowData[region][town]) return;
 
-  // Dummy coordinates just for demonstration
   const coords = {
     "Anchorage": [61.2181, -149.9003],
     "Palmer": [61.5996, -149.1128],
