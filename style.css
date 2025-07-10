@@ -62,4 +62,17 @@ select {
   margin-left: 8px;
   border: 1px solid #999;
 }
- 
+ .ts-wrapper {
+  position: relative !important;
+  z-index: 1000 !important;
+  opacity: 1 !important;
+  pointer-events: all !important;
+}
+
+.ts-dropdown {
+  z-index: 2000 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
