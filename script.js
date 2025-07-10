@@ -63,15 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
   townTomSelect.clearOptions();
+  townTomSelect.clear(); // clear selection
 
   towns.forEach(town => {
     townTomSelect.addOption({ value: town, text: town });
   });
-
   townTomSelect.refreshOptions();
-  townTomSelect.clear(); // reset selected value
-}
 
+  // Show all towns for selected region in snow chart
+  const filtered = snowData.filter(entry => towns.includes(entry.town));
+  renderSnowTable(filtered);
+}
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
   if (!data.length) {
