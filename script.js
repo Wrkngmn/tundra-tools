@@ -83,22 +83,25 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-function updateTownDropdown(region) {
+unction updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
-  townTomSelect.clearOptions();
- townTomSelect.clear(true);        // Clear input
-townTomSelect.setValue("", true); // Fully reset selection and trigger change
+
+  // Reset the Town dropdown entirely
+  townTomSelect.clear(true);            // Clear any existing input
+  townTomSelect.clearOptions();         // Clear all prior options
+  townTomSelect.addOption({ value: "", text: "Select a Town" }); // Placeholder
 
   towns.forEach(town => {
     townTomSelect.addOption({ value: town, text: town });
   });
-  townTomSelect.refreshOptions();
 
-  // Show all towns in region when selected
+  townTomSelect.setValue("");           // Reset selection
+  townTomSelect.refreshOptions(false);  // Refresh UI
+
+  // Render table for region-level view
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
 }
-
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
   if (!data.length) {
