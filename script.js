@@ -112,7 +112,25 @@ function getSnowColor(inches) {
 
 function populateDropdown(id, data) {
   const select = document.getElementById(id);
-  select.innerHTML = "";
+  select.innerHTML = ""; // Clear previous options
+
+  // Add default placeholder
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "-- Select a Region --";
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  select.appendChild(defaultOption);
+
+  // Add optional "See all Regions"
+  if (id === "region-select") {
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = "See all Regions";
+    select.appendChild(allOption);
+  }
+
+  // Add actual regions
   data.forEach(item => {
     const option = document.createElement("option");
     option.value = item;
