@@ -1,122 +1,118 @@
-let map, marker, regionBox;
-let snowData = {};
-let regionSelect, townSelect, snowBody, statusBox;
-let regionTS, townTS;
-
-const coordsMap = {
-  "Anchorage": [61.2176, -149.8584],
-  "Wasilla": [61.5814, -149.4522],
-  "Palmer": [61.5996, -149.1128],
-  "Fairbanks": [64.8378, -147.7164],
-  "North Pole": [64.7511, -147.3494],
-  "Juneau": [58.3019, -134.4197],
-  "Sitka": [57.0531, -135.33],
-  "Nome": [64.5011, -165.4064],
-  "Bethel": [60.7922, -161.7558],
-  "Utqiagvik": [71.2906, -156.7886]
+const snowData = {
+  "Southcentral": {
+    "Anchorage": 4,
+    "Palmer": 8,
+    "Wasilla": 6
+  },
+  "Interior": {
+    "Fairbanks": 12,
+    "North Pole": 15
+  },
+  "Southeast": {
+    "Juneau": 10,
+    "Sitka": 14
+  }
 };
 
-const regionTowns = {
-  "Southcentral": ["Anchorage", "Wasilla", "Palmer"],
-  "Interior": ["Fairbanks", "North Pole"],
-  "Southeast": ["Juneau", "Sitka"],
-  "Western": ["Nome", "Bethel"],
-  "Northern": ["Utqiagvik"]
+const regionSelect = document.getElementById('regionSelect');
+const townSelect = document.getElementById('townSelect');
+const snowTableBody = document.querySelector('#snowTable tbody');
+
+const map = L.map('map').setView([61.17, -149.9], 6); // Default to Anchorage
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+const regionCenters = {
+  "Southcentral": [61.17, -149.9],
+  "Interior": [64.84, -147.72],
+  "Southeast": [58.3, -134.42]
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("alaska_snow_depth.json")
-    .then(resp => resp.json())
-    .then(data => {
-      snowData = data;
-      initApp();
-    });
-});
+let marker;
 
-function initApp() {
-  regionSelect = document.getElementById("region");
-  townSelect = document.getElementById("town");
-  snowBody = document.getElementById("snowBody");
-  statusBox = document.getElementById("regionStatus");
-
-  Object.keys(regionTowns).forEach(region => {
-    const opt = document.createElement("option");
+function populateRegions() {
+  regionSelect.innerHTML = '<option value="">Select a region</option>';
+  Object.keys(snowData).forEach(region => {
+    const opt = document.createElement('option');
     opt.value = region;
     opt.textContent = region;
     regionSelect.appendChild(opt);
   });
-
-  regionTS = new TomSelect("#region", {
-    maxItems: 1,
-    placeholder: "Select a region...",
-    onChange: region => {
-      populateTowns(region);
-      updateSnowTable(null, null);
-    }
-  });
-
-  townTS = new TomSelect("#town", {
-    maxItems: 1,
-    placeholder: "Select a town...",
-    onChange: town => {
-      const region = regionSelect.value;
-      updateSnowTable(region, town);
-      panMap(town);
-    }
-  });
-
-  map = L.map("mainMap").setView([61.2176, -149.8584], 6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
 }
 
 function populateTowns(region) {
-  townTS.clear(true);
-  townTS.clearOptions();
-
-  if (regionTowns[region]) {
-    const options = regionTowns[region].map(town => ({
-      value: town,
-      text: town
-    }));
-    townTS.addOptions(options);
-    townTS.refreshOptions();
-    townTS.open();
+  townSelect.innerHTML = '<option value="">Select a town</option>';
+  if (!region || !snowData[region]) {
+    townSelect.disabled = true;
+    return;
   }
+
+  Object.keys(snowData[region]).forEach(town => {
+    const opt = document.createElement('option');
+    opt.value = town;
+    opt.textContent = town;
+    townSelect.appendChild(opt);
+  });
+  townSelect.disabled = false;
 }
 
-function updateSnowTable(region, town) {
-  snowBody.innerHTML = "";
-  if (town && snowData[town] !== undefined) {
-    const depth = snowData[town];
-    const level = depth <= 6 ? "light" : depth <= 18 ? "moderate" : "heavy";
+function updateSnowTable(region) {
+  snowTableBody.innerHTML = '';
+  if (!region || !snowData[region]) return;
 
-    const row = document.createElement("tr");
-    row.setAttribute("data-depth", level);
-    row.innerHTML = `<td>${town}</td><td>${depth}</td>`;
-    snowBody.appendChild(row);
-
-    statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
-  } else {
-    snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
-    statusBox.textContent = "Select a Town or Region to see updates.";
-  }
+  Object.entries(snowData[region]).forEach(([town, depth]) => {
+    const row = document.createElement('tr');
+    const townCell = document.createElement('td');
+    townCell.textContent = town;
+    const depthCell = document.createElement('td');
+    depthCell.textContent = `${depth}"`;
+    depthCell.style.backgroundColor = getSnowColor(depth);
+    row.appendChild(townCell);
+    row.appendChild(depthCell);
+    snowTableBody.appendChild(row);
+  });
 }
 
-function panMap(town) {
-  if (!town || !coordsMap[town]) return;
-
-  if (regionBox) {
-    map.removeLayer(regionBox);
-    regionBox = null;
-  }
-
-  if (marker) {
-    map.removeLayer(marker);
-  }
-
-  const coords = coordsMap[town];
-  marker = L.marker(coords).addTo(map).bindPopup(town).openPopup();
-  map.setView(coords, 9);
+function getSnowColor(depth) {
+  if (depth <= 6) return 'green';
+  if (depth <= 12) return 'lightblue';
+  if (depth <= 24) return 'orange';
+  return 'red';
 }
+
+regionSelect.addEventListener('change', e => {
+  const region = e.target.value;
+  populateTowns(region);
+  updateSnowTable(region);
+
+  if (regionCenters[region]) {
+    map.setView(regionCenters[region], 7);
+  }
+});
+
+townSelect.addEventListener('change', e => {
+  const region = regionSelect.value;
+  const town = e.target.value;
+  if (!region || !town || !snowData[region][town]) return;
+
+  // Dummy coordinates just for demonstration
+  const coords = {
+    "Anchorage": [61.2181, -149.9003],
+    "Palmer": [61.5996, -149.1128],
+    "Wasilla": [61.5814, -149.4412],
+    "Fairbanks": [64.8378, -147.7164],
+    "North Pole": [64.7511, -147.3494],
+    "Juneau": [58.3019, -134.4197],
+    "Sitka": [57.0531, -135.3300]
+  };
+
+  if (marker) map.removeLayer(marker);
+  marker = L.marker(coords[town]).addTo(map);
+  map.setView(coords[town], 9);
+});
+
+populateRegions();
+new TomSelect('#regionSelect', { create: false, sortField: 'text' });
+new TomSelect('#townSelect', { create: false, sortField: 'text' });
