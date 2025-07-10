@@ -63,41 +63,6 @@ body {
   border: 1px solid #ccc;
 }
 
-#data-container {
-  border: 1px solid #ccc;
-  padding: 10px;
-}
-.bar-row {
-  margin-bottom: 10px;
-}
-
-.bar-label {
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.bar-track {
-  background-color: #eee;
-  position: relative;
-  height: 20px;
-  width: 100%;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  border-radius: 4px;
-}
-
-.bar-value {
-  position: absolute;
-  right: 10px;
-  top: 0;
-  font-size: 14px;
-  line-height: 20px;
-  color: #000;
-}
 .snow-table {
   width: 100%;
   border-collapse: collapse;
@@ -113,3 +78,4 @@ body {
 .snow-table th {
   background-color: #f0f0f0;
 }
+
