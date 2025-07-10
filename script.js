@@ -24,16 +24,35 @@ function populateDropdown(id, data) {
 document.addEventListener("DOMContentLoaded", () => {
   populateDropdown("region-select", regions);
   populateDropdown("town-select", towns);
+// Simulate snow data
+const snowData = [
+  { town: "Anchorage", depth: 8 },
+  { town: "Fairbanks", depth: 15 },
+  { town: "Juneau", depth: 5 },
+  { town: "Nome", depth: 27 }
+];
 
-  // Simulate snow data
-  const dataContainer = document.getElementById("data-container");
-  dataContainer.innerHTML = `
-    <ul>
-      <li>Anchorage: 8"</li>
-      <li>Fairbanks: 15"</li>
-      <li>Juneau: 5"</li>
-      <li>Nome: 27"</li>
-    </ul>
+function getColor(depth) {
+  if (depth <= 6) return "green";
+  if (depth <= 12) return "blue";
+  if (depth <= 24) return "orange";
+  return "red";
+}
+
+let html = "";
+snowData.forEach(entry => {
+  const color = getColor(entry.depth);
+  html += `
+    <div class="bar-row">
+      <div class="bar-label">${entry.town}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${entry.depth * 4}px; background-color:${color}"></div>
+        <span class="bar-value">${entry.depth}"</span>
+      </div>
+    </div>
   `;
 });
+
+document.getElementById("data-container").innerHTML = html;
+
 
