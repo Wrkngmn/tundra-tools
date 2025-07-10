@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Leaflet CSS -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-o8EnbFFlnhOaA2z5N4ddItS/q3vUvZiEgWZ6kG7Ff5k="
-  crossorigin=""
-/>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Snow Depth Tracker</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-o8EnbFFlnhOaA2z5N4ddItS/q3vUvZiEgWZ6kG7Ff5k="
+    crossorigin=""
+  />
 </head>
 <body>
   <div class="container">
@@ -56,32 +54,40 @@
     <main>
       <div class="map-container">
         <button id="expandMap">Toggle Fullscreen</button>
-        <div id="mainMap" class="map-area">Map loading...</div>
+        <div id="mainMap" class="map-area"></div>
       </div>
     </main>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jlk0dEtfy3Gfktd9wOQWXBzyNQKnbMH1ZIsG+5w="
+    crossorigin=""></script>
   <script src="script.js"></script>
   <script>
     const expandBtn = document.getElementById('expandMap');
-    const map = document.getElementById('mainMap');
+    const mapBox = document.getElementById('mainMap');
 
     expandBtn.addEventListener('click', () => {
       if (!document.fullscreenElement) {
-        map.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
+        mapBox.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
       } else {
         document.exitFullscreen();
       }
     });
-  </script>
-  <!-- Leaflet JS -->
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-o9N1jlk0dEtfy3Gfktd9wOQWXBzyNQKnbMH1ZIsG+5w="
-  crossorigin=""
-></script>
 
+    // === Initialize Leaflet map ===
+    const map = L.map('mainMap').setView([61.2176, -149.8997], 5); // Anchorage center
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([61.2176, -149.8997])
+      .addTo(map)
+      .bindPopup('Anchorage')
+      .openPopup();
+  </script>
 </body>
 </html>
-
