@@ -9,40 +9,42 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Tundra Tools Snow Tracker</h2>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Tundra Tools Snow Tracker</h2>
 
-    <label for="regionSelect">Select a Region</label>
-    <select id="regionSelect" placeholder="-- Select a Region --"></select>
+      <label for="regionSelect">Select a Region</label>
+      <select id="regionSelect" placeholder="-- Select a Region --"></select>
 
-    <label for="townSelect">Select a Town</label>
-    <select id="townSelect" placeholder="-- Select a Town --"></select>
-  </div>
-
-  <div class="main">
-    <div id="map"></div>
-
-    <div id="snowDepthContainer">
-      <h3>Snow Depth by Town</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Town</th>
-            <th>Snow Depth</th>
-          </tr>
-        </thead>
-        <tbody id="snowTableBody"></tbody>
-      </table>
+      <label for="townSelect">Select a Town</label>
+      <select id="townSelect" placeholder="-- Select a Town --"></select>
     </div>
 
-    <div id="legend">
-      <h3>Snow Depth Legend</h3>
-      <ul>
-        <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Light: 0–12"</li>
-        <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Moderate: 13–24"</li>
-        <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Heavy: 25–36"</li>
-        <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Extreme: 37"+</li>
-      </ul>
+    <div class="main">
+      <div id="map">Loading map...</div>
+
+      <div id="snow-depth-data">
+        <h3>Snow Depth by Town</h3>
+        <table class="snow-table">
+          <thead>
+            <tr>
+              <th>Town</th>
+              <th>Snow Depth</th>
+            </tr>
+          </thead>
+          <tbody id="snowTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="legend">
+        <h3>Snow Depth Legend</h3>
+        <ul>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Light: 0–12"</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Moderate: 13–24"</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Heavy: 25–36"</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Extreme: 37"+</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -51,4 +53,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
