@@ -9,7 +9,14 @@ const snowData = [
   { town: "Anchorage", depth: 8 },
   { town: "Fairbanks", depth: 15 },
   { town: "Juneau", depth: 5 },
-  { town: "Nome", depth: 27 }
+  { town: "Nome", depth: 27 },
+  { town: "Wasilla", depth: 10 },
+  { town: "Palmer", depth: 7 },
+  { town: "Bethel", depth: 18 },
+  { town: "Sitka", depth: 3 },
+  { town: "Ketchikan", depth: 12 },
+  { town: "Kotzebue", depth: 20 },
+  { town: "North Pole", depth: 14 }
 ];
 
 function getSnowColor(inches) {
@@ -25,8 +32,8 @@ function populateDropdown(id, data) {
 
   data.forEach(item => {
     const option = document.createElement("option");
-   option.value = item === "-- Select a Region --" ? "" : item;
-option.textContent = item;
+    option.value = item === "-- Select a Region --" ? "" : item;
+    option.textContent = item;
     select.appendChild(option);
   });
 }
@@ -51,20 +58,21 @@ document.addEventListener("DOMContentLoaded", () => {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
-    placeholder: "Select a Town"
+    placeholder: "Select a Town",
   });
 
-  // Start with empty town list
+  // Start with empty town list and no chart
   townTomSelect.clearOptions();
-townTomSelect.on("change", function(value) {
-  const selectedTown = value;
-  if (selectedTown) {
-    const match = snowData.find(entry => entry.town === selectedTown);
-    renderSnowTable(match ? [match] : []);
-  }
+
+  // Hook into town selection
+  townTomSelect.on("change", function(value) {
+    const selectedTown = value;
+    if (selectedTown) {
+      const match = snowData.find(entry => entry.town === selectedTown);
+      renderSnowTable(match ? [match] : []);
+    }
+  });
 });
-  
- 
 
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
@@ -76,14 +84,15 @@ function updateTownDropdown(region) {
   });
   townTomSelect.refreshOptions();
 
-  // Show all towns for selected region in snow chart
+  // Show all towns in region when selected
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
 }
+
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
   if (!data.length) {
-    container.innerHTML = ""; // Show nothing if no data
+    container.innerHTML = "";
     return;
   }
 
@@ -116,3 +125,4 @@ function renderSnowTable(data) {
     tbody.appendChild(row);
   });
 }
+
