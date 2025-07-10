@@ -30,46 +30,45 @@ let map;
 let marker;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize Leaflet map
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
-
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  populateDropdowns();
-});
-
-function populateDropdowns() {
+  // === Populate Region <select> with options BEFORE TomSelect runs
   Object.keys(fakeData).forEach(region => {
-    const regionOption = document.createElement("option");
-    regionOption.value = region;
-    regionOption.textContent = region;
-    regionSelect.appendChild(regionOption);
+    const option = document.createElement("option");
+    option.value = region;
+    option.textContent = region;
+    regionSelect.appendChild(option);
   });
 
+  // Initialize Region dropdown with Tom Select
   new TomSelect("#region", {
     maxItems: 1,
     placeholder: "Select a region...",
-    onChange: value => {
-      updateTownOptions(value);
+    onChange: (region) => {
+      populateTowns(region);
       updateSnowTable(null, null);
     }
   });
 
+  // Initialize Town dropdown with Tom Select (initially empty)
   new TomSelect("#town", {
     maxItems: 1,
     placeholder: "Select a town...",
-    onChange: value => {
+    onChange: (town) => {
       const region = regionSelect.value;
-      const town = value;
       updateSnowTable(region, town);
       panMap(region, town);
     }
   });
-}
+});
 
-function updateTownOptions(region) {
+function populateTowns(region) {
   townSelect.innerHTML = "";
+
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
@@ -77,6 +76,9 @@ function updateTownOptions(region) {
       option.textContent = town;
       townSelect.appendChild(option);
     });
+
+    // Refresh Tom Select after adding options
+    TomSelect.instances.town.clear();
     TomSelect.instances.town.sync();
   }
 }
@@ -84,17 +86,18 @@ function updateTownOptions(region) {
 function updateSnowTable(region, town) {
   snowBody.innerHTML = "";
   if (
-    region &&
-    town &&
+    region && town &&
     fakeData[region] &&
     fakeData[region][town]
   ) {
     const depth = fakeData[region][town].depth;
-    const row = document.createElement("tr");
     const level = depth <= 6 ? "light" : depth <= 18 ? "moderate" : "heavy";
+
+    const row = document.createElement("tr");
     row.setAttribute("data-depth", level);
     row.innerHTML = `<td>${town}</td><td>${depth}</td>`;
     snowBody.appendChild(row);
+
     statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
   } else {
     snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
@@ -104,17 +107,18 @@ function updateSnowTable(region, town) {
 
 function panMap(region, town) {
   if (
-    region &&
-    town &&
+    region && town &&
     fakeData[region] &&
     fakeData[region][town] &&
     fakeData[region][town].coords
   ) {
     const coords = fakeData[region][town].coords;
     map.setView(coords, 9);
+
     if (marker) {
       map.removeLayer(marker);
     }
+
     marker = L.marker(coords).addTo(map).bindPopup(town).openPopup();
   }
 }
