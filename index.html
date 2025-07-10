@@ -2,45 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snow Depth Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <div id="container">
-    <div id="sidebar">
-      <h2>Snow Depth Tracker</h2>
-      <p>Select a region or town to view snow depth data.</p>
+  <div id="sidebar">
+    <h1>Snow Depth by Area</h1>
+    <label for="regionSelect">Select a region:</label>
+    <select id="regionSelect" placeholder="Select a region"></select>
 
-      <select id="regionSelect" placeholder="Select a region"></select>
-      <select id="townSelect" placeholder="Select a town"></select>
+    <label for="townSelect">Select a town:</label>
+    <select id="townSelect" placeholder="Select a town" disabled></select>
 
-      <div id="snowInfoBox">
-        <h3>Snow Depth by Area</h3>
-        <table id="snowTable">
-          <thead><tr><th>Town</th><th>Snow Depth</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div id="legend">
-        <strong>Legend:</strong><br/>
-        <div class="legend-line"><span class="legend-label">0–6"</span><span class="legend-box" style="background-color: green;"></span></div>
-        <div class="legend-line"><span class="legend-label">6–12"</span><span class="legend-box" style="background-color: lightblue;"></span></div>
-        <div class="legend-line"><span class="legend-label">12–24"</span><span class="legend-box" style="background-color: orange;"></span></div>
-        <div class="legend-line"><span class="legend-label">24+"</span><span class="legend-box" style="background-color: red;"></span></div>
-      </div>
-    </div>
-
-    <div id="map"></div>
+    <table id="snowTable">
+      <thead>
+        <tr><th>Town</th><th>Snow Depth</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="script.js"></script>
-    
+  <div id="map"></div>
+
+  <div id="legend">
+    <strong>Legend:</strong><br />
+    0–6"    <span class="legend-box green"></span> Green (Low)<br />
+    7–12"    <span class="legend-box blue"></span> Light Blue (Moderate)<br />
+    13–24"    <span class="legend-box orange"></span> Orange (High)<br />
+    24"+    <span class="legend-box red"></span> Red (Severe)
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
