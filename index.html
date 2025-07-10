@@ -15,15 +15,23 @@
     <aside class="sidebar">
       <h1>Select Your Region</h1>
 
-      <label for="regionSelect">Region</label>
-      <input list="regions" id="regionSelect" name="regionSelect" placeholder="Start typing..." />
-      <datalist id="regions"></datalist>
+      <div class="selectors">
+        <div class="selector-group">
+          <label for="regionSelect">Region</label>
+          <input list="regions" id="regionSelect" placeholder="Start typing region..." />
+          <datalist id="regions"></datalist>
+        </div>
+        <div class="selector-group">
+          <label for="townSelect">Town</label>
+          <input list="towns" id="townSelect" placeholder="Start typing town..." />
+          <datalist id="towns"></datalist>
+        </div>
+      </div>
 
-      <label for="townSelect">Town</label>
-      <input list="towns" id="townSelect" name="townSelect" placeholder="Start typing..." />
-      <datalist id="towns"></datalist>
-
-      <label><input type="checkbox" id="setZone" /> Set This As My Zone</label>
+      <label style="display:block; margin-top:10px;">
+        <input type="checkbox" id="setZone" />
+        Set This As My Zone
+      </label>
     </aside>
 
     <main class="main">
@@ -48,3 +56,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
