@@ -1,6 +1,37 @@
- // === DROPDOWN SETUP ===
-const regions = ["Interior", "Southcentral", "Southeast", "Western"];
-const towns = ["Anchorage", "Fairbanks", "Juneau", "Nome", "Wasilla", "Bethel"];
+const regionTownMap = {
+  "Interior": ["Fairbanks", "North Pole"],
+  "Southcentral": ["Anchorage", "Wasilla", "Palmer"],
+  "Southeast": ["Juneau", "Sitka", "Ketchikan"],
+  "Western": ["Nome", "Bethel", "Kotzebue"]
+};
+
+const snowData = [
+  { town: "Anchorage", depth: 8 },
+  { town: "Fairbanks", depth: 15 },
+  { town: "Juneau", depth: 5 },
+  { town: "Nome", depth: 27 }
+];
+
+function getSnowColor(inches) {
+  if (inches <= 6) return "#d2f8d2";         // light green
+  if (inches <= 12) return "#d0ebff";        // light blue
+  if (inches <= 24) return "#ffe5b4";        // light orange
+  return "#ffcccc";                          // light red
+}
+
+function populateDropdown(id, data) {
+  const select = document.getElementById(id);
+  select.innerHTML = ""; // Clear options
+
+  data.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    select.appendChild(option);
+  });
+}
+
+let regionSelect, townSelect, townTomSelect;
 
 document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region-select");
@@ -23,23 +54,22 @@ document.addEventListener("DOMContentLoaded", () => {
     placeholder: "Select a Town"
   });
 
+  // Start with empty town list
+  townTomSelect.clearOptions();
+
   renderSnowTable(snowData);
 });
-}
 
-// === BAR CHART SETUP ===
-const snowData = [
-  { town: "Anchorage", depth: 8 },
-  { town: "Fairbanks", depth: 15 },
-  { town: "Juneau", depth: 5 },
-  { town: "Nome", depth: 27 }
-];
+function updateTownDropdown(region) {
+  const towns = regionTownMap[region] || [];
+  townTomSelect.clearOptions();
 
-function getSnowColor(inches) {
-  if (inches <= 6) return "#d2f8d2";         // light green
-  if (inches <= 12) return "#d0ebff";        // light blue
-  if (inches <= 24) return "#ffe5b4";        // light orange
-  return "#ffcccc";                          // light red
+  towns.forEach(town => {
+    townTomSelect.addOption({ value: town, text: town });
+  });
+
+  townTomSelect.refreshOptions();
+  townTomSelect.clear(); // reset selected value
 }
 
 function renderSnowTable(data) {
@@ -73,10 +103,3 @@ function renderSnowTable(data) {
     tbody.appendChild(row);
   });
 }
-
-// === INITIALIZE ALL ON LOAD ===
-document.addEventListener("DOMContentLoaded", () => {
-  populateDropdown("region-select", ["", ...Object.keys(regionTownMap)]);
-  populateDropdown("town-select", towns);
-  renderSnowTable(snowData);
-});
