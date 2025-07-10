@@ -1,3 +1,5 @@
+let map;
+let marker; // Move this up so it's global
 const fakeData = {
   "Southcentral": {
     "Anchorage": { depth: 12, coords: [61.2176, -149.8997] },
