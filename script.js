@@ -56,9 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Start with empty town list
   townTomSelect.clearOptions();
-
-  renderSnowTable(snowData);
+townTomSelect.on("change", function(value) {
+  const selectedTown = value;
+  if (selectedTown) {
+    const match = snowData.find(entry => entry.town === selectedTown);
+    renderSnowTable(match ? [match] : []);
+  }
 });
+  
+ 
 
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
