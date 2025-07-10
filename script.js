@@ -97,7 +97,11 @@ function panMap(region, town) {
   ) {
     const coords = fakeData[region][town].coords;
     map.setView(coords, 9);
-    if (marker) map.removeLayer(marker);
+
+    if (marker) {
+      map.removeLayer(marker);
+    }
+
     marker = L.marker(coords).addTo(map).bindPopup(town).openPopup();
   }
 }
