@@ -5,6 +5,27 @@ const regionTownMap = {
   "Western": ["Nome", "Bethel", "Kotzebue"]
 };
 
+const regionCoords = {
+  "Interior": [64.8378, -147.7164],
+  "Southcentral": [61.2181, -149.9003],
+  "Southeast": [58.3019, -134.4197],
+  "Western": [64.5011, -165.4064]
+};
+
+const townCoords = {
+  "Anchorage": [61.2181, -149.9003],
+  "Fairbanks": [64.8378, -147.7164],
+  "Juneau": [58.3019, -134.4197],
+  "Nome": [64.5011, -165.4064],
+  "Wasilla": [61.5806, -149.4408],
+  "Palmer": [61.5994, -149.1128],
+  "Bethel": [60.7922, -161.7558],
+  "Sitka": [57.0531, -135.3300],
+  "Ketchikan": [55.3422, -131.6461],
+  "Kotzebue": [66.8983, -162.5967],
+  "North Pole": [64.7511, -147.3494]
+};
+
 const snowData = [
   { town: "Anchorage", depth: 8 },
   { town: "Fairbanks", depth: 15 },
@@ -38,6 +59,8 @@ function populateDropdown(id, data) {
 }
 
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
+let map;
+let townMarker = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region-select");
@@ -66,9 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedRegion = regionSelectTomSelect.getValue();
     const validTowns = regionTownMap[selectedRegion] || [];
 
+    // Clear old marker if any
+    if (townMarker) {
+      map.removeLayer(townMarker);
+      townMarker = null;
+    }
+
     if (value && validTowns.includes(value)) {
       const match = snowData.find(entry => entry.town === value);
       renderSnowTable(match ? [match] : []);
+
+      // Add town marker
+      if (townCoords[value]) {
+        townMarker = L.marker(townCoords[value]).addTo(map);
+        map.flyTo(townCoords[value], 10);
+      }
     } else {
       const filtered = snowData.filter(entry => validTowns.includes(entry.town));
       renderSnowTable(filtered);
@@ -76,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ✅ Initialize Leaflet map centered on Anchorage
-  const map = L.map('map').setView([61.2176, -149.8997], 6);
+  map = L.map('map').setView([61.2176, -149.8997], 6);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -99,6 +134,17 @@ function updateTownDropdown(region) {
 
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
+
+  // Clear old marker if any
+  if (townMarker) {
+    map.removeLayer(townMarker);
+    townMarker = null;
+  }
+
+  // Fly to region center
+  if (regionCoords[region]) {
+    map.flyTo(regionCoords[region], 6);
+  }
 }
 
 function renderSnowTable(data) {
