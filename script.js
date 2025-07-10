@@ -19,7 +19,6 @@ const townSelect = document.getElementById('townSelect');
 const snowTableBody = document.querySelector('#snowTable tbody');
 
 const map = L.map('map').setView([61.17, -149.9], 6);
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -33,7 +32,10 @@ const regionCenters = {
 let marker;
 
 function populateRegions() {
-  regionSelect.innerHTML = '<option value="">Select a region</option>';
+  regionSelect.innerHTML = `
+    <option value="">Select a region</option>
+    <option value="ALL_REGIONS">Show All Regions</option>
+  `;
   Object.keys(snowData).forEach(region => {
     const opt = document.createElement('option');
     opt.value = region;
@@ -43,7 +45,7 @@ function populateRegions() {
 }
 
 function populateTowns(region) {
-  townSelect.innerHTML = '<option value="">Select a town</option>';
+  townSelect.innerHTML = '<option value="">All towns in region</option>';
   if (!region || !snowData[region]) {
     townSelect.disabled = true;
     return;
@@ -58,21 +60,45 @@ function populateTowns(region) {
   townSelect.disabled = false;
 }
 
-function updateSnowTable(region) {
+function updateSnowTable(region, specificTown = "") {
   snowTableBody.innerHTML = '';
   if (!region || !snowData[region]) return;
 
-  Object.entries(snowData[region]).forEach(([town, depth]) => {
+  const towns = snowData[region];
+  for (const [town, depth] of Object.entries(towns)) {
+    if (specificTown && town !== specificTown) continue;
+
     const row = document.createElement('tr');
     const townCell = document.createElement('td');
     townCell.textContent = town;
+
     const depthCell = document.createElement('td');
     depthCell.textContent = `${depth}"`;
     depthCell.style.backgroundColor = getSnowColor(depth);
+
     row.appendChild(townCell);
     row.appendChild(depthCell);
     snowTableBody.appendChild(row);
-  });
+  }
+}
+
+function updateSnowTableAllRegions() {
+  snowTableBody.innerHTML = '';
+  for (const region in snowData) {
+    for (const [town, depth] of Object.entries(snowData[region])) {
+      const row = document.createElement('tr');
+      const townCell = document.createElement('td');
+      townCell.textContent = town;
+
+      const depthCell = document.createElement('td');
+      depthCell.textContent = `${depth}"`;
+      depthCell.style.backgroundColor = getSnowColor(depth);
+
+      row.appendChild(townCell);
+      row.appendChild(depthCell);
+      snowTableBody.appendChild(row);
+    }
+  }
 }
 
 function getSnowColor(depth) {
@@ -84,18 +110,48 @@ function getSnowColor(depth) {
 
 regionSelect.addEventListener('change', e => {
   const region = e.target.value;
+
+  if (region === "ALL_REGIONS") {
+    townSelect.innerHTML = '<option value="">Select a town</option>';
+    townSelect.disabled = true;
+    updateSnowTableAllRegions();
+    map.setView([62.5, -150], 4);
+    if (marker) {
+      map.removeLayer(marker);
+      marker = null;
+    }
+    return;
+  }
+
   populateTowns(region);
   updateSnowTable(region);
 
   if (regionCenters[region]) {
     map.setView(regionCenters[region], 7);
   }
+
+  if (marker) {
+    map.removeLayer(marker);
+    marker = null;
+  }
 });
 
 townSelect.addEventListener('change', e => {
   const region = regionSelect.value;
-  const town = e.target.value;
-  if (!region || !town || !snowData[region][town]) return;
+  const selectedTown = e.target.value;
+
+  if (!region || !snowData[region]) return;
+
+  if (selectedTown === "") {
+    updateSnowTable(region);
+    if (marker) {
+      map.removeLayer(marker);
+      marker = null;
+    }
+    return;
+  }
+
+  updateSnowTable(region, selectedTown);
 
   const coords = {
     "Anchorage": [61.2181, -149.9003],
@@ -107,11 +163,23 @@ townSelect.addEventListener('change', e => {
     "Sitka": [57.0531, -135.3300]
   };
 
-  if (marker) map.removeLayer(marker);
-  marker = L.marker(coords[town]).addTo(map);
-  map.setView(coords[town], 9);
+  if (coords[selectedTown]) {
+    if (marker) map.removeLayer(marker);
+    marker = L.marker(coords[selectedTown]).addTo(map);
+    map.setView(coords[selectedTown], 9);
+  }
 });
 
 populateRegions();
-new TomSelect('#regionSelect', { create: false, sortField: 'text' });
-new TomSelect('#townSelect', { create: false, sortField: 'text' });
+
+new TomSelect('#regionSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a region'
+});
+
+new TomSelect('#townSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a town'
+});
