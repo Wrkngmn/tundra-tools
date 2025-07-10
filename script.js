@@ -21,7 +21,9 @@
   }
 };
 
-let regionSelect, townSelect, snowBody, statusBox, map, marker;
+let map, marker;
+let regionSelect, townSelect, snowBody, statusBox;
+let regionTS, townTS;
 
 document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region");
@@ -29,67 +31,58 @@ document.addEventListener("DOMContentLoaded", () => {
   snowBody = document.getElementById("snowBody");
   statusBox = document.getElementById("regionStatus");
 
-  // === Initialize map
-  map = L.map("mainMap").setView([61.2176, -149.8584], 6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  // === Populate and activate region dropdown
+  // === Step 1: Populate region <select> before Tom Select init
   Object.keys(fakeData).forEach(region => {
-    const option = document.createElement("option");
-    option.value = region;
-    option.textContent = region;
-    regionSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = region;
+    opt.textContent = region;
+    regionSelect.appendChild(opt);
   });
 
-  new TomSelect("#region", {
+  // === Step 2: Initialize Tom Selects
+  regionTS = new TomSelect("#region", {
     maxItems: 1,
     placeholder: "Select a region...",
-    onChange: (region) => {
+    onChange: region => {
       populateTowns(region);
       updateSnowTable(null, null);
     }
   });
 
-  // === Delay town init — empty at first
-  new TomSelect("#town", {
+  townTS = new TomSelect("#town", {
     maxItems: 1,
     placeholder: "Select a town...",
-    onChange: (town) => {
+    onChange: town => {
       const region = regionSelect.value;
       updateSnowTable(region, town);
       panMap(region, town);
     }
   });
+
+  // === Step 3: Initialize map
+  map = L.map("mainMap").setView([61.2176, -149.8584], 6);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 });
 
 function populateTowns(region) {
-  const townSelectInstance = TomSelect.instances.town;
-
-  townSelect.innerHTML = "";
+  townTS.clearOptions();
 
   if (fakeData[region]) {
-    Object.keys(fakeData[region]).forEach(town => {
-      const option = document.createElement("option");
-      option.value = town;
-      option.textContent = town;
-      townSelect.appendChild(option);
-    });
-
-    // Rebuild TomSelect for updated list
-    townSelectInstance.clearOptions();
-    townSelectInstance.addOptions([...townSelect.options].map(opt => ({
-      value: opt.value,
-      text: opt.textContent
-    })));
-    townSelectInstance.clear();
-    townSelectInstance.refreshOptions(false);
+    const options = Object.keys(fakeData[region]).map(town => ({
+      value: town,
+      text: town
+    }));
+    townTS.addOptions(options);
+    townTS.refreshOptions(false);
+    townTS.clear();
   }
 }
 
 function updateSnowTable(region, town) {
   snowBody.innerHTML = "";
+
   if (
     region &&
     town &&
