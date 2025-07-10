@@ -17,7 +17,8 @@ body {
   overflow-y: auto;
 }
 
-.sidebar input[type="text"] {
+.sidebar input[type="text"],
+.sidebar input[list] {
   width: 100%;
   padding: 5px;
   margin-bottom: 10px;
@@ -49,10 +50,6 @@ body {
   border: 1px solid #ccc;
   padding: 5px;
   text-align: left;
-}
-
-#snowDepthTable td {
-  transition: background-color 0.3s ease;
 }
 
 #snowDepthTable .moderate {
@@ -89,14 +86,9 @@ body {
   overflow-y: auto;
 }
 
-.map-placeholder {
+.map-box {
   margin-top: 20px;
   width: 100%;
   height: 400px;
-  background-color: #d9ecf5;
   border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-style: italic;
 }
