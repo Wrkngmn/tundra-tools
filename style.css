@@ -1,81 +1,55 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tundra Tools - Snow Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Tundra Tools Snow Tracker</h2>
 
-.container {
-  display: flex;
-  min-height: 100vh;
-}
+      <label for="regionSelect">Select a Region</label>
+      <select id="regionSelect" placeholder="-- Select a Region --"></select>
 
-.sidebar {
-  width: 300px;
-  padding: 20px;
-  background-color: #f1f1f1;
-  box-sizing: border-box;
-}
+      <label for="townSelect">Select a Town</label>
+      <select id="townSelect" placeholder="-- Select a Town --"></select>
+    </div>
 
-.sidebar label {
-  display: block;
-  margin-top: 10px;
-  font-weight: bold;
-}
+    <div class="main">
+      <div id="map">Loading map...</div>
 
-.sidebar select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-}
+      <div id="snow-depth-data">
+        <h3>Snow Depth by Town</h3>
+        <table class="snow-table">
+          <thead>
+            <tr>
+              <th>Town</th>
+              <th>Snow Depth</th>
+            </tr>
+          </thead>
+          <tbody id="snowTableBody"></tbody>
+        </table>
+      </div>
 
-.main {
-  flex: 1;
-  padding: 20px;
-  box-sizing: border-box;
-}
+      <div id="legend">
+        <h3>Snow Depth Legend</h3>
+        <ul>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Light: 0–12"</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Moderate: 13–24"</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Heavy: 25–36"</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;Extreme: 37"+</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-#map {
-  width: 100%;
-  height: 400px;
-  background-color: #e0e0e0;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-#legend h3, #snow-depth-data h3 {
-  margin-bottom: 10px;
-}
-
-#legend ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 20px;
-}
-
-.legend-box {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
-  border: 1px solid #ccc;
-}
-
-.snow-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.snow-table th, .snow-table td {
-  border: 1px solid #ccc;
-  padding: 6px 10px;
-  text-align: left;
-}
-
-.snow-table th {
-  background-color: #f0f0f0;
-}
-
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
