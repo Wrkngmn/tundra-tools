@@ -105,10 +105,10 @@ const snowData = [
 ];
 
 function getSnowColor(inches) {
-  if (inches <= 6) return "#d2f8d2";
-  if (inches <= 12) return "#d0ebff";
-  if (inches <= 24) return "#ffe5b4";
-  return "#ffcccc";
+  if (inches <= 12) return "#d2f8d2";         // Light: 0–12"
+  if (inches <= 24) return "#d0ebff";         // Moderate: 13–24"
+  if (inches <= 36) return "#ffe5b4";         // Heavy: 25–36"
+  return "#ffcccc";                           // Extreme: 37"+
 }
 
 function populateDropdown(id, data) {
