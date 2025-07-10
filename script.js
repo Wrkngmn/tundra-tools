@@ -1,64 +1,78 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const regionInput = document.getElementById("regionInput");
-  const townInput = document.getElementById("townInput");
-
-  const snowData = [
-    { region: "Interior", town: "Fairbanks", depth: 22 },
-    { region: "Southcentral", town: "Anchorage", depth: 12 },
-    { region: "Southeast", town: "Juneau", depth: 5 },
-    { region: "Interior", town: "North Pole", depth: 18 },
-    { region: "Southwest", town: "Bethel", depth: 7 }
-  ];
-
-  function updateTable(filteredData) {
-    const tableBody = document.querySelector("#snowDepthTable tbody");
-    tableBody.innerHTML = "";
-
-    if (filteredData.length === 0) {
-      tableBody.innerHTML = "<tr><td>–</td><td>–</td></tr>";
-      return;
-    }
-
-    for (const entry of filteredData) {
-      const row = document.createElement("tr");
-      const areaCell = document.createElement("td");
-      const depthCell = document.createElement("td");
-
-      areaCell.textContent = entry.town;
-      depthCell.textContent = entry.depth;
-
-      if (entry.depth > 18) {
-        row.classList.add("heavy");
-      } else if (entry.depth >= 7) {
-        row.classList.add("moderate");
-      }
-
-      row.appendChild(areaCell);
-      row.appendChild(depthCell);
-      tableBody.appendChild(row);
-    }
+const fakeData = {
+  "Southcentral": {
+    "Anchorage": 12,
+    "Wasilla": 6,
+    "Palmer": 9
+  },
+  "Interior": {
+    "Fairbanks": 20,
+    "North Pole": 16
+  },
+  "Southeast": {
+    "Juneau": 7,
+    "Sitka": 4
+  },
+  "Western": {
+    "Nome": 10,
+    "Bethel": 3
+  },
+  "Northern": {
+    "Utqiagvik": 25
   }
+};
 
-  regionInput.addEventListener("input", () => {
-    const region = regionInput.value.trim().toLowerCase();
-    const filtered = snowData.filter(e =>
-      e.region.toLowerCase().includes(region)
-    );
-    updateTable(filtered);
+const regionInput = document.getElementById("region");
+const townInput = document.getElementById("town");
+const regionList = document.getElementById("regionList");
+const townList = document.getElementById("townList");
+const snowBody = document.getElementById("snowBody");
+const statusBox = document.getElementById("regionStatus");
+
+function populateDropdowns() {
+  Object.keys(fakeData).forEach(region => {
+    const option = document.createElement("option");
+    option.value = region;
+    regionList.appendChild(option);
   });
+}
 
-  townInput.addEventListener("input", () => {
-    const town = townInput.value.trim().toLowerCase();
-    const filtered = snowData.filter(e =>
-      e.town.toLowerCase().includes(town)
-    );
-    updateTable(filtered);
-  });
+function updateTownOptions(region) {
+  townList.innerHTML = "";
+  if (fakeData[region]) {
+    Object.keys(fakeData[region]).forEach(town => {
+      const option = document.createElement("option");
+      option.value = town;
+      townList.appendChild(option);
+    });
+  }
+}
 
-  // === Map ===
-  const map = L.map("map").setView([64.2008, -149.4937], 4); // Centered on Alaska
+function updateSnowTable(region, town) {
+  snowBody.innerHTML = "";
+  if (region && town && fakeData[region] && fakeData[region][town] !== undefined) {
+    const depth = fakeData[region][town];
+    const row = document.createElement("tr");
+    const level = depth <= 6 ? "light" : depth <= 18 ? "moderate" : "heavy";
+    row.setAttribute("data-depth", level);
+    row.innerHTML = `<td>${town}</td><td>${depth}</td>`;
+    snowBody.appendChild(row);
+    statusBox.textContent = `Snow depth for ${town}, ${region}: ${depth}"`;
+  } else {
+    snowBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
+    statusBox.textContent = `Select a town to see updates.`;
+  }
+}
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+regionInput.addEventListener("input", () => {
+  const selectedRegion = regionInput.value;
+  updateTownOptions(selectedRegion);
+  updateSnowTable(null, null);
 });
+
+townInput.addEventListener("input", () => {
+  const region = regionInput.value;
+  const town = townInput.value;
+  updateSnowTable(region, town);
+});
+
+populateDropdowns();
