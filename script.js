@@ -206,5 +206,6 @@ window.TomSelect.instances['townSelect'] = townSelectInstance;
   // Force-enable dropdown after page load
 if (townSelectInstance) {
   townSelectInstance.enable();
-}
+}  // Expose for debugging
+  window.populateTowns = populateTowns;
 });
