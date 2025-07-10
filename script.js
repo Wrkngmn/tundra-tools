@@ -44,30 +44,36 @@ document.addEventListener("DOMContentLoaded", () => {
     regionSelect.appendChild(option);
   });
 
-  // Initialize Region dropdown with Tom Select
-  new TomSelect("#region", {
-    maxItems: 1,
-    placeholder: "Select a region...",
-    onChange: (region) => {
-      populateTowns(region);
-      updateSnowTable(null, null);
-    }
-  });
-
-  // Initialize Town dropdown with Tom Select (initially empty)
-  new TomSelect("#town", {
-    maxItems: 1,
-    placeholder: "Select a town...",
-    onChange: (town) => {
-      const region = regionSelect.value;
-      updateSnowTable(region, town);
-      panMap(region, town);
-    }
-  });
-});
-
 function populateTowns(region) {
-  townSelect.innerHTML = "";
+  const townWrapper = document.getElementById("town");
+
+  // Remove any existing Tom Select instance
+  if (TomSelect.instances.town) {
+    TomSelect.instances.town.destroy();
+  }
+
+  townWrapper.innerHTML = "";
+
+  if (fakeData[region]) {
+    Object.keys(fakeData[region]).forEach(town => {
+      const option = document.createElement("option");
+      option.value = town;
+      option.textContent = town;
+      townWrapper.appendChild(option);
+    });
+
+    // Recreate Tom Select with new options
+    new TomSelect("#town", {
+      maxItems: 1,
+      placeholder: "Select a town...",
+      onChange: (town) => {
+        updateSnowTable(region, town);
+        panMap(region, town);
+      }
+    });
+  }
+}
+
 
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
