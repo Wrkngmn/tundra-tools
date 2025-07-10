@@ -176,9 +176,9 @@ populateDropdown("region-select", Object.keys(regionTownMap));
       townMarker = null;
     }
 
-    if (value && validTowns.includes(value)) {
-      const match = snowData.find(entry => entry.town === value);
-      renderSnowTable(match ? [match] : []);
+   if (value && validTowns.includes(value)) {
+  const match = snowData.find(entry => entry.town === value);
+  renderSnowTable([match || { town: value, depth: null }]);
 
       // Add town marker
       if (townCoords[value]) {
