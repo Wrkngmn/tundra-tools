@@ -1,59 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tundra Tools - Snow Depth Tracker</title>
-  <link rel="stylesheet" href="style.css" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-</head>
-<body>
-  <div class="container">
-    <aside class="sidebar">
-      <h1>Select Your Region</h1>
+<aside class="sidebar">
+  <h2>Select Your Region</h2>
 
-      <div class="selectors">
-        <div class="selector-group">
-          <label for="regionSelect">Region</label>
-          <input list="regions" id="regionSelect" placeholder="Start typing region..." />
-          <datalist id="regions"></datalist>
-        </div>
-        <div class="selector-group">
-          <label for="townSelect">Town</label>
-          <input list="towns" id="townSelect" placeholder="Start typing town..." />
-          <datalist id="towns"></datalist>
-        </div>
-      </div>
+  <div class="selectors-row">
+    <div class="selector-group">
+      <label for="regionSelect">Region</label>
+      <input list="regions" id="regionSelect" placeholder="Start typing region..." />
+      <datalist id="regions">
+        <!-- Add real region options dynamically or manually -->
+        <option value="Interior">
+        <option value="Southcentral">
+        <option value="Southeast">
+        <option value="Western">
+        <option value="Northern">
+        <option value="Southwest">
+      </datalist>
+    </div>
 
-      <label style="display:block; margin-top:10px;">
-        <input type="checkbox" id="setZone" />
-        Set This As My Zone
-      </label>
-    </aside>
-
-    <main class="main">
-      <h1>Snow Depth Tracker</h1>
-      <div id="alert" class="alert">Select a town to see updates.</div>
-
-      <div id="map" class="map"></div>
-
-      <h2>Snow Depth by Area</h2>
-      <table>
-        <thead>
-          <tr><th>Area</th><th>Snow Depth (in)</th></tr>
-        </thead>
-        <tbody id="snowTable">
-          <tr><td>–</td><td>–</td></tr>
-        </tbody>
-      </table>
-    </main>
+    <div class="selector-group">
+      <label for="townSelect">Town</label>
+      <input list="towns" id="townSelect" placeholder="Start typing town..." />
+      <datalist id="towns">
+        <!-- Add real town options dynamically or manually -->
+        <option value="Anchorage">
+        <option value="Fairbanks">
+        <option value="Juneau">
+        <option value="Wasilla">
+        <option value="Homer">
+        <option value="Nome">
+      </datalist>
+    </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
-
+  <label style="display:block; margin-top:10px;">
+    <input type="checkbox" id="setZone" />
+    Set This As My Zone
+  </label>
+</aside>
