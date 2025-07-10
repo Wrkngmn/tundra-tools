@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   populateDropdown("region-select", ["-- Select a Region --", ...Object.keys(regionTownMap)]);
 
-  new TomSelect(regionSelect, {
+  regionSelectTomSelect = new TomSelect(regionSelect, {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
@@ -58,32 +58,28 @@ document.addEventListener("DOMContentLoaded", () => {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
-    placeholder: "Select a Town",
+    placeholder: "Select a Town"
   });
 
-  // Start with empty town list and no chart
+  // Start with empty town list
   townTomSelect.clearOptions();
 
-  // Hook into town selection
- townTomSelect.on("change", function(value) {
-  const selectedTown = value;
-  const selectedRegion = regionSelect.value;
+  // 🧠 Update snow depth chart when a town is selected
+  townTomSelect.on("change", function (value) {
+    const selectedTown = value;
+    const selectedRegion = regionSelectTomSelect.getValue();
 
-  if (!selectedRegion) {
-    renderSnowTable([]); // No region, don't show anything
-    return;
-  }
+    const validTowns = regionTownMap[selectedRegion] || [];
 
-  const validTowns = regionTownMap[selectedRegion] || [];
-
-  if (selectedTown && validTowns.includes(selectedTown)) {
-    const match = snowData.find(entry => entry.town === selectedTown);
-    renderSnowTable(match ? [match] : []);
-  } else {
-    // If town is cleared or invalid, show region-level data
-    const filtered = snowData.filter(entry => validTowns.includes(entry.town));
-    renderSnowTable(filtered);
-  }
+    if (selectedTown && validTowns.includes(selectedTown)) {
+      const match = snowData.find(entry => entry.town === selectedTown);
+      renderSnowTable(match ? [match] : []);
+    } else {
+      // No town selected or invalid town → show region towns
+      const filtered = snowData.filter(entry => validTowns.includes(entry.town));
+      renderSnowTable(filtered);
+    }
+  });
 });
 
 
