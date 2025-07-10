@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     placeholder: "Select a Town"
   });
 
-  townTomSelect.clearOptions(); // Start with no towns
+  townTomSelect.clearOptions();
 
   townTomSelect.on("change", (value) => {
     const selectedRegion = regionSelectTomSelect.getValue();
@@ -74,21 +74,28 @@ document.addEventListener("DOMContentLoaded", () => {
       renderSnowTable(filtered);
     }
   });
+
+  // ✅ Initialize Leaflet map centered on Anchorage
+  const map = L.map('map').setView([61.2176, -149.8997], 6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 });
 
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
 
-  townTomSelect.clear(true);            // Clear UI and dropdown
-  townTomSelect.clearOptions();         // Remove old towns
-  townTomSelect.refreshOptions(false);  // Refresh before adding
+  townTomSelect.clear(true);
+  townTomSelect.clearOptions();
+  townTomSelect.refreshOptions(false);
 
   towns.forEach(town => {
     townTomSelect.addOption({ value: town, text: town });
   });
 
-  townTomSelect.setValue("");           // Reset selected value
-  townTomSelect.refreshOptions(false);  // Final refresh
+  townTomSelect.setValue("");
+  townTomSelect.refreshOptions(false);
 
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
