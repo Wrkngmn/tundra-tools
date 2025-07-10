@@ -31,21 +31,21 @@ const regionCenters = {
 
 let marker;
 
-// === Initialize Region dropdown ===
-new TomSelect('#regionSelect', {
-  create: false,
-  sortField: 'text',
-  placeholder: 'Select a region'
-});
-
-// === Initialize Town dropdown and store instance globally ===
+// === Initialize Town dropdown first ===
 const townSelectInstance = new TomSelect('#townSelect', {
   create: false,
   sortField: 'text',
   placeholder: 'Select a town'
 });
 
-// === Populate Regions ===
+// === Initialize Region dropdown next ===
+new TomSelect('#regionSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a region'
+});
+
+// === Populate Regions after initializing selects ===
 populateRegions();
 
 function populateRegions() {
@@ -62,23 +62,16 @@ function populateRegions() {
 }
 
 function populateTowns(region) {
-  townSelect.innerHTML = '<option value="">All towns in region</option>';
-
   if (!region || !snowData[region]) {
-    townSelect.disabled = true;
     townSelectInstance.disable();
     townSelectInstance.clearOptions();
     townSelectInstance.addOption({ value: '', text: 'Select a town' });
     townSelectInstance.refreshOptions();
+    townSelectInstance.setValue('');
     return;
   }
 
- // ✅ Ensure town dropdown is interactive
-  townSelect.disabled = false;
-  townSelect.removeAttribute("disabled"); // <- this line ensures browser activates it
   townSelectInstance.enable();
-
-  // 🧹 Clear + repopulate dropdown
   townSelectInstance.clearOptions();
   townSelectInstance.addOption({ value: '', text: 'All towns in region' });
 
@@ -138,11 +131,11 @@ function getSnowColor(depth) {
   return 'red';
 }
 
+// === Region Select Change Handler ===
 regionSelect.addEventListener('change', e => {
   const region = e.target.value;
 
   if (region === "ALL_REGIONS") {
-    townSelect.disabled = true;
     townSelectInstance.disable();
     updateSnowTableAllRegions();
     map.setView([62.5, -150], 4);
@@ -166,6 +159,7 @@ regionSelect.addEventListener('change', e => {
   }
 });
 
+// === Town Select Change Handler ===
 townSelect.addEventListener('change', e => {
   const region = regionSelect.value;
   const selectedTown = e.target.value;
