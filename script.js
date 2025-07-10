@@ -129,7 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region-select");
   townSelect = document.getElementById("town-select");
 
-  populateDropdown("region-select", ["-- Select a Region --", ...Object.keys(regionTownMap)]);
+const regionOptions = ["-- See all Regions --", ...Object.keys(regionTownMap)];
+populateDropdown("region-select", regionOptions);
 
   regionSelectTomSelect = new TomSelect(regionSelect, {
     create: false,
