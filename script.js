@@ -30,7 +30,23 @@ const regionCenters = {
 };
 
 let marker;
-let townSelectInstance; // global ref to Tom Select instance
+
+// === Initialize Region dropdown ===
+new TomSelect('#regionSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a region'
+});
+
+// === Initialize Town dropdown and store instance globally ===
+const townSelectInstance = new TomSelect('#townSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a town'
+});
+
+// === Populate Regions ===
+populateRegions();
 
 function populateRegions() {
   regionSelect.innerHTML = `
@@ -178,18 +194,4 @@ townSelect.addEventListener('change', e => {
     marker = L.marker(coords[selectedTown]).addTo(map);
     map.setView(coords[selectedTown], 9);
   }
-});
-
-populateRegions();
-
-new TomSelect('#regionSelect', {
-  create: false,
-  sortField: 'text',
-  placeholder: 'Select a region'
-});
-
-townSelectInstance = new TomSelect('#townSelect', {
-  create: false,
-  sortField: 'text',
-  placeholder: 'Select a town'
 });
