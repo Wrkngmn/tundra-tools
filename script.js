@@ -74,6 +74,11 @@ function updateTownDropdown(region) {
 
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
+  if (!data.length) {
+    container.innerHTML = ""; // Show nothing if no data
+    return;
+  }
+
   container.innerHTML = `
     <table class="snow-table">
       <thead>
