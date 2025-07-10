@@ -30,6 +30,7 @@ const regionCenters = {
 };
 
 let marker;
+let townSelectInstance; // global ref to Tom Select instance
 
 function populateRegions() {
   regionSelect.innerHTML = `
@@ -45,36 +46,28 @@ function populateRegions() {
 }
 
 function populateTowns(region) {
-  const tomSelectTown = TomSelect.instances['townSelect'];
-
   townSelect.innerHTML = '<option value="">All towns in region</option>';
 
   if (!region || !snowData[region]) {
     townSelect.disabled = true;
-    tomSelectTown.disable();
-    tomSelectTown.clearOptions();
-    tomSelectTown.addOption({ value: '', text: 'Select a town' });
-    tomSelectTown.refreshOptions();
+    townSelectInstance.disable();
+    townSelectInstance.clearOptions();
+    townSelectInstance.addOption({ value: '', text: 'Select a town' });
+    townSelectInstance.refreshOptions();
     return;
   }
 
-  Object.keys(snowData[region]).forEach(town => {
-    const opt = document.createElement('option');
-    opt.value = town;
-    opt.textContent = town;
-    townSelect.appendChild(opt);
-  });
-
   townSelect.disabled = false;
+  townSelectInstance.enable();
+  townSelectInstance.clearOptions();
+  townSelectInstance.addOption({ value: '', text: 'All towns in region' });
 
-  tomSelectTown.enable();
-  tomSelectTown.clearOptions();
-  tomSelectTown.addOption({ value: '', text: 'All towns in region' });
   Object.keys(snowData[region]).forEach(town => {
-    tomSelectTown.addOption({ value: town, text: town });
+    townSelectInstance.addOption({ value: town, text: town });
   });
-  tomSelectTown.refreshOptions();
-  tomSelectTown.setValue('');
+
+  townSelectInstance.refreshOptions();
+  townSelectInstance.setValue('');
 }
 
 function updateSnowTable(region, specificTown = "") {
@@ -129,9 +122,8 @@ regionSelect.addEventListener('change', e => {
   const region = e.target.value;
 
   if (region === "ALL_REGIONS") {
-    townSelect.innerHTML = '<option value="">Select a town</option>';
     townSelect.disabled = true;
-    TomSelect.instances['townSelect'].disable();
+    townSelectInstance.disable();
     updateSnowTableAllRegions();
     map.setView([62.5, -150], 4);
     if (marker) {
@@ -196,7 +188,7 @@ new TomSelect('#regionSelect', {
   placeholder: 'Select a region'
 });
 
-new TomSelect('#townSelect', {
+townSelectInstance = new TomSelect('#townSelect', {
   create: false,
   sortField: 'text',
   placeholder: 'Select a town'
