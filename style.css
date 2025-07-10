@@ -98,3 +98,18 @@ body {
   line-height: 20px;
   color: #000;
 }
+.snow-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.snow-table th, .snow-table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.snow-table th {
+  background-color: #f0f0f0;
+}
