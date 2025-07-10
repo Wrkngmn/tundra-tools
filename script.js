@@ -25,8 +25,8 @@ function populateDropdown(id, data) {
 
   data.forEach(item => {
     const option = document.createElement("option");
-    option.value = item;
-    option.textContent = item;
+   option.value = item === "-- Select a Region --" ? "" : item;
+option.textContent = item;
     select.appendChild(option);
   });
 }
