@@ -67,7 +67,7 @@ window.TomSelect.instances['townSelect'] = townSelectInstance;
 
   // === Populate Town options ===
   function populateTowns(region) {
-    if (!region || !snowData[region]) {
+      if (!region || !snowData[region]) {
       townSelectInstance.disable();
       townSelectInstance.clearOptions();
       townSelectInstance.addOption({ value: '', text: 'Select a town' });
@@ -87,7 +87,7 @@ window.TomSelect.instances['townSelect'] = townSelectInstance;
     townSelectInstance.refreshOptions();
     townSelectInstance.setValue('');
   }
-
+window.populateTowns = populateTowns; // ✅ Add this immediately after the function
   // === Snow Table for selected region and town ===
   function updateSnowTable(region, specificTown = "") {
     snowTableBody.innerHTML = '';
