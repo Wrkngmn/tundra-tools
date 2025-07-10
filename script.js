@@ -11,26 +11,6 @@ const townSelect = document.getElementById("town");
 const snowBody = document.getElementById("snowBody");
 const statusBox = document.getElementById("regionStatus");
 
-// === Populate Region Dropdown ===
-Object.keys(fakeData).forEach(region => {
-  const option = document.createElement("option");
-  option.value = region;
-  option.textContent = region;
-  regionSelect.appendChild(option);
-});
-
-regionSelect.addEventListener("change", () => {
-  const selectedRegion = regionSelect.value;
-  updateTownOptions(selectedRegion);
-  updateSnowTable(null, null);
-});
-
-townSelect.addEventListener("change", () => {
-  const region = regionSelect.value;
-  const town = townSelect.value;
-  updateSnowTable(region, town);
-});
-
 function updateTownOptions(region) {
   townSelect.innerHTML = "";
   if (fakeData[region]) {
@@ -59,7 +39,18 @@ function updateSnowTable(region, town) {
   }
 }
 
-// === Initialize Tom Select after DOM loads ===
+regionSelect.addEventListener("change", () => {
+  const selectedRegion = regionSelect.value;
+  updateTownOptions(selectedRegion);
+  updateSnowTable(null, null);
+});
+
+townSelect.addEventListener("change", () => {
+  const region = regionSelect.value;
+  const town = townSelect.value;
+  updateSnowTable(region, town);
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   new TomSelect("#region", {
     create: false,
@@ -73,10 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
     placeholder: "Select a town..."
   });
 
-  // Populate dropdowns
   Object.keys(fakeData).forEach(region => {
     const option = document.createElement("option");
     option.value = region;
+    option.textContent = region;
     regionSelect.appendChild(option);
   });
 });
