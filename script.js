@@ -5,7 +5,7 @@ const fakeData = {
     Anchorage: { region: "Southcentral", depth: 22, lat: 61.2181, lon: -149.9003 },
     Fairbanks: { region: "Interior", depth: 27, lat: 64.8378, lon: -147.7164 },
     Nome: { region: "North Slope", depth: 15, lat: 64.5011, lon: -165.4064 },
-    Bethel: { region: "Southwest", depth: 19, lat: 60.7922, lon: -161.7558 }
+    Bethel: { region: "Southwest", depth: 3, lat: 60.7922, lon: -161.7558 }
   }
 };
 
@@ -16,7 +16,7 @@ const townList = document.getElementById("towns");
 const snowTable = document.getElementById("snowTable");
 const alertBox = document.getElementById("alert");
 
-const map = L.map("map").setView([64.2008, -149.4937], 4); // Centered on Alaska
+const map = L.map("map").setView([64.2008, -149.4937], 4);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -35,21 +35,35 @@ Object.keys(fakeData.towns).forEach(town => {
   townList.appendChild(opt);
 });
 
-// When a town is selected
 townInput.addEventListener("change", () => {
   const townName = townInput.value;
   const townData = fakeData.towns[townName];
+  const tableBody = document.getElementById("snowTable");
+  tableBody.innerHTML = "";
 
   if (townData) {
-    snowTable.innerHTML = `<tr><td>${townName}</td><td>${townData.depth}</td></tr>`;
+    let row = document.createElement("tr");
+
+    if (townData.depth > 18) {
+      row.classList.add("snow-high");
+    } else if (townData.depth > 6) {
+      row.classList.add("snow-medium");
+    }
+
+    row.innerHTML = `
+      <td>${townName}</td>
+      <td>${townData.depth}</td>
+    `;
+    tableBody.appendChild(row);
+
     alertBox.textContent = `Showing snow data for ${townName}, ${townData.region}`;
 
-    // Update map
     if (marker) map.removeLayer(marker);
     marker = L.marker([townData.lat, townData.lon]).addTo(map);
     map.setView([townData.lat, townData.lon], 8);
   } else {
-    snowTable.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
+    tableBody.innerHTML = `<tr><td>–</td><td>–</td></tr>`;
     alertBox.textContent = `Select a town to see updates.`;
   }
 });
+
