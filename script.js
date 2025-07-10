@@ -28,34 +28,48 @@ const snowData = [
   { town: "Nome", depth: 27 }
 ];
 
-function getColor(depth) {
-  if (depth <= 6) return "green";
-  if (depth <= 12) return "blue";
-  if (depth <= 24) return "orange";
-  return "red";
+function getSnowColor(inches) {
+  if (inches <= 6) return "#d2f8d2";         // light green
+  if (inches <= 12) return "#d0ebff";        // light blue
+  if (inches <= 24) return "#ffe5b4";        // light orange
+  return "#ffcccc";                          // light red
 }
 
-function renderSnowData() {
-  let html = "";
-  snowData.forEach(entry => {
-    const color = getColor(entry.depth);
-    html += `
-      <div class="bar-row">
-        <div class="bar-label">${entry.town}</div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width:${entry.depth * 4}px; background-color:${color}"></div>
-          <span class="bar-value">${entry.depth}"</span>
-        </div>
-      </div>
-    `;
-  });
+function renderSnowTable(data) {
+  const container = document.getElementById("data-container");
+  container.innerHTML = `
+    <table class="snow-table">
+      <thead>
+        <tr>
+          <th>Town</th>
+          <th>Snow Depth</th>
+        </tr>
+      </thead>
+      <tbody id="snowTableBody"></tbody>
+    </table>
+  `;
 
-  document.getElementById("data-container").innerHTML = html;
+  const tbody = container.querySelector("#snowTableBody");
+
+  data.forEach(item => {
+    const row = document.createElement("tr");
+
+    const townCell = document.createElement("td");
+    townCell.textContent = item.town;
+
+    const snowCell = document.createElement("td");
+    snowCell.textContent = `${item.depth}"`;
+    snowCell.style.backgroundColor = getSnowColor(item.depth);
+
+    row.appendChild(townCell);
+    row.appendChild(snowCell);
+    tbody.appendChild(row);
+  });
 }
 
 // === INITIALIZE ALL ON LOAD ===
 document.addEventListener("DOMContentLoaded", () => {
   populateDropdown("region-select", regions);
   populateDropdown("town-select", towns);
-  renderSnowData();
+  renderSnowTable(snowData);
 });
