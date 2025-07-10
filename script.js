@@ -86,7 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
   townTomSelect.clearOptions();
-  townTomSelect.clear(); // clear selection
+ townTomSelect.clear(true);        // Clear input
+townTomSelect.setValue("", true); // Fully reset selection and trigger change
 
   towns.forEach(town => {
     townTomSelect.addOption({ value: town, text: town });
