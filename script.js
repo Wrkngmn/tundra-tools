@@ -11,6 +11,21 @@ const townSelect = document.getElementById("town");
 const snowBody = document.getElementById("snowBody");
 const statusBox = document.getElementById("regionStatus");
 
+function populateRegionOptions() {
+  Object.keys(fakeData).forEach(region => {
+    const option = document.createElement("option");
+    option.value = region;
+    option.textContent = region;
+    regionSelect.appendChild(option);
+  });
+
+  new TomSelect("#region", {
+    create: false,
+    maxItems: 1,
+    placeholder: "Select a region..."
+  });
+}
+
 function updateTownOptions(region) {
   townSelect.innerHTML = "";
   if (fakeData[region]) {
@@ -19,6 +34,15 @@ function updateTownOptions(region) {
       option.value = town;
       option.textContent = town;
       townSelect.appendChild(option);
+    });
+
+    if (TomSelect.instances.hasOwnProperty("town")) {
+      TomSelect.instances.town.destroy();
+    }
+    new TomSelect("#town", {
+      create: false,
+      maxItems: 1,
+      placeholder: "Select a town..."
     });
   }
 }
@@ -52,22 +76,5 @@ townSelect.addEventListener("change", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  new TomSelect("#region", {
-    create: false,
-    maxItems: 1,
-    placeholder: "Select a region..."
-  });
-
-  new TomSelect("#town", {
-    create: false,
-    maxItems: 1,
-    placeholder: "Select a town..."
-  });
-
-  Object.keys(fakeData).forEach(region => {
-    const option = document.createElement("option");
-    option.value = region;
-    option.textContent = region;
-    regionSelect.appendChild(option);
-  });
+  populateRegionOptions();
 });
