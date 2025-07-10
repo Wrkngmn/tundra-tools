@@ -4,113 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Snow Depth Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f9f9f9;
-    }
-
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: 300px;
-      background-color: #f0f0f0;
-      padding: 20px;
-      box-sizing: border-box;
-      border-right: 1px solid #ccc;
-    }
-
-    .main {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0 16px 0;
-      box-sizing: border-box;
-      font-size: 14px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    #setZone {
-      margin-top: -10px;
-      margin-bottom: 20px;
-    }
-
-    .map-box {
-      background-color: #cce5ff;
-      height: 250px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    .legend {
-      font-size: 13px;
-      margin-top: 15px;
-    }
-
-    .legend span {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      margin-left: 4px;
-      vertical-align: middle;
-      border: 1px solid #aaa;
-    }
-
-    .legend-item {
-      margin-top: 6px;
-    }
-
-    .legend-label {
-      display: inline-block;
-      min-width: 65px;
-    }
-
-    .table-container {
-      margin-top: 30px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    th, td {
-      border: 1px solid #aaa;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #eee;
-    }
-
-    .snow-depth-box {
-      width: 100%;
-      margin-top: 20px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
@@ -118,59 +12,46 @@
       <h2>Select Your Region</h2>
 
       <label for="region">Region</label>
-      <input type="text" id="region" placeholder="Start typing region..." />
+      <input type="text" id="region" list="regionList" placeholder="Start typing region..." />
+      <datalist id="regionList"></datalist>
 
       <label for="town">Town</label>
-      <input type="text" id="town" placeholder="Start typing town..." />
+      <input type="text" id="town" list="townList" placeholder="Start typing town..." />
+      <datalist id="townList"></datalist>
 
-      <div id="setZone">
+      <div class="zone-check">
         <input type="checkbox" id="zone" />
         <label for="zone">Set This As My Zone</label>
       </div>
 
-      <div class="snow-depth-box">
+      <div id="infoBox">
         <h3>Snow Depth Tracker</h3>
-        <p>Select a town to see updates.</p>
-        <div class="map-box">Map loading...</div>
-      </div>
+        <p id="regionStatus">Select a town to see updates.</p>
+        <div class="map-area">Map loading...</div>
 
-      <div class="legend">
-        <strong>Legend:</strong><br />
-        <div class="legend-item">
-          <span class="legend-label">0–6"</span>      <span style="background-color: #7cfc00;"></span> Light snow
-        </div>
-        <div class="legend-item">
-          <span class="legend-label">7–18"</span>      <span style="background-color: #fdd835;"></span> Moderate snow
-        </div>
-        <div class="legend-item">
-          <span class="legend-label">19+"</span>      <span style="background-color: #ef5350;"></span> Heavy snow
+        <div id="legend">
+          <strong>Legend:</strong><br />
+          <div><span class="legend-swatch green"></span> 0–6″      Light snow</div>
+          <div><span class="legend-swatch yellow"></span> 7–18″      Moderate snow</div>
+          <div><span class="legend-swatch red"></span> 19+″      Heavy snow</div>
         </div>
       </div>
 
-      <div class="table-container">
-        <h3>Snow Depth by Area</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Area</th>
-              <th>Snow Depth (in)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>–</td>
-              <td>–</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table>
+        <thead>
+          <tr><th>Area</th><th>Snow Depth (in)</th></tr>
+        </thead>
+        <tbody id="snowBody">
+          <tr><td>–</td><td>–</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="main">
-      <div id="mainMap" class="map-box" style="height: 90vh;">
-        Map loading...
-      </div>
-    </div>
+    <main>
+      <div class="map-area" style="height: 90vh;">Map loading...</div>
+    </main>
   </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
