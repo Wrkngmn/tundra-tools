@@ -1,4 +1,5 @@
 // Dummy region and town data for dropdowns
+console.log("✅ script.js loaded");
 const regions = ["Interior", "Southcentral", "Southeast", "Western"];
 const towns = ["Anchorage", "Fairbanks", "Juneau", "Nome", "Wasilla", "Bethel"];
 
