@@ -138,32 +138,33 @@ window.TomSelect.instances['townSelect'] = townSelectInstance;
   }
 
   // === Event Listeners ===
-  regionSelect.addEventListener('change', e => {
-    const region = e.target.value;
+ regionSelect.addEventListener('change', e => {
+  const region = e.target.value;
 
-    if (region === "ALL_REGIONS") {
-      townSelectInstance.disable();
-      updateSnowTableAllRegions();
-      map.setView([62.5, -150], 4);
-      if (marker) {
-        map.removeLayer(marker);
-        marker = null;
-      }
-      return;
-    }
-
-    populateTowns(region);
-    updateSnowTable(region);
-
-    if (regionCenters[region]) {
-      map.setView(regionCenters[region], 7);
-    }
-
+  if (region === "ALL_REGIONS") {
+    townSelectInstance.disable();
+    updateSnowTableAllRegions();
+    map.setView([62.5, -150], 4);
     if (marker) {
       map.removeLayer(marker);
       marker = null;
     }
-  });
+    return;
+  }
+
+  populateTowns(region);
+  updateSnowTable(region);
+  townSelectInstance.enable(); // ✅ enable after region is selected
+
+  if (regionCenters[region]) {
+    map.setView(regionCenters[region], 7);
+  }
+
+  if (marker) {
+    map.removeLayer(marker);
+    marker = null;
+  }
+});
 
   townSelect.addEventListener('change', e => {
     const region = regionSelect.value;
