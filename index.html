@@ -1,38 +1,86 @@
-<aside class="sidebar">
-  <h2>Select Your Region</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tundra Tools - Snow Depth Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Select Your Region</h2>
 
-  <div class="selectors-row">
-    <div class="selector-group">
-      <label for="regionSelect">Region</label>
-      <input list="regions" id="regionSelect" placeholder="Start typing region..." />
-      <datalist id="regions">
-        <!-- Add real region options dynamically or manually -->
-        <option value="Interior">
-        <option value="Southcentral">
-        <option value="Southeast">
-        <option value="Western">
-        <option value="Northern">
-        <option value="Southwest">
-      </datalist>
-    </div>
+      <div class="selectors-row">
+        <div class="selector-group">
+          <label for="regionSelect">Region</label>
+          <input list="regions" id="regionSelect" placeholder="Start typing region..." />
+          <datalist id="regions">
+            <option value="Southcentral">
+            <option value="Interior">
+            <option value="Southeast">
+            <option value="Southwest">
+            <option value="North Slope">
+            <option value="Aleutians">
+          </datalist>
+        </div>
 
-    <div class="selector-group">
-      <label for="townSelect">Town</label>
-      <input list="towns" id="townSelect" placeholder="Start typing town..." />
-      <datalist id="towns">
-        <!-- Add real town options dynamically or manually -->
-        <option value="Anchorage">
-        <option value="Fairbanks">
-        <option value="Juneau">
-        <option value="Wasilla">
-        <option value="Homer">
-        <option value="Nome">
-      </datalist>
-    </div>
+        <div class="selector-group">
+          <label for="townSelect">Town</label>
+          <input list="towns" id="townSelect" placeholder="Start typing town..." />
+          <datalist id="towns">
+            <option value="Wasilla">
+            <option value="Anchorage">
+            <option value="Fairbanks">
+            <option value="Nome">
+            <option value="Bethel">
+          </datalist>
+        </div>
+      </div>
+
+      <label style="display:block; margin-top:10px;">
+        <input type="checkbox" id="setZone" />
+        Set This As My Zone
+      </label>
+    </aside>
+
+    <main class="main">
+      <h1>Snow Depth Tracker</h1>
+      <div id="alert" class="alert">Select a town to see updates.</div>
+
+      <div id="map" class="map"></div>
+
+      <!-- Snow Data Table -->
+      <div id="snowDataContainer">
+        <h2>Snow Depth by Area</h2>
+        <table id="snowData">
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Snow Depth (in)</th>
+            </tr>
+          </thead>
+          <tbody id="snowTable">
+            <tr><td>–</td><td>–</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Legend -->
+        <div id="legend">
+          <p><strong>Legend:</strong></p>
+          <div class="legend-item"><span class="legend-box default"></span> 0–6" (No highlight)</div>
+          <div class="legend-item"><span class="legend-box medium"></span> 7–18" (Moderate snow)</div>
+          <div class="legend-item"><span class="legend-box high"></span> 19+ inches (Heavy snow)</div>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <label style="display:block; margin-top:10px;">
-    <input type="checkbox" id="setZone" />
-    Set This As My Zone
-  </label>
-</aside>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
