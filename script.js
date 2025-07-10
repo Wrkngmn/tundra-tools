@@ -1,4 +1,4 @@
- const fakeData = {
+const fakeData = {
   "Southcentral": {
     "Anchorage": { depth: 12, coords: [61.2176, -149.8584] },
     "Wasilla":   { depth: 6, coords: [61.5814, -149.4522] },
@@ -21,6 +21,14 @@
   }
 };
 
+const regionBounds = {
+  "Southcentral": [[60.5, -151], [62, -147]],
+  "Interior": [[64, -149], [65.5, -146]],
+  "Southeast": [[56.5, -136], [59, -132]],
+  "Western": [[60, -167], [65, -160]],
+  "Northern": [[70.5, -158], [72, -155]]
+};
+
 let map, marker;
 let regionSelect, townSelect, snowBody, statusBox;
 let regionTS, townTS;
@@ -31,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   snowBody = document.getElementById("snowBody");
   statusBox = document.getElementById("regionStatus");
 
-  // === Populate region options BEFORE Tom Select init
   Object.keys(fakeData).forEach(region => {
     const opt = document.createElement("option");
     opt.value = region;
@@ -39,17 +46,16 @@ document.addEventListener("DOMContentLoaded", () => {
     regionSelect.appendChild(opt);
   });
 
-  // === Initialize Tom Select for region
   regionTS = new TomSelect("#region", {
     maxItems: 1,
     placeholder: "Select a region...",
     onChange: region => {
       populateTowns(region);
       updateSnowTable(null, null);
+      panToRegion(region); // zoom to region if no town selected
     }
   });
 
-  // === Initialize Tom Select for town (starts empty)
   townTS = new TomSelect("#town", {
     maxItems: 1,
     placeholder: "Select a town...",
@@ -60,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Initialize map
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
@@ -68,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function populateTowns(region) {
-  townTS.clear(true);       // Clear selection and options
+  townTS.clear(true);
   townTS.clearOptions();
 
   if (fakeData[region]) {
@@ -79,7 +84,7 @@ function populateTowns(region) {
 
     townTS.addOptions(options);
     townTS.refreshOptions();
-    townTS.open(); // Optional: show dropdown immediately
+    townTS.open();
   }
 }
 
@@ -123,5 +128,12 @@ function panMap(region, town) {
     }
 
     marker = L.marker(coords).addTo(map).bindPopup(town).openPopup();
+  }
+}
+
+function panToRegion(region) {
+  if (region && regionBounds[region]) {
+    const bounds = regionBounds[region];
+    map.fitBounds(bounds);
   }
 }
