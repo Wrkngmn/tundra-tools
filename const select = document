@@ -4,13 +4,15 @@ const towns = ["Anchorage", "Fairbanks", "Juneau", "Nome", "Wasilla", "Bethel"];
 
 function populateDropdown(id, data) {
   const select = document.getElementById(id);
+  select.innerHTML = ""; // Clear existing options
+
   data.forEach(item => {
     const option = document.createElement("option");
     option.value = item;
-    option.textContent = item;
+    option.textContent = item === "" ? "-- Select --" : item;
     select.appendChild(option);
   });
-
+}
   new TomSelect(select, {
     create: false,
     maxItems: 1,
@@ -69,7 +71,7 @@ function renderSnowTable(data) {
 
 // === INITIALIZE ALL ON LOAD ===
 document.addEventListener("DOMContentLoaded", () => {
-  populateDropdown("region-select", regions);
+  populateDropdown("region-select", ["", ...Object.keys(regionTownMap)]);
   populateDropdown("town-select", towns);
   renderSnowTable(snowData);
 });
