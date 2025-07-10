@@ -1,4 +1,4 @@
-const fakeData = {
+ const fakeData = {
   "Southcentral": {
     "Anchorage": { depth: 12, coords: [61.2176, -149.8584] },
     "Wasilla":   { depth: 6, coords: [61.5814, -149.4522] },
@@ -30,13 +30,13 @@ let map;
 let marker;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize Leaflet map
+  // Initialize map
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // === Populate Region <select> with options BEFORE TomSelect runs
+  // === Populate region options before initializing Tom Select
   Object.keys(fakeData).forEach(region => {
     const option = document.createElement("option");
     option.value = region;
@@ -44,25 +44,42 @@ document.addEventListener("DOMContentLoaded", () => {
     regionSelect.appendChild(option);
   });
 
-function populateTowns(region) {
-  const townWrapper = document.getElementById("town");
+  // === Initialize Tom Select for region
+  new TomSelect("#region", {
+    maxItems: 1,
+    placeholder: "Select a region...",
+    onChange: (region) => {
+      populateTowns(region);
+      updateSnowTable(null, null);
+    }
+  });
 
-  // Remove any existing Tom Select instance
+  // ⛔ Do NOT initialize Tom Select for #town here — it will be handled later
+});
+
+function populateTowns(region) {
+  const oldTownSelect = document.getElementById("town");
+
+  // Destroy any existing TomSelect instance
   if (TomSelect.instances.town) {
     TomSelect.instances.town.destroy();
   }
 
-  townWrapper.innerHTML = "";
+  // Create a new <select> element
+  const newTownSelect = document.createElement("select");
+  newTownSelect.id = "town";
+  newTownSelect.name = "town";
+  oldTownSelect.replaceWith(newTownSelect);
 
   if (fakeData[region]) {
     Object.keys(fakeData[region]).forEach(town => {
       const option = document.createElement("option");
       option.value = town;
       option.textContent = town;
-      townWrapper.appendChild(option);
+      newTownSelect.appendChild(option);
     });
 
-    // Recreate Tom Select with new options
+    // Initialize Tom Select on the new town select
     new TomSelect("#town", {
       maxItems: 1,
       placeholder: "Select a town...",
@@ -74,25 +91,11 @@ function populateTowns(region) {
   }
 }
 
-
-  if (fakeData[region]) {
-    Object.keys(fakeData[region]).forEach(town => {
-      const option = document.createElement("option");
-      option.value = town;
-      option.textContent = town;
-      townSelect.appendChild(option);
-    });
-
-    // Refresh Tom Select after adding options
-    TomSelect.instances.town.clear();
-    TomSelect.instances.town.sync();
-  }
-}
-
 function updateSnowTable(region, town) {
   snowBody.innerHTML = "";
   if (
-    region && town &&
+    region &&
+    town &&
     fakeData[region] &&
     fakeData[region][town]
   ) {
@@ -113,7 +116,8 @@ function updateSnowTable(region, town) {
 
 function panMap(region, town) {
   if (
-    region && town &&
+    region &&
+    town &&
     fakeData[region] &&
     fakeData[region][town] &&
     fakeData[region][town].coords
