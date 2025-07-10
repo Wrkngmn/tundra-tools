@@ -34,7 +34,8 @@ select {
   border-collapse: collapse;
 }
 
-#snowTable th, #snowTable td {
+#snowTable th,
+#snowTable td {
   border: 1px solid #ccc;
   padding: 6px;
   text-align: left;
@@ -44,10 +45,20 @@ select {
   background-color: #eef;
 }
 
+.legend-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.legend-label {
+  width: 60px;
+}
+
 .legend-box {
   display: inline-block;
   width: 20px;
   height: 14px;
-  margin-left: 20px;
+  margin-left: 8px;
   border: 1px solid #999;
 }
