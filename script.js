@@ -282,8 +282,13 @@ function renderSnowTable(data) {
     townCell.textContent = item.town;
 
     const snowCell = document.createElement("td");
-    snowCell.textContent = `${item.depth}"`;
-    snowCell.style.backgroundColor = getSnowColor(item.depth);
+   if (item.depth == null) {
+  snowCell.textContent = "No data available";
+  snowCell.style.backgroundColor = "#f5f5f5"; // light gray fallback
+} else {
+  snowCell.textContent = `${item.depth}"`;
+  snowCell.style.backgroundColor = getSnowColor(item.depth);
+}
 
     row.appendChild(townCell);
     row.appendChild(snowCell);
