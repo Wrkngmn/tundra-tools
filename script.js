@@ -1,3 +1,4 @@
+console.log("Testing script connection");
 let townSelectInstance;
 document.addEventListener('DOMContentLoaded', function () {
   const snowData = {
