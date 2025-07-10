@@ -38,7 +38,7 @@ const townSelectInstance = new TomSelect('#townSelect', {
   sortField: 'text',
   placeholder: 'Select a town'
 });
-
+console.log("TownSelect initialized", townSelectInstance);
 // 🟢 Make the instance globally available for debugging
 window.townSelectInstance = townSelectInstance;
 window.TomSelect.instances = window.TomSelect.instances || {};
