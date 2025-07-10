@@ -1,82 +1,38 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #fff;
-  color: #111;
-}
+<aside class="sidebar">
+  <h2>Select Your Region</h2>
 
-.container {
-  display: flex;
-  height: 100vh;
-}
+  <div class="selectors-row">
+    <div class="selector-group">
+      <label for="regionSelect">Region</label>
+      <input list="regions" id="regionSelect" placeholder="Start typing region..." />
+      <datalist id="regions">
+        <!-- Add real region options dynamically or manually -->
+        <option value="Interior">
+        <option value="Southcentral">
+        <option value="Southeast">
+        <option value="Western">
+        <option value="Northern">
+        <option value="Southwest">
+      </datalist>
+    </div>
 
-.sidebar {
-  width: 280px;
-  padding: 1rem;
-  background: #f0f0f0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-}
+    <div class="selector-group">
+      <label for="townSelect">Town</label>
+      <input list="towns" id="townSelect" placeholder="Start typing town..." />
+      <datalist id="towns">
+        <!-- Add real town options dynamically or manually -->
+        <option value="Anchorage">
+        <option value="Fairbanks">
+        <option value="Juneau">
+        <option value="Wasilla">
+        <option value="Homer">
+        <option value="Nome">
+      </datalist>
+    </div>
+  </div>
 
-.sidebar h1 {
-  font-size: 1.5rem;
-}
-
-.sidebar input {
-  padding: 6px;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-}
-
-.main {
-  flex-grow: 1;
-  padding: 1rem 2rem;
-  box-sizing: border-box;
-}
-
-.alert {
-  background: #ffe9b3;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border-left: 5px solid #e5c100;
-}
-
-.map {
-  height: 300px;
-  width: 100%;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-}
-
-/* NEW: Side-by-side dropdown styling */
-.selectors {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.selector-group {
-  flex: 1 1 45%;
-  display: flex;
-  flex-direction: column;
-}
-
-.selector-group label {
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-}
-
-.selector-group input {
-  padding: 6px;
-  font-size: 1rem;
-}
+  <label style="display:block; margin-top:10px;">
+    <input type="checkbox" id="setZone" />
+    Set This As My Zone
+  </label>
+</aside>
