@@ -73,8 +73,9 @@ function populateTowns(region) {
     return;
   }
 
-  // ✅ Ensure dropdown is usable
+ // ✅ Ensure town dropdown is interactive
   townSelect.disabled = false;
+  townSelect.removeAttribute("disabled"); // <- this line ensures browser activates it
   townSelectInstance.enable();
 
   // 🧹 Clear + repopulate dropdown
