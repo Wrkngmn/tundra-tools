@@ -33,12 +33,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let marker;
 
-  // === Initialize Tom Select dropdowns after DOM is ready ===
-  const townSelectInstance = new TomSelect('#townSelect', {
-    create: false,
-    sortField: 'text',
-    placeholder: 'Select a town'
-  });
+ const townSelectInstance = new TomSelect('#townSelect', {
+  create: false,
+  sortField: 'text',
+  placeholder: 'Select a town'
+});
+window.TomSelect.instances = window.TomSelect.instances || {};
+window.TomSelect.instances['townSelect'] = townSelectInstance;
 
   new TomSelect('#regionSelect', {
     create: false,
