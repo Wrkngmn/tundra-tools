@@ -22,14 +22,14 @@ const fakeData = {
 };
 
 const regionBounds = {
-  "Southcentral": [[60.5, -151], [62, -147]],
-  "Interior": [[64, -149], [65.5, -146]],
-  "Southeast": [[56.5, -136], [59, -132]],
-  "Western": [[60, -167], [65, -160]],
-  "Northern": [[70.5, -158], [72, -155]]
+  "Southcentral": [[60.7, -150.5], [61.8, -148.5]],
+  "Interior": [[64.5, -148.5], [65.3, -146.5]],
+  "Southeast": [[57.5, -135.8], [58.5, -134.2]],
+  "Western": [[60.5, -164], [64.5, -160.5]],
+  "Northern": [[70.8, -157.5], [71.8, -155.5]]
 };
 
-let map, marker;
+let map, marker, regionBox;
 let regionSelect, townSelect, snowBody, statusBox;
 let regionTS, townTS;
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onChange: region => {
       populateTowns(region);
       updateSnowTable(null, null);
-      panToRegion(region); // zoom to region if no town selected
+      panToRegion(region); // zoom to region with highlight
     }
   });
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     onChange: town => {
       const region = regionSelect.value;
       updateSnowTable(region, town);
-      panMap(region, town);
+      panMap(region, town); // clears region box
     }
   });
 
@@ -123,6 +123,11 @@ function panMap(region, town) {
     const coords = fakeData[region][town].coords;
     map.setView(coords, 9);
 
+    if (regionBox) {
+      map.removeLayer(regionBox);
+      regionBox = null;
+    }
+
     if (marker) {
       map.removeLayer(marker);
     }
@@ -134,6 +139,18 @@ function panMap(region, town) {
 function panToRegion(region) {
   if (region && regionBounds[region]) {
     const bounds = regionBounds[region];
-    map.fitBounds(bounds);
+
+    if (regionBox) map.removeLayer(regionBox);
+
+    regionBox = L.rectangle(bounds, {
+      color: "#007bff",
+      weight: 2,
+      fillOpacity: 0.08
+    }).addTo(map);
+
+    map.flyToBounds(bounds, {
+      padding: [20, 20],
+      duration: 1.2
+    });
   }
 }
