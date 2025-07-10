@@ -66,12 +66,7 @@ main {
 .map-area {
   width: 100%;
   height: 45vh;
-  background-color: #cce5ff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border-radius: 6px;
-  font-weight: bold;
 }
 
 #expandMap {
