@@ -138,7 +138,6 @@ function populateDropdown(id, data) {
     select.appendChild(option);
   });
 }
-
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let map;
 let townMarker = null;
