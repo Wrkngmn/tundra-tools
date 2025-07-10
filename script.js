@@ -2,24 +2,29 @@
 const regions = ["Interior", "Southcentral", "Southeast", "Western"];
 const towns = ["Anchorage", "Fairbanks", "Juneau", "Nome", "Wasilla", "Bethel"];
 
-function populateDropdown(id, data) {
-  const select = document.getElementById(id);
-  select.innerHTML = ""; // Clear existing options
+document.addEventListener("DOMContentLoaded", () => {
+  regionSelect = document.getElementById("region-select");
+  townSelect = document.getElementById("town-select");
 
-  data.forEach(item => {
-    const option = document.createElement("option");
-    option.value = item;
-    option.textContent = item === "" ? "-- Select --" : item;
-    select.appendChild(option);
-  });
-}
-  new TomSelect(select, {
+  populateDropdown("region-select", Object.keys(regionTownMap));
+
+  new TomSelect(regionSelect, {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
-    sortField: { field: "text", direction: "asc" },
-    placeholder: select.getAttribute("placeholder")
+    placeholder: "Select a Region",
+    onChange: updateTownDropdown
   });
+
+  townTomSelect = new TomSelect(townSelect, {
+    create: false,
+    maxItems: 1,
+    allowEmptyOption: true,
+    placeholder: "Select a Town"
+  });
+
+  renderSnowTable(snowData);
+});
 }
 
 // === BAR CHART SETUP ===
