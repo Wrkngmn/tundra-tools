@@ -1,5 +1,4 @@
-// Dummy region and town data for dropdowns
-console.log("✅ script.js loaded");
+ // === DROPDOWN SETUP ===
 const regions = ["Interior", "Southcentral", "Southeast", "Western"];
 const towns = ["Anchorage", "Fairbanks", "Juneau", "Nome", "Wasilla", "Bethel"];
 
@@ -21,10 +20,7 @@ function populateDropdown(id, data) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  populateDropdown("region-select", regions);
-  populateDropdown("town-select", towns);
-// Simulate snow data
+// === BAR CHART SETUP ===
 const snowData = [
   { town: "Anchorage", depth: 8 },
   { town: "Fairbanks", depth: 15 },
@@ -39,20 +35,27 @@ function getColor(depth) {
   return "red";
 }
 
-let html = "";
-snowData.forEach(entry => {
-  const color = getColor(entry.depth);
-  html += `
-    <div class="bar-row">
-      <div class="bar-label">${entry.town}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${entry.depth * 4}px; background-color:${color}"></div>
-        <span class="bar-value">${entry.depth}"</span>
+function renderSnowData() {
+  let html = "";
+  snowData.forEach(entry => {
+    const color = getColor(entry.depth);
+    html += `
+      <div class="bar-row">
+        <div class="bar-label">${entry.town}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${entry.depth * 4}px; background-color:${color}"></div>
+          <span class="bar-value">${entry.depth}"</span>
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  });
+
+  document.getElementById("data-container").innerHTML = html;
+}
+
+// === INITIALIZE ALL ON LOAD ===
+document.addEventListener("DOMContentLoaded", () => {
+  populateDropdown("region-select", regions);
+  populateDropdown("town-select", towns);
+  renderSnowData();
 });
-
-document.getElementById("data-container").innerHTML = html;
-
-
