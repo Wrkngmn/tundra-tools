@@ -73,8 +73,11 @@ function populateTowns(region) {
     return;
   }
 
+  // ✅ Ensure dropdown is usable
   townSelect.disabled = false;
   townSelectInstance.enable();
+
+  // 🧹 Clear + repopulate dropdown
   townSelectInstance.clearOptions();
   townSelectInstance.addOption({ value: '', text: 'All towns in region' });
 
