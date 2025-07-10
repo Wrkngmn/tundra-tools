@@ -45,9 +45,16 @@ function populateRegions() {
 }
 
 function populateTowns(region) {
+  const tomSelectTown = TomSelect.instances['townSelect'];
+
   townSelect.innerHTML = '<option value="">All towns in region</option>';
+
   if (!region || !snowData[region]) {
     townSelect.disabled = true;
+    tomSelectTown.disable();
+    tomSelectTown.clearOptions();
+    tomSelectTown.addOption({ value: '', text: 'Select a town' });
+    tomSelectTown.refreshOptions();
     return;
   }
 
@@ -57,7 +64,17 @@ function populateTowns(region) {
     opt.textContent = town;
     townSelect.appendChild(opt);
   });
+
   townSelect.disabled = false;
+
+  tomSelectTown.enable();
+  tomSelectTown.clearOptions();
+  tomSelectTown.addOption({ value: '', text: 'All towns in region' });
+  Object.keys(snowData[region]).forEach(town => {
+    tomSelectTown.addOption({ value: town, text: town });
+  });
+  tomSelectTown.refreshOptions();
+  tomSelectTown.setValue('');
 }
 
 function updateSnowTable(region, specificTown = "") {
@@ -114,6 +131,7 @@ regionSelect.addEventListener('change', e => {
   if (region === "ALL_REGIONS") {
     townSelect.innerHTML = '<option value="">Select a town</option>';
     townSelect.disabled = true;
+    TomSelect.instances['townSelect'].disable();
     updateSnowTableAllRegions();
     map.setView([62.5, -150], 4);
     if (marker) {
