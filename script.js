@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   snowBody = document.getElementById("snowBody");
   statusBox = document.getElementById("regionStatus");
 
-  // === Step 1: Populate region <select> before Tom Select init
+  // === Populate region options BEFORE Tom Select init
   Object.keys(fakeData).forEach(region => {
     const opt = document.createElement("option");
     opt.value = region;
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     regionSelect.appendChild(opt);
   });
 
-  // === Step 2: Initialize Tom Selects
+  // === Initialize Tom Select for region
   regionTS = new TomSelect("#region", {
     maxItems: 1,
     placeholder: "Select a region...",
@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // === Initialize Tom Select for town (starts empty)
   townTS = new TomSelect("#town", {
     maxItems: 1,
     placeholder: "Select a town...",
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === Step 3: Initialize map
+  // === Initialize map
   map = L.map("mainMap").setView([61.2176, -149.8584], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap contributors'
@@ -67,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function populateTowns(region) {
+  townTS.clear(true);       // Clear selection and options
   townTS.clearOptions();
 
   if (fakeData[region]) {
@@ -74,9 +76,10 @@ function populateTowns(region) {
       value: town,
       text: town
     }));
+
     townTS.addOptions(options);
-    townTS.refreshOptions(false);
-    townTS.clear();
+    townTS.refreshOptions();
+    townTS.open(); // Optional: show dropdown immediately
   }
 }
 
