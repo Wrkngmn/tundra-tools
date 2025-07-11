@@ -224,6 +224,8 @@ regionSelectTomSelect.on("change", (value) => {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
+ // ✅ Display highest snow count section
+  renderHighestSnowCount();
 });
 
 function updateTownDropdown(region) {
