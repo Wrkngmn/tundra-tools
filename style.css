@@ -78,3 +78,23 @@ body {
 .snow-table th {
   background-color: #f0f0f0;
 }
+#highest-snow-box {
+  margin-top: 30px;
+  padding: 15px;
+  border: 2px solid #ffa500;
+  border-radius: 10px;
+  background-color: #fff8e1;
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+  animation: pulse 2s infinite alternate;
+}
+
+#highest-snow-box h3 {
+  text-align: center;
+  font-size: 18px;
+  color: #e65100;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.03); }
+}
