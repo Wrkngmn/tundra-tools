@@ -30,18 +30,19 @@ body {
   margin-bottom: 10px;
 }
 
-/* Main Map Area */
 .main {
   flex: 1;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
 }
 
 #map {
+  flex-grow: 1;
+  min-height: 100%;
+  height: 100vh;
   width: 100%;
-  height: 600px;
   background-color: #e0e0e0;
-  font-weight: bold;
 }
 
 /* Headers */
