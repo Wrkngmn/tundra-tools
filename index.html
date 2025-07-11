@@ -41,11 +41,15 @@
       </div>
     </div>
 
-    <div class="main">
-      <div id="map">Map loading...</div>
-      <div id="data-container"></div>
-    </div>
-  </div>
+<div class="main">
+  <div id="map">Loading Map...</div>
+</div>
+
+<div class="sidebar">
+  <!-- ... your existing dropdowns and legend ... -->
+
+  <div id="data-container"></div> <!-- ✅ move this here -->
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="script.js"></script>
