@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tundra Tools Snow Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.css"/>
 </head>
 <body>
   <div class="container">
     <div class="sidebar">
-      <h1>
-        <div style="text-align: center;">
-          <span>Tundra Tools Snow</span><br />
-          <span style="font-size: 1em;">Tracker</span>
-        </div>
+      <h1 style="text-align: center;">
+        <span>Tundra Tools Snow</span><br/>
+        <span style="font-size: 1.2em;">Tracker</span>
       </h1>
 
       <label for="region-select">Select Your Region:</label>
@@ -28,30 +24,29 @@
       <div id="legend">
         <h3>Snow Depth Legend</h3>
         <ul>
-          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–12" Light</li>
-          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Moderate</li>
-          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25–36" Heavy</li>
-          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;37"+ Extreme</li>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–6" Light Snow</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;7–12" Moderate Snow</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Heavy Snow</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25"+ Extreme Snow</li>
         </ul>
       </div>
 
-      <div id="highest-snow-section">
-        <h3>Highest Snow Count in Alaska</h3>
-        <div id="highest-snow-content">Loading...</div>
+      <div id="highest-snow-content">
+        <!-- Filled dynamically with highest snow count -->
+      </div>
+
+      <div id="data-container">
+        <!-- Filled dynamically with snow data table -->
       </div>
     </div>
 
-<div class="main">
-  <div id="map">Loading Map...</div>
-</div>
+    <div class="main">
+      <div id="map">Loading map...</div>
+    </div>
+  </div>
 
-<div class="sidebar">
-  <!-- ... your existing dropdowns and legend ... -->
-
-  <div id="data-container"></div> <!-- ✅ move this here -->
-</div>
-
-  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
