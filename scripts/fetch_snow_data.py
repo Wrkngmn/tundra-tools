@@ -17,3 +17,4 @@ def fetch_dummy_snow_data():
 
 if __name__ == "__main__":
     fetch_dummy_snow_data()
+
