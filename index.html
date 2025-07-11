@@ -1,50 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Real-time snow levels for Alaskan towns like Anchorage, Fairbanks, and Juneau. Check snow depth and forecasts!">
+  <meta name="keywords" content="Alaska snow levels, snow depth, Anchorage snow, Fairbanks snow, snow tracker">
   <title>Tundra Tools Snow Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <div class="sidebar">
       <h1 class="header-title">
-        <span>Tundra Tools Snow</span><br/>
+        <span>Tundra Tools Snow</span><br>
         <span class="tracker-subtitle">Tracker</span>
       </h1>
-
-      <label for="region-select">Select Your Region</label>
-      <select id="region-select"></select>
-
-      <label for="town-select">Select a Town</label>
-      <select id="town-select"></select>
-
+      <div id="social">
+        <a href="https://x.com/YourHandle" class="cta-button">Follow @YourHandle for Snow Updates!</a>
+      </div>
+      <label for="region-select" aria-label="Select an Alaskan region">Select Your Region</label>
+      <select id="region-select" aria-required="true"></select>
+      <label for="town-select" aria-label="Select a town in Alaska">Select a Town</label>
+      <select id="town-select" aria-required="true"></select>
       <div id="data-container"></div>
-
       <div id="legend">
         <h3>Snow Depth Legend</h3>
         <ul>
-          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–12" Light</li>
-          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Moderate</li>
-          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25–36" Heavy</li>
-          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;37"+ Extreme</li>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span> 0–6" Light</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span> 7–12" Moderate</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span> 13–24" Heavy</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span> 25"+ Extreme</li>
         </ul>
       </div>
-
       <div id="highest-snow">
         <h3>Highest Snow Count in Alaska</h3>
         <div id="highest-snow-content">Loading...</div>
       </div>
+      <div id="affiliate" class="affiliate">
+        <h3>Prep for Snow</h3>
+        <p><a href="https://www.amazon.com/snow-shovel" target="_blank">Best Snow Shovels</a> for Alaska winters (affiliate link)</p>
+      </div>
+      <div id="sponsor">
+        <h3>Advertise with Us</h3>
+        <p>Reach Alaska snow enthusiasts! Email: <a href="mailto:your@email.com">your@email.com</a></p>
+      </div>
     </div>
-
     <div class="main">
-      <div id="map">Loading map...</div>
+      <div id="map" role="region" aria-label="Interactive map of Alaska snow levels">Loading map...</div>
     </div>
   </div>
-
+  <footer>
+    <p>Contact: <a href="mailto:your@email.com">your@email.com</a> | <a href="https://x.com/YourHandle">X</a> | Powered by NRCS SNOTEL</p>
+  </footer>
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
