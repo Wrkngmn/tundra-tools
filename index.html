@@ -4,25 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tundra Tools Snow Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.css"/>
 </head>
 <body>
   <div class="container">
     <div class="sidebar">
-      <h1 class="header-title">
-        <span>Tundra Tools Snow</span><br/>
-        <span class="tracker-subtitle">Tracker</span>
+      <h1>
+        <div style="text-align: center;">
+          <span>Tundra Tools Snow</span><br />
+          <span style="font-size: 1em;">Tracker</span>
+        </div>
       </h1>
 
-      <label for="region-select">Select Your Region</label>
+      <label for="region-select">Select Your Region:</label>
       <select id="region-select"></select>
 
-      <label for="town-select">Select a Town</label>
+      <label for="town-select">Select a Town:</label>
       <select id="town-select"></select>
-
-      <div id="data-container"></div>
 
       <div id="legend">
         <h3>Snow Depth Legend</h3>
@@ -34,19 +35,19 @@
         </ul>
       </div>
 
-      <div id="highest-snow">
+      <div id="highest-snow-section">
         <h3>Highest Snow Count in Alaska</h3>
         <div id="highest-snow-content">Loading...</div>
       </div>
     </div>
 
     <div class="main">
-      <div id="map">Loading map...</div>
+      <div id="map">Map loading...</div>
+      <div id="data-container"></div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
