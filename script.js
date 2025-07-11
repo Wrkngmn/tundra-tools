@@ -145,7 +145,6 @@ let townMarker = null;
 document.addEventListener("DOMContentLoaded", () => {
   regionSelect = document.getElementById("region-select");
   townSelect = document.getElementById("town-select");
-
 const regionOptions = ["-- See all Regions --", ...Object.keys(regionTownMap)];
 populateDropdown("region-select", Object.keys(regionTownMap));
 
@@ -155,7 +154,9 @@ populateDropdown("region-select", Object.keys(regionTownMap));
     allowEmptyOption: true,
     placeholder: "Select a Region",
     onChange: updateTownDropdown
-  });
+     renderHighestSnowCount(); // ← Add this at the end of the DOMContentLoaded block
+});
+   
 
   townTomSelect = new TomSelect(townSelect, {
     create: false,
