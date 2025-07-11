@@ -1,0 +1,17 @@
+{
+  "updated": "2025-07-11T02:16:36.963968Z",
+  "data": [
+    {
+      "town": "Anchorage",
+      "depth": 12
+    },
+    {
+      "town": "Fairbanks",
+      "depth": 18
+    },
+    {
+      "town": "Juneau",
+      "depth": 8
+    }
+  ]
+}
