@@ -38,11 +38,10 @@ body {
 }
 
 #map {
+  height: 50vh; /* Use 50% of the viewport height */
   width: 100%;
-  height: 50vh;  /* 50% of the visible viewport height */
   background-color: #e0e0e0;
 }
-
 
 /* Headers */
 .header-title {
