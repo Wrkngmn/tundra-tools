@@ -154,10 +154,10 @@ populateDropdown("region-select", Object.keys(regionTownMap));
     allowEmptyOption: true,
     placeholder: "Select a Region",
     onChange: updateTownDropdown
-     renderHighestSnowCount(); // ← Add this at the end of the DOMContentLoaded block
+     
 });
    
-
+   renderHighestSnowCount(); // ← Add this at the end of the DOMContentLoaded block
   townTomSelect = new TomSelect(townSelect, {
     create: false,
     maxItems: 1,
