@@ -98,3 +98,10 @@ body {
   from { transform: scale(1); }
   to { transform: scale(1.03); }
 }
+.tracker-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.tracker-header span {
+  display: block;
+}
