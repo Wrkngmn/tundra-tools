@@ -11,7 +11,6 @@ const regionTownMap = {
   ],
   "Southeast": [
     "Juneau", "Sitka", "Ketchikan", "Petersburg", "Wrangell",
-    
     "Haines", "Skagway", "Craig", "Metlakatla", "Thorne Bay",
     "Angoon", "Klawock", "Yakutat"
   ],
@@ -168,10 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       townTomSelect.enable();
       updateTownDropdown(value);
     }
-   // ✅ Always trigger map size refresh after view update
-setTimeout(() => {
-  map.invalidateSize();
-}, 100);
+  });
 
   map = L.map("map").setView([61.2176, -149.8997], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
