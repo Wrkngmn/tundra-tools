@@ -253,7 +253,44 @@ function updateTownDropdown(region) {
     map.flyTo(regionCoords[region], 6);
   }
 }
+function renderHighestSnowCount() {
+  const container = document.getElementById("highest-snow-content");
 
+  if (!snowData.length) {
+    container.textContent = "No data available.";
+    return;
+  }
+
+  const maxDepth = Math.max(...snowData.map(entry => entry.depth));
+  const topTowns = snowData.filter(entry => entry.depth === maxDepth);
+
+  const table = document.createElement("table");
+  table.className = "snow-table";
+
+  const thead = document.createElement("thead");
+  thead.innerHTML = "<tr><th>Town</th><th>Snow Depth</th></tr>";
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  topTowns.forEach(town => {
+    const row = document.createElement("tr");
+
+    const townCell = document.createElement("td");
+    townCell.textContent = town.town;
+
+    const depthCell = document.createElement("td");
+    depthCell.textContent = `${town.depth}"`;
+    depthCell.style.backgroundColor = getSnowColor(town.depth);
+
+    row.appendChild(townCell);
+    row.appendChild(depthCell);
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(tbody);
+  container.innerHTML = "";
+  container.appendChild(table);
+}
 function renderSnowTable(data) {
   const container = document.getElementById("data-container");
   if (!data.length) {
