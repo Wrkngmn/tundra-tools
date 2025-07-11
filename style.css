@@ -38,9 +38,7 @@ body {
 }
 
 #map {
-  flex-grow: 1;
-  min-height: 100%;
-  height: 100vh;
+  height: 50vh; /* Use 50% of the viewport height */
   width: 100%;
   background-color: #e0e0e0;
 }
