@@ -3,16 +3,19 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background: #e6f0fa;
 }
 
 .container {
   display: flex;
+  flex-wrap: wrap;
   min-height: 100vh;
 }
 
 /* Sidebar */
 .sidebar {
   width: 300px;
+  min-width: 300px;
   padding: 20px;
   background-color: #f1f1f1;
   box-sizing: border-box;
@@ -20,7 +23,7 @@ body {
 
 .sidebar label {
   display: block;
-  margin-top: 10px;
+  margin: 10px 0 5px;
   font-weight: bold;
 }
 
@@ -28,18 +31,22 @@ body {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
+  border-radius: 5px;
 }
 
+/* Main Area */
 .main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  min-height: 50vh;
+  padding: 20px;
   box-sizing: border-box;
 }
 
 #map {
-  height: 50vh; /* Use 50% of the viewport height */
+  height: 50vh;
   width: 100%;
+  min-height: 300px;
+  border-radius: 10px;
   background-color: #e0e0e0;
 }
 
@@ -49,12 +56,14 @@ body {
   text-align: center;
   margin-bottom: 20px;
   line-height: 1.2;
+  color: #333;
 }
 
 .tracker-subtitle {
   font-size: 20px;
   display: block;
   text-align: center;
+  color: #007bff;
 }
 
 /* Snow Table */
@@ -63,6 +72,8 @@ body {
   border-collapse: collapse;
   font-size: 14px;
   margin-top: 10px;
+  background: white;
+  border-radius: 5px;
 }
 
 .snow-table th, .snow-table td {
@@ -77,8 +88,11 @@ body {
 
 /* Legend */
 #legend h3,
-#highest-snow h3 {
-  margin-bottom: 10px;
+#highest-snow h3,
+#affiliate h3,
+#sponsor h3 {
+  margin: 10px 0;
+  font-size: 16px;
 }
 
 #legend ul {
@@ -103,4 +117,54 @@ body {
 
 #highest-snow-content {
   margin-top: 10px;
+}
+
+/* Affiliate and Sponsor */
+.affiliate, #sponsor {
+  margin: 20px 0;
+}
+
+.affiliate a, #sponsor a, .cta-button {
+  background: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.affiliate a:hover, #sponsor a:hover, .cta-button:hover {
+  background: #0056b3;
+}
+
+.cta-button {
+  background: #1da1f2; /* X/Twitter blue */
+}
+
+/* Footer */
+footer {
+  background: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+footer a {
+  color: #1da1f2;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar, .main {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+  #map {
+    height: 300px;
+  }
 }
