@@ -82,33 +82,58 @@ const townCoords = {
   "St. Michael": [63.4806, -162.0325]
 };
 
+const stationToTownMap = {
+  'AK_ANH_01': 'Anchorage',
+  'AK_GRD_01': 'Girdwood',
+  'AK_FAI_02': 'Fairbanks',
+  'AK_JUN_01': 'Juneau'
+  // Add more mappings from NRCS SNOTEL metadata
+};
+
 let snowData = [];
 let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 
 async function fetchSnowData() {
+  const cacheKey = 'snowData';
+  const cached = localStorage.getItem(cacheKey);
+  if (cached && Date.now() - JSON.parse(cached).timestamp < 3600000) {
+    snowData = JSON.parse(cached).data;
+    return;
+  }
   try {
-    const response = await fetch("https://wrkngmn.github.io/tundra-tools/data/snow_data.json");
-    const json = await response.json();
-    snowData = json.data || [];
+    // Mock data (replace with NRCS SNOTEL API: https://wcc.sc.egov.usda.gov/api/snotel/all)
+    const mockResponse = [
+      { station: 'AK_ANH_01', snowDepth: 0, swe: 0, lastUpdated: '2025-07-11 15:00' },
+      { station: 'AK_GRD_01', snowDepth: 130, swe: 28, lastUpdated: '2025-07-11 15:00' },
+      { station: 'AK_FAI_02', snowDepth: 10, swe: 2.5, lastUpdated: '2025-07-11 15:00' },
+      { station: 'AK_JUN_01', snowDepth: 5, swe: 1.2, lastUpdated: '2025-07-11 15:00' }
+    ];
+    snowData = mockResponse.map(entry => ({
+      town: stationToTownMap[entry.station] || 'Unknown',
+      depth: entry.snowDepth || 0,
+      swe: entry.swe || 0,
+      lastUpdated: entry.lastUpdated || 'Unknown'
+    }));
+    localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
   } catch (err) {
-    console.error("Error fetching snow data:", err);
+    console.error('Error fetching snow data:', err);
+    document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   await fetchSnowData();
+  regionSelect = document.getElementById('region-select');
+  townSelect = document.getElementById('town-select');
 
-  regionSelect = document.getElementById("region-select");
-  townSelect = document.getElementById("town-select");
-
-  populateDropdown("region-select", Object.keys(regionTownMap));
+  populateDropdown('region-select', Object.keys(regionTownMap));
 
   regionSelectTomSelect = new TomSelect(regionSelect, {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
-    placeholder: "Select a Region",
+    placeholder: 'Select a Region',
     onChange: updateTownDropdown
   });
 
@@ -116,26 +141,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     create: false,
     maxItems: 1,
     allowEmptyOption: true,
-    placeholder: "Select a Town"
+    placeholder: 'Select a Town'
   });
 
   townTomSelect.clearOptions();
 
-  townTomSelect.on("change", (value) => {
+  map = L.map('map', { preferCanvas: true }).setView([61.2176, -149.8997], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Add initial markers for all towns with data
+  snowData.forEach(entry => {
+    if (townCoords[entry.town] && entry.depth != null) {
+      L.marker(townCoords[entry.town])
+        .addTo(map)
+        .bindPopup(`${entry.town}: ${entry.depth}"`);
+    }
+  });
+
+  townTomSelect.on('change', (value) => {
     const selectedRegion = regionSelectTomSelect.getValue();
     const validTowns = regionTownMap[selectedRegion] || [];
-
     if (townMarker) {
       map.removeLayer(townMarker);
       townMarker = null;
     }
-
     if (value && validTowns.includes(value)) {
-      const match = snowData.find(entry => entry.town === value);
-      renderSnowTable([match || { town: value, depth: null }]);
-
+      const match = snowData.find(entry => entry.town === value) || { town: value, depth: null, swe: 0, lastUpdated: 'Unknown' };
+      renderSnowTable([match]);
       if (townCoords[value]) {
-        townMarker = L.marker(townCoords[value]).addTo(map);
+        townMarker = L.marker(townCoords[value]).addTo(map).bindPopup(`${value}: ${match.depth || 'No data'}"`);
         map.flyTo(townCoords[value], 10);
       }
     } else {
@@ -144,59 +180,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  regionSelectTomSelect.on("change", (value) => {
-    if (value === "all") {
+  regionSelectTomSelect.on('change', (value) => {
+    if (value === 'all') {
       const allTowns = Object.values(regionTownMap).flat().sort();
       townTomSelect.clear(true);
       townTomSelect.clearOptions();
       townTomSelect.disable();
-
-      renderSnowTable(allTowns.map(town => {
-        const match = snowData.find(entry => entry.town === town);
-        return match || { town, depth: null };
-      }));
-
+      renderSnowTable(allTowns.map(town => snowData.find(entry => entry.town === town) || { town, depth: null, swe: 0, lastUpdated: 'Unknown' }));
       if (townMarker) {
         map.removeLayer(townMarker);
         townMarker = null;
       }
-
       map.setView([61.2176, -149.8997], 5);
     } else {
-      const towns = regionTownMap[value] || [];
       townTomSelect.enable();
       updateTownDropdown(value);
     }
   });
-
-  map = L.map("map").setView([61.2176, -149.8997], 6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "&copy; OpenStreetMap contributors"
-  }).addTo(map);
 
   renderHighestSnowCount();
 });
 
 function populateDropdown(id, data) {
   const select = document.getElementById(id);
-  select.innerHTML = "";
-
-  const defaultOption = document.createElement("option");
-  defaultOption.value = "";
-  defaultOption.textContent = "-- Select a Region --";
+  select.innerHTML = '';
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = '-- Select a Region --';
   defaultOption.disabled = true;
   defaultOption.selected = true;
   select.appendChild(defaultOption);
-
-  if (id === "region-select") {
-    const allOption = document.createElement("option");
-    allOption.value = "all";
-    allOption.textContent = "See all Regions";
+  if (id === 'region-select') {
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.textContent = 'See all Regions';
     select.appendChild(allOption);
   }
-
   data.forEach(item => {
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = item;
     option.textContent = item;
     select.appendChild(option);
@@ -205,103 +226,56 @@ function populateDropdown(id, data) {
 
 function updateTownDropdown(region) {
   const towns = regionTownMap[region] || [];
-
   townTomSelect.clear(true);
   townTomSelect.clearOptions();
+  towns.forEach(town => townTomSelect.addOption({ value: town, text: town }));
+  townTomSelect.setValue('');
   townTomSelect.refreshOptions(false);
-
-  towns.forEach(town => {
-    townTomSelect.addOption({ value: town, text: town });
-  });
-
-  townTomSelect.setValue("");
-  townTomSelect.refreshOptions(false);
-
   const filtered = snowData.filter(entry => towns.includes(entry.town));
   renderSnowTable(filtered);
-
   if (townMarker) {
     map.removeLayer(townMarker);
     townMarker = null;
   }
-
   if (regionCoords[region]) {
     map.flyTo(regionCoords[region], 6);
   }
 }
 
 function renderSnowTable(data) {
-  const container = document.getElementById("data-container");
+  const container = document.getElementById('data-container');
   if (!data.length) {
-    container.innerHTML = "";
+    container.innerHTML = '<p>No data available.</p>';
     return;
   }
-
   container.innerHTML = `
     <table class="snow-table">
-      <thead><tr><th>Town</th><th>Snow Depth</th></tr></thead>
+      <thead><tr><th>Town</th><th>Snow Depth</th><th>SWE</th><th>Last Updated</th></tr></thead>
       <tbody id="snowTableBody"></tbody>
     </table>
   `;
-
-  const tbody = container.querySelector("#snowTableBody");
-
+  const tbody = container.querySelector('#snowTableBody');
   data.forEach(item => {
-    const row = document.createElement("tr");
-    const townCell = document.createElement("td");
-    townCell.textContent = item.town;
-
-    const snowCell = document.createElement("td");
-    if (item.depth == null) {
-      snowCell.textContent = "No data available";
-      snowCell.style.backgroundColor = "#f5f5f5";
-    } else {
-      snowCell.textContent = `${item.depth}"`;
-      snowCell.style.backgroundColor = getSnowColor(item.depth);
-    }
-
-    row.appendChild(townCell);
-    row.appendChild(snowCell);
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.town}</td>
+      <td style="background-color: ${item.depth == null ? '#f5f5f5' : getSnowColor(item.depth)}">${item.depth == null ? 'No data' : item.depth + '"'}</td>
+      <td>${item.swe == null ? 'No data' : item.swe + ' inches'}</td>
+      <td>${item.lastUpdated}</td>
+    `;
     tbody.appendChild(row);
   });
 }
 
 function renderHighestSnowCount() {
-  const container = document.getElementById("highest-snow-content");
-
+  const container = document.getElementById('highest-snow-content');
   if (!snowData.length) {
-    container.textContent = "No data available.";
+    container.innerHTML = '<p>No data available.</p>';
     return;
   }
-
-  const maxDepth = Math.max(...snowData.map(entry => entry.depth));
+  const maxDepth = Math.max(...snowData.map(entry => entry.depth || 0));
   const topTowns = snowData.filter(entry => entry.depth === maxDepth);
-
-  const table = document.createElement("table");
-  table.className = "snow-table";
-
-  const thead = document.createElement("thead");
-  thead.innerHTML = "<tr><th>Town</th><th>Snow Depth</th></tr>";
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  topTowns.forEach(town => {
-    const row = document.createElement("tr");
-    const townCell = document.createElement("td");
-    townCell.textContent = town.town;
-
-    const depthCell = document.createElement("td");
-    depthCell.textContent = `${town.depth}"`;
-    depthCell.style.backgroundColor = getSnowColor(town.depth);
-
-    row.appendChild(townCell);
-    row.appendChild(depthCell);
-    tbody.appendChild(row);
-  });
-
-  table.appendChild(tbody);
-  container.innerHTML = "";
-  container.appendChild(table);
+  container.innerHTML = `<p style="color: #ff4d4d; font-weight: bold;">Highest Snow: ${topTowns[0].town} at ${maxDepth}"</p>`;
 }
 
 function getSnowColor(inches) {
