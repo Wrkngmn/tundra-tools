@@ -1,9 +1,26 @@
 const regionTownMap = {
-  "Southcentral": [...],
-  "Interior": [...],
-  "Southeast": [...],
-  "Western": [...]
+  "Southcentral": [
+    "Anchorage", "Wasilla", "Palmer", "Eagle River", "Girdwood",
+    "Seward", "Kenai", "Soldotna", "Homer", "Cordova",
+    "Valdez", "Whittier", "Talkeetna", "Glennallen"
+  ],
+  "Interior": [
+    "Fairbanks", "North Pole", "Delta Junction", "Tok", "Nenana",
+    "Healy", "Fort Yukon", "Galena", "Bettles", "Manley Hot Springs",
+    "Tanana", "Circle"
+  ],
+  "Southeast": [
+    "Juneau", "Sitka", "Ketchikan", "Petersburg", "Wrangell",
+    "Haines", "Skagway", "Craig", "Metlakatla", "Thorne Bay",
+    "Angoon", "Klawock", "Yakutat"
+  ],
+  "Western": [
+    "Nome", "Bethel", "Kotzebue", "Dillingham", "Unalakleet",
+    "Hooper Bay", "Togiak", "Quinhagak", "Shishmaref", "Emmonak",
+    "Scammon Bay", "St. Michael"
+  ]
 };
+
 
 const regionCoords = {
   "Interior": [64.8378, -147.7164],
