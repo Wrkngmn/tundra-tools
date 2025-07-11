@@ -3,91 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Tundra Tools Snow Tracker</title>
-  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 300px;
-      padding: 20px;
-      background-color: #f1f1f1;
-      box-sizing: border-box;
-    }
-    .sidebar label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .sidebar select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-    }
-    .main {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    #map {
-      width: 100%;
-      height: 400px;
-      background-color: #e0e0e0;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-    #legend ul {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 20px;
-    }
-    .legend-box {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      vertical-align: middle;
-      border: 1px solid #ccc;
-    }
-    .snow-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .snow-table th, .snow-table td {
-      border: 1px solid #ccc;
-      padding: 6px 10px;
-      text-align: left;
-    }
-    .snow-table th {
-      background-color: #f0f0f0;
-    }
-    #highest-snow-box {
-      margin-top: 20px;
-    }
-    h1 {
-      text-align: center;
-      margin: 20px 0 10px;
-      line-height: 1;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>
-    <div>Tundra Tools</div>
-    <div>Snow Tracker</div>
-  </h1>
   <div class="container">
     <div class="sidebar">
+      <h2>Tundra Tools<br><span style="margin-left: 2em;">Snow Tracker</span></h2>
+
       <label for="region-select">Select Your Region</label>
       <select id="region-select" placeholder="Select a Region"></select>
 
@@ -102,15 +25,15 @@
       <div id="legend">
         <h3>Snow Depth Legend</h3>
         <ul>
-          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–12" Light</li>
-          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Moderate</li>
-          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25–36" Heavy</li>
-          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;37"+ Extreme</li>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–12" Light Snow</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Moderate Snow</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25–36" Heavy Snow</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;37"+ Extreme Snow</li>
         </ul>
       </div>
 
       <div id="highest-snow-box">
-        <h3>🎇 Highest Snow Count in Alaska 🎆</h3>
+        <h3>Highest Snow Count in Alaska</h3>
         <div id="highest-snow-content">Loading...</div>
       </div>
     </div>
@@ -120,11 +43,9 @@
     </div>
   </div>
 
-  <!-- Leaflet JS -->
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- TomSelect JS -->
-  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-  <!-- Your JS file -->
   <script src="script.js"></script>
 </body>
 </html>
