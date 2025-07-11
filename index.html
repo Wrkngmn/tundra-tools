@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Tundra Tools Snow Tracker</title>
+  <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
   <div class="container">
     <div class="sidebar">
-      <h2>Tundra Tools<br><span style="margin-left: 2em;">Snow Tracker</span></h2>
+      <h2 class="tracker-header">
+        <span>Tundra Tools</span><br>
+        <span>Snow Tracker</span>
+      </h2>
 
       <label for="region-select">Select Your Region</label>
-      <select id="region-select" placeholder="Select a Region"></select>
+      <select id="region-select"></select>
 
       <label for="town-select">Select a Town</label>
-      <select id="town-select" placeholder="Select a Town"></select>
+      <select id="town-select"></select>
 
       <div id="snow-depth-data">
         <h3>Snow Depth by Town</h3>
@@ -25,10 +29,10 @@
       <div id="legend">
         <h3>Snow Depth Legend</h3>
         <ul>
-          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;&nbsp;&nbsp;0–12" Light Snow</li>
-          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;&nbsp;&nbsp;13–24" Moderate Snow</li>
-          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;&nbsp;&nbsp;25–36" Heavy Snow</li>
-          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;&nbsp;&nbsp;37"+ Extreme Snow</li>
+          <li><span class="legend-box" style="background-color: #d2f8d2;"></span>&nbsp;&nbsp;0–12" Light</li>
+          <li><span class="legend-box" style="background-color: #d0ebff;"></span>&nbsp;&nbsp;13–24" Moderate</li>
+          <li><span class="legend-box" style="background-color: #ffe5b4;"></span>&nbsp;&nbsp;25–36" Heavy</li>
+          <li><span class="legend-box" style="background-color: #ffcccc;"></span>&nbsp;&nbsp;37"+ Extreme</li>
         </ul>
       </div>
 
@@ -43,7 +47,6 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
