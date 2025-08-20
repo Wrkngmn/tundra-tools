@@ -180,11 +180,9 @@ async function fetchSnowData() {
       lastUpdated: stationData[station].lastUpdated ?? 'Unknown'
     }));
     localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
-    updateHighestSnow();
-    updateMapMarkers();
   } catch (err) {
     console.error('Error fetching snow data:', err);
-    document.getElementById('data-container').innerHTML = '<p>Sorry, snow data is temporarily unavailable. Try again later!</p>';
+    document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
 }
 
@@ -275,54 +273,6 @@ function updateHighestSnow() {
 }
 
 function initMap() {
-  map = L.map('map').setView([64.8378, -147.7164], 4); // Center on Fairbanks
+  map = L.map('map').setView([64.8378, -147.7164], 4);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-}
-
-function initSelects() {
-  regionSelect = document.getElementById('region-select');
-  townSelect = document.getElementById('town-select');
-  regionSelectTomSelect = new TomSelect(regionSelect, {
-    options: Object.keys(regionTownMap).map(region => ({value: region, text: region})),
-    placeholder: 'Choose a region...'
-  });
-  townSelectTomSelect = new TomSelect(townSelect, {
-    placeholder: 'Choose a town...'
-  });
- regionSelectTomSelect.on('change', value => {
-  if (value) {
-    townSelectTomSelect.clear();
-    townSelectTomSelect.clearOptions();
-    townSelectTomSelect.addOptions(regionTownMap[value].map(town => ({value: town, text: town})));
-    map.setView(regionCoords[value] || [64.8378, -147.7164], 6);
-  }
-});
-townSelectTomSelect.on('change', value => {
-  if (value) {
-    updateGearRecommendations(value);
-    const coords = townCoords[value] || [64.8378, -147.7164];
-    if (townMarker) map.removeLayer(townMarker);
-    townMarker = L.marker(coords).addTo(map).bindPopup(`${value}`).openPopup();
-    map.setView(coords, 8);
-    const nearestStation = alaskaStations.reduce((closest, station) => {
-      const dist = Math.sqrt(
-        Math.pow(station.lat - coords[0], 2) + Math.pow(station.lng - coords[1], 2)
-      );
-      return dist < closest.dist ? {station, dist} : closest;
-    }, {dist: Infinity}).station;
-    const data = snowData.find(d => d.station === nearestStation.triplet);
-    document.getElementById('data-container').innerHTML = data
-      ? `<table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`
-      : 'No data available';
-  }
-});
-document.addEventListener('DOMContentLoaded', () => {
-  initMap();
-  initSelects();
-  fetchSnowData().then(() => {
-    updateMapMarkers();
-    updateHighestSnow();
-  });
-});
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright
