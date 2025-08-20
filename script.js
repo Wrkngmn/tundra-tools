@@ -152,13 +152,34 @@ let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let stationMarkers = [];
 
-async function fetchSnowData() {
-  const cacheKey = 'snowData';
-  const cached = localStorage.getItem(cacheKey);
-  if (cached && Date.now() - JSON.parse(cached).timestamp < 3600000) {
-    snowData = JSON.parse(cached).data;
-    return;
+{
+    console.log("Fetching snow data for tundra-tools, triplets count:", alaskaStations.length);
+    const now = new Date();
+    const beginDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' ');
+    const endDate = now.toISOString().slice(0, 16).replace('T', ' ');
+    const triplets = alaskaStations.map(s => s.triplet);
+    const snwdData = await getApiData('SNWD', beginDate, endDate, triplets);
+    const wteqData = await getApiData('WTEQ', beginDate, endDate, triplets);
+    console.log("API response for SNWD:", snwdData.length, "WTEQ:", wteqData.length);
+    const stationData = {};
+    snwdData.forEach(d => {
+      if (!stationData[d.station]) stationData[d.station] = {depth: d.value, lastUpdated: d.dateTime};
+    });
+    wteqData.forEach(d => {
+      if (stationData[d.station]) stationData[d.station].swe = d.value;
+    });
+    snowData = Object.keys(stationData).map(station => ({
+      station,
+      depth: stationData[station].depth ?? null,
+      swe: stationData[station].swe ?? null,
+      lastUpdated: stationData[station].lastUpdated ?? 'Unknown'
+    }));
+    localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
+  } catch (err) {
+    console.error('Error fetching snow data for tundra-tools:', err);
+    document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
+}
   try {
     const now = new Date();
     const beginDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' ');
