@@ -20,14 +20,12 @@ const regionTownMap = {
     "Scammon Bay", "St. Michael"
   ]
 };
-
 const regionCoords = {
   "Interior": [64.8378, -147.7164],
   "Southcentral": [61.2181, -149.9003],
   "Southeast": [58.3019, -134.4197],
   "Western": [64.5011, -165.4064]
 };
-
 const townCoords = {
   "Anchorage": [61.2181, -149.9003],
   "Wasilla": [61.5814, -149.4417],
@@ -81,8 +79,6 @@ const townCoords = {
   "Scammon Bay": [61.8442, -165.5706],
   "St. Michael": [63.4806, -162.0325]
 };
-
-// Full list of active Alaska SNOTEL stations as of 2025-July-11
 const alaskaStations = [
   {name: 'Alexander Lake', id: '1267', triplet: '1267:AK:SNTL', lat: 61.75, lng: -150.89, elev: 170},
   {name: 'American Creek', id: '1189', triplet: '1189:AK:SNTL', lat: 64.79, lng: -141.23, elev: 1020},
@@ -151,7 +147,6 @@ const alaskaStations = [
   {name: 'Little Nelchina', id: '2224', triplet: '2224:AK:SNTL', lat: 61.98, lng: -146.6, elev: 2350},
   {name: 'Paradise Hill', id: '2225', triplet: '2225:AK:SNTL', lat: 64.4, lng: -146.89, elev: 1400}
 ];
-
 let snowData = [];
 let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
@@ -185,9 +180,11 @@ async function fetchSnowData() {
       lastUpdated: stationData[station].lastUpdated ?? 'Unknown'
     }));
     localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
+    updateHighestSnow();
+    updateMapMarkers();
   } catch (err) {
     console.error('Error fetching snow data:', err);
-    document.getElementById('data-container').innerHTML = 'Error loading data.';
+    document.getElementById('data-container').innerHTML = '<p>Sorry, snow data is temporarily unavailable. Try again later!</p>';
   }
 }
 
@@ -202,7 +199,7 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
       <ns:elementCd>${elementCd}</ns:elementCd>
       <ns:ordinal>1</ns:ordinal>
       <ns:beginDate>${beginDate}</ns:beginDate>
-      <ns:endDate>${endDate}</ns: endDate>
+      <ns:endDate>${endDate}</ns:endDate>
       <ns:filter>ALL</ns:filter>
       <ns:unitSystem>ENGLISH</ns:unitSystem>
     </ns:getInstantaneousData>
@@ -229,4 +226,73 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
   return Object.values(grouped);
 }
 
-// ... (the rest of the script remains the same, including getDistance, getClosestStation, DOMContentLoaded event, populateDropdown, updateTownDropdown, renderSnowTable, renderHighestSnowCount, getSnowColor)
+function updateGearRecommendations(town) {
+  const townData = snowData.find(d => d.station.includes(town)) || { depth: 0 };
+  const depth = townData.depth || 0;
+  const affiliateDiv = document.getElementById('affiliate');
+  let gearRecommendation = '';
+  if (depth > 24) {
+    gearRecommendation = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Heavy-Duty Snow Shovel</a> for extreme snow (${depth}") #ad</p>`;
+  } else if (depth > 12) {
+    gearRecommendation = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Snow Shovel & Cleats Combo</a> for heavy snow (${depth}") #ad</p>`;
+  } else {
+    gearRecommendation = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Insulated Boots</a> for light snow (${depth}") #ad</p>`;
+  }
+  affiliateDiv.innerHTML = `<h3>Prep for ${town}'s Snow</h3>${gearRecommendation}`;
+}
+
+function updateMapMarkers() {
+  stationMarkers.forEach(marker => map.removeLayer(marker));
+  stationMarkers = [];
+  snowData.forEach(data => {
+    const station = alaskaStations.find(s => s.triplet === data.station);
+    if (station) {
+      const depth = data.depth || 0;
+      let color = '#d2f8d2'; // Light
+      if (depth > 24) color = '#ffcccc'; // Extreme
+      else if (depth > 12) color = '#ffe5b4'; // Heavy
+      else if (depth > 6) color = '#d0ebff'; // Moderate
+      const marker = L.circleMarker([station.lat, station.lng], {
+        radius: 8,
+        fillColor: color,
+        color: '#333',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      }).bindPopup(`${station.name}: ${depth}" snow`);
+      marker.addTo(map);
+      stationMarkers.push(marker);
+    }
+  });
+}
+
+function updateHighestSnow() {
+  const highest = snowData.reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''});
+  const station = alaskaStations.find(s => s.triplet === highest.station);
+  document.getElementById('highest-snow-content').innerHTML = station
+    ? `${station.name}: ${highest.depth}" on ${highest.lastUpdated}`
+    : 'No data available';
+}
+
+function initMap() {
+  map = L.map('map').setView([64.8378, -147.7164], 4); // Center on Fairbanks
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+}
+
+function initSelects() {
+  regionSelect = document.getElementById('region-select');
+  townSelect = document.getElementById('town-select');
+  regionSelectTomSelect = new TomSelect(regionSelect, {
+    options: Object.keys(regionTownMap).map(region => ({value: region, text: region})),
+    placeholder: 'Choose a region...'
+  });
+  townSelectTomSelect = new TomSelect(townSelect, {
+    placeholder: 'Choose a town...'
+  });
+  regionSelectTomSelect.on('change', value => {
+    if (value) {
+      townSelectTomSelect.clear();
+      townSelectTomSelect.clearOptions();
+      townSelectTomSelect.addOptions(regionTownMap[value].
