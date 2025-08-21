@@ -309,6 +309,7 @@ function updateMapMarkers() {
       return station && calculateDistance(townCoords[town], [station.lat, station.lng]) < 50;
     }) || { depth: 0 };
     const depth = data.depth || 0;
+    if (depth === 0) return; // Skip markers for towns with no depth data
     let color = '#d2f8d2'; // Light
     if (depth > 24) color = '#ffcccc'; // Extreme
     else if (depth > 12) color = '#ffe5b4'; // Heavy
@@ -330,12 +331,13 @@ function updateMapMarkers() {
 }
 
 function updateHighestSnow() {
-  const highest = Object.values(townSnowData).reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''});
+  const highest = Object.values(townSnowData).reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''}) || {};
   const station = alaskaStations.find(s => s.triplet === highest.station);
-  const content = station && !Object.keys(townCoords).includes(station.name)
+  const content = (highest.depth || 0) > 0 ? (station && !Object.keys(townCoords).includes(station.name)
     ? `<span style="color: red;">Data from ${station.name}</span><br>${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`
-    : `${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`;
-  document.getElementById('highest-snow-content').innerHTML = content || 'No data available';
+    : `${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`)
+    : 'No data available';
+  document.getElementById('highest-snow-content').innerHTML = content;
 }
 
 function calculateDistance(coord1, coord2) {
@@ -391,6 +393,9 @@ function initSelects() {
         ? `<span style="color: red;">Data from ${station.name}</span><br><table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`
         : `<table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`;
       document.getElementById('data-container').innerHTML = content;
+    }
+  });
+}
     }
   });
 }
