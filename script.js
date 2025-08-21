@@ -250,12 +250,14 @@ function updateTownSnowData() {
   townSnowData = {};
   snowData.forEach(data => {
     const station = alaskaStations.find(s => s.triplet === data.station);
-    const town = Object.keys(townCoords).find(t => {
-      const dist = calculateDistance(townCoords[t], [station.lat, station.lng]);
-      return dist < 50 && (station.name === t || dist < 10); // Prioritize exact matches or very close stations
-    });
-    if (town) {
-      townSnowData[town] = data;
+    if (station) {
+      const town = Object.keys(townCoords).find(t => {
+        const dist = calculateDistance(townCoords[t], [station.lat, station.lng]);
+        return dist < 50 && (station.name === t || dist < 10); // Prioritize exact matches or very close stations
+      });
+      if (town) {
+        townSnowData[town] = data;
+      }
     }
   });
   console.log("Town snow data mapped:", Object.keys(townSnowData).length, "towns");
