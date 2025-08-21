@@ -153,12 +153,27 @@ let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let stationMarkers = [];
 
 async function fetchSnowData() {
-  {
+  const cacheKey = 'snowData';
+  const cached = localStorage.getItem(cacheKey);
+  console.log("Checking cache for tundra-tools:", cached ? "Found" : "Not found");
+  if (cached) {
+    const cachedData = JSON.parse(cached);
+    console.log("Cache timestamp:", new Date(cachedData.timestamp), "Age (hours):", (Date.now() - cachedData.timestamp) / 3600000);
+    if (Date.now() - cachedData.timestamp < 3600000) {
+      snowData = cachedData.data;
+      console.log("Using cached snow data, length:", snowData.length);
+      return;
+    } else {
+      console.log("Cache expired, forcing API call");
+      localStorage.removeItem(cacheKey);
+    }
+  }
+  try {
     console.log("Fetching snow data for tundra-tools, using first 10 triplets");
     const now = new Date();
     const beginDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' ');
     const endDate = now.toISOString().slice(0, 16).replace('T', ' ');
-    const triplets = alaskaStations.slice(0, 10).map(s => s.triplet); // Limit to 10 stations
+    const triplets = alaskaStations.slice(0, 10).map(s => s.triplet);
     console.log("Sending API request with", triplets.length, "triplets");
     const snwdData = await getApiData('SNWD', beginDate, endDate, triplets);
     console.log("Raw SNWD data received, length:", snwdData.length);
@@ -177,15 +192,13 @@ async function fetchSnowData() {
       swe: stationData[station].swe ?? null,
       lastUpdated: stationData[station].lastUpdated ?? 'Unknown'
     }));
-   console.log("Processed snow data, length:", snowData.length);
+    console.log("Processed snow data, length:", snowData.length);
     localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
   } catch (err) {
     console.error('Error fetching snow data for tundra-tools:', err);
     document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
 }
- 
-
 async function getApiData(elementCd, beginDate, endDate, triplets) {
   const url = 'https://wcc.sc.egov.usda.gov/awdbWebService/services';
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
