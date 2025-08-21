@@ -16,39 +16,34 @@
     <h1>Tundra Tools Snow Tracker</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="gear.html">Gear</a>
     </nav>
   </header>
   <div class="container">
-    <div class="sidebar-left">
+    <div class="main">
+      <div id="map">Loading map...</div>
+      <div id="gear-banner">Loading featured gear...</div>
+    </div>
+    <div class="sidebar">
       <div class="controls">
         <label for="region-select">Region:</label>
         <select id="region-select"></select>
         <label for="town-select">Town:</label>
         <select id="town-select"></select>
       </div>
+      <div id="data-container">Select a town to see snow data.</div>
+      <div id="legend">
+        <h2>Snow Depth Legend</h2>
+        <div class="legend-item"><span class="legend-color light"></span> Light (0-6")</div>
+        <div class="legend-item"><span class="legend-color moderate"></span> Moderate (6-12")</div>
+        <div class="legend-item"><span class="legend-color heavy"></span> Heavy (12-24")</div>
+        <div class="legend-item"><span class="legend-color extreme"></span> Extreme (24"+)</div>
+      </div>
+      <div id="highest-snow">
+        <h2>Highest Snow Depth</h2>
+        <div id="highest-snow-content">No data available</div>
+      </div>
+      <div id="affiliate">Select a town for gear recommendations.</div>
     </div>
-    <div class="main-right">
-      <div id="map">Loading map...</div>
-      <div id="gear-banner">Loading featured gear...</div>
-    </div>
-  </div>
-  <div class="legend-container">
-    <div id="legend">
-      <h2>Snow Depth Legend</h2>
-      <div class="legend-item"><span class="legend-color light"></span> Light (0-6")</div>
-      <div class="legend-item"><span class="legend-color moderate"></span> Moderate (6-12")</div>
-      <div class="legend-item"><span class="legend-color heavy"></span> Heavy (12-24")</div>
-      <div class="legend-item"><span class="legend-color extreme"></span> Extreme (24"+)</div>
-    </div>
-  </div>
-  <div class="sidebar-right">
-    <div id="data-container">Select a town to see snow data.</div>
-    <div id="highest-snow">
-      <h2>Highest Snow Depth</h2>
-      <div id="highest-snow-content">No data available</div>
-    </div>
-    <div id="affiliate">Select a town for gear recommendations.</div>
   </div>
 </body>
 </html>
