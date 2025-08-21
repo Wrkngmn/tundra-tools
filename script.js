@@ -153,6 +153,33 @@ let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let stationMarkers = [];
 
+const gearItems = [
+  { name: 'Collapsible Snow Shovel', description: 'Durable, lightweight, perfect for deep snow. $30', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Insulated Winter Boots', description: 'Waterproof, -40°F rated. $80', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Heated Gloves', description: 'Battery-powered for warmth. $50', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Ice Traction Cleats', description: 'For safe walking on ice. $25', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Portable Snow Melter', description: 'For driveways and paths. $60', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Heavy-Duty Snow Brush', description: 'For vehicles. $20', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Thermal Base Layers', description: 'For layering in cold. $40', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'LED Headlamp', description: 'For dark winter tasks. $30', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Insulated Water Bottle', description: 'Keeps water unfrozen. $35', link: 'YOUR_AMAZON_AFFILIATE_LINK' },
+  { name: 'Emergency Survival Kit', description: 'For winter preparedness. $50', link: 'YOUR_AMAZON_AFFILIATE_LINK' }
+];
+
+function rotateGearBanner() {
+  const banner = document.getElementById('gear-banner');
+  if (!banner) return;
+
+  let index = 0;
+  const rotate = () => {
+    const item = gearItems[index];
+    banner.innerHTML = `<a href="${item.link}" target="_blank">${item.name}</a><br>${item.description}`;
+    index = (index + 1) % gearItems.length;
+  };
+  rotate(); // Initial display
+  setInterval(rotate, 10000); // Rotate every 10 seconds
+}
+
 console.log("Tundra Tools script loaded.");
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Starting tundra-tools initialization...");
@@ -160,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("Map initialized for tundra-tools...");
   initSelects();
   console.log("Selects initialized for tundra-tools...");
+  rotateGearBanner();
   fetchSnowData().then(() => {
     console.log("Snow data fetched for tundra-tools...");
     updateTownSnowData();
@@ -220,14 +248,11 @@ async function fetchSnowData() {
 
 function updateTownSnowData() {
   townSnowData = {};
-  const townTriplets = Object.keys(townCoords).map(town => {
-    const station = alaskaStations.find(s => s.name === town || s.triplet.includes(town));
-    return station ? station.triplet : null;
-  }).filter(t => t);
   snowData.forEach(data => {
+    const station = alaskaStations.find(s => s.triplet === data.station);
     const town = Object.keys(townCoords).find(t => {
-      const station = alaskaStations.find(s => s.triplet === data.station);
-      return station && (station.name === t || townTriplets.includes(data.station));
+      const dist = calculateDistance(townCoords[t], [station.lat, station.lng]);
+      return dist < 50 && (station.name === t || dist < 10); // Prioritize exact matches or very close stations
     });
     if (town) {
       townSnowData[town] = data;
@@ -332,7 +357,7 @@ function updateMapMarkers() {
 
 function updateHighestSnow() {
   const highest = Object.values(townSnowData).reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''}) || {};
-  if (!highest.station) {
+  if (!highest.station || (highest.depth || 0) <= 0) {
     document.getElementById('highest-snow-content').innerHTML = 'No data available';
     return;
   }
