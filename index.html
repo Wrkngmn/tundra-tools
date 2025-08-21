@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tundra Tools Snow Tracker</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19.0/dist/maps.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tomtom-international/web-sdk-maps@6.19.0/dist/maps-web.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-  <script src="script.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </head>
 <body>
   <header>
@@ -19,23 +19,25 @@
       <a href="gear.html">Gear</a>
     </nav>
   </header>
-  <div class="main">
-    <div id="map" role="region" aria-label="Interactive map of Alaska snow levels" tabindex="0">Loading map...</div>
-    <div id="gear-banner" aria-live="polite" role="region" aria-label="Featured Alaska-Tough Gear">Loading featured gear...</div>
-  </div>
-  <div class="sidebar">
-    <div class="controls">
-      <label for="region-select">Region:</label>
-      <select id="region-select"></select>
-      <label for="town-select">Town:</label>
-      <select id="town-select"></select>
+  <div class="container">
+    <div class="sidebar">
+      <div class="controls">
+        <label for="region-select">Region:</label>
+        <select id="region-select"></select>
+        <label for="town-select">Town:</label>
+        <select id="town-select"></select>
+      </div>
+      <div id="data-container">Select a town to see snow data.</div>
+      <div id="highest-snow">
+        <h2>Highest Snow Depth</h2>
+        <div id="highest-snow-content">No data available</div>
+      </div>
+      <div id="affiliate">Select a town for gear recommendations.</div>
     </div>
-    <div id="data-container" role="region" aria-label="Snow data for selected town">Select a town to see snow data.</div>
-    <div id="highest-snow" role="region" aria-label="Highest snow depth in Alaska">
-      <h2>Highest Snow Depth</h2>
-      <div id="highest-snow-content">No data available</div>
+    <div class="main">
+      <div id="map">Loading map...</div>
+      <div id="gear-banner">Loading featured gear...</div>
     </div>
-    <div id="affiliate" role="region" aria-label="Gear recommendations">Select a town for gear recommendations.</div>
   </div>
 </body>
 </html>
