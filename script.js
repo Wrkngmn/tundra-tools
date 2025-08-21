@@ -223,7 +223,7 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
   <soapenv:Header/>
   <soapenv:Body>
     <ns:getInstantaneousData>
-      ${triplets.map(t => `<ns:stationTriplets>${t}</ns:stationTriplets>`).join('')}
+      ${triplets.map(t => `<stationTriplets>${t}</stationTriplets>`).join('')}
       <ns:elementCd>${elementCd}</ns:elementCd>
       <ns:ordinal>1</ns:ordinal>
       <ns:beginDate>${beginDate}</ns:beginDate>
