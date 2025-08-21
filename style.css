@@ -32,12 +32,21 @@ nav a:hover {
 .container {
   flex: 1;
   display: flex;
-  justify-content: space-between;
   padding: 20px;
 }
 
+.sidebar {
+  flex: 1;
+  padding: 20px;
+  background-color: #ecf0f1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 300px;
+  margin-right: 20px;
+}
+
 .main {
-  flex: 2;
+  flex: 3;
   display: flex;
   flex-direction: column;
 }
@@ -67,16 +76,6 @@ nav a:hover {
 
 #gear-banner a:hover {
   text-decoration: underline;
-}
-
-.sidebar {
-  flex: 1;
-  padding: 20px;
-  background-color: #ecf0f1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-left: 20px;
-  max-width: 300px;
 }
 
 .controls label {
