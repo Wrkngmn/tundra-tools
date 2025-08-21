@@ -1,4 +1,4 @@
-body {
+ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -29,29 +29,40 @@ nav a:hover {
   text-decoration: underline;
 }
 
-.main {
+.container {
   flex: 1;
   display: flex;
   justify-content: space-between;
   padding: 20px;
 }
 
-#map-container {
-  flex: 2;
+.sidebar {
+  flex: 1;
+  padding: 20px;
+  background-color: #ecf0f1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-width: 300px;
+}
+
+.main {
+  flex: 3;
   display: flex;
   flex-direction: column;
+  margin-left: 20px;
 }
 
 #map {
+  flex: 1;
   height: 400px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin-bottom: 10px;
 }
 
 #gear-banner {
   background-color: #f0f0f0;
   padding: 10px;
-  margin-top: 10px;
   text-align: center;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -69,16 +80,6 @@ nav a:hover {
   text-decoration: underline;
 }
 
-.sidebar {
-  flex: 1;
-  padding: 20px;
-  background-color: #ecf0f1;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-left: 20px;
-  max-width: 300px;
-}
-
 .controls label {
   display: block;
   margin-top: 10px;
@@ -90,8 +91,42 @@ nav a:hover {
   margin-top: 5px;
 }
 
-#data-container, #highest-snow, #affiliate {
+#data-container, #highest-snow, #affiliate, #legend {
   margin-top: 20px;
+}
+
+#legend h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+}
+
+.legend-color.light {
+  background-color: #d2f8d2;
+}
+
+.legend-color.moderate {
+  background-color: #d0ebff;
+}
+
+.legend-color.heavy {
+  background-color: #ffe5b4;
+}
+
+.legend-color.extreme {
+  background-color: #ffcccc;
 }
 
 .snow-table {
@@ -104,10 +139,13 @@ nav a:hover {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-  font-weight: normal; /* Remove bold from headers */
-  background-color: transparent; /* Remove blue highlight */
+}
+
+.snow-table th {
+  font-weight: normal;
+  background-color: transparent;
 }
 
 .snow-table td {
-  font-weight: bold; /* Make results bold */
+  font-weight: bold;
 }
