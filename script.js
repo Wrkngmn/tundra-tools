@@ -309,11 +309,11 @@ function updateMapMarkers() {
       return station && calculateDistance(townCoords[town], [station.lat, station.lng]) < 50;
     }) || { depth: 0 };
     const depth = data.depth || 0;
-    if (depth === 0) return; // Skip markers for towns with no depth data
-    let color = '#d2f8d2'; // Light
-    if (depth > 24) color = '#ffcccc'; // Extreme
-    else if (depth > 12) color = '#ffe5b4'; // Heavy
-    else if (depth > 6) color = '#d0ebff'; // Moderate
+    if (depth <= 0) return; // Skip markers for towns with no or negative depth data
+    let color = '#d0ebff'; // Moderate blue as default for valid low data
+    if (depth > 24) color = '#ffcccc'; // Extreme red
+    else if (depth > 12) color = '#ffe5b4'; // Heavy orange
+    else if (depth > 6) color = '#d0ebff'; // Moderate blue
     const station = alaskaStations.find(s => s.triplet === (data.station || ''));
     const popupContent = station && !Object.keys(townCoords).includes(station.name)
       ? `<span style="color: red;">Data from ${station.name}</span><br>${town}: ${depth}" snow`
@@ -393,9 +393,6 @@ function initSelects() {
         ? `<span style="color: red;">Data from ${station.name}</span><br><table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`
         : `<table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`;
       document.getElementById('data-container').innerHTML = content;
-    }
-  });
-}
     }
   });
 }
