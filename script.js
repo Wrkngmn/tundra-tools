@@ -310,7 +310,7 @@ function updateMapMarkers() {
     }) || { depth: 0 };
     const depth = data.depth || 0;
     if (depth <= 0) return; // Skip markers for towns with no or negative depth data
-    let color = '#d0ebff'; // Moderate blue as default for valid low data
+    let color = '#d0ebff'; // Moderate blue for low valid data
     if (depth > 24) color = '#ffcccc'; // Extreme red
     else if (depth > 12) color = '#ffe5b4'; // Heavy orange
     else if (depth > 6) color = '#d0ebff'; // Moderate blue
@@ -332,11 +332,14 @@ function updateMapMarkers() {
 
 function updateHighestSnow() {
   const highest = Object.values(townSnowData).reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''}) || {};
+  if (!highest.station) {
+    document.getElementById('highest-snow-content').innerHTML = 'No data available';
+    return;
+  }
   const station = alaskaStations.find(s => s.triplet === highest.station);
-  const content = (highest.depth || 0) > 0 ? (station && !Object.keys(townCoords).includes(station.name)
+  const content = station && !Object.keys(townCoords).includes(station.name)
     ? `<span style="color: red;">Data from ${station.name}</span><br>${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`
-    : `${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`)
-    : 'No data available';
+    : `${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`;
   document.getElementById('highest-snow-content').innerHTML = content;
 }
 
