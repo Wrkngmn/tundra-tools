@@ -3,41 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Real-time snow levels for Alaskan towns like Anchorage, Fairbanks, and Juneau. Check snow depth and forecasts!">
+  <meta name="keywords" content="Alaska snow levels, snow depth, Anchorage snow, Fairbanks snow, snow tracker">
   <title>Tundra Tools Snow Tracker</title>
-  <link rel="stylesheet" href="style.css">
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
-  <script src="script.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Tundra Tools Snow Tracker</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="gear.html">Gear</a>
+    <h1 class="header-title">
+      <span>Tundra Tools Snow</span><br>
+      <span class="tracker-subtitle">Tracker</span>
+    </h1>
+    <nav id="social">
+      <a href="index.html" class="active">Snow Tracker</a>
+      <a href="gear.html">Alaska-Tough Gear</a>
+      <a href="https://x.com/YOUR_X_HANDLE" class="cta-button">Follow @YOUR_X_HANDLE for Updates!</a>
     </nav>
   </header>
   <div class="container">
     <div class="sidebar">
-      <div class="controls">
-        <label for="region-select">Region:</label>
-        <select id="region-select"></select>
-        <label for="town-select">Town:</label>
-        <select id="town-select"></select>
+      <label for="region-select" aria-label="Select an Alaskan region">Select Your Region</label>
+      <select id="region-select" aria-required="true"></select>
+      <label for="town-select" aria-label="Select a town in Alaska">Select a Town</label>
+      <select id="town-select" aria-required="true"></select>
+      <div id="data-container"></div>
+      <div id="legend">
+        <h3>Snow Depth Legend</h3>
+        <ul>
+          <li><span class="legend-box legend-box-light"></span> 0–6" Light</li>
+          <li><span class="legend-box legend-box-moderate"></span> 7–12" Moderate</li>
+          <li><span class="legend-box legend-box-heavy"></span> 13–24" Heavy</li>
+          <li><span class="legend-box legend-box-extreme"></span> 25"+ Extreme</li>
+        </ul>
       </div>
-      <div id="data-container">Select a town to see snow data.</div>
       <div id="highest-snow">
-        <h2>Highest Snow Depth</h2>
-        <div id="highest-snow-content">No data available</div>
+        <h3>Highest Snow Count in Alaska</h3>
+        <div id="highest-snow-content">Loading...</div>
       </div>
-      <div id="affiliate">Select a town for gear recommendations.</div>
+      <div id="affiliate" class="affiliate">
+        <h3>Prep for Snow</h3>
+        <p>Loading gear recommendations...</p>
+      </div>
+      <div id="sponsor">
+        <h3>Advertise with Us</h3>
+        <p>Reach Alaska snow enthusiasts! Email: <a href="mailto:nick@tundratools.com">nick@tundratools.com</a></p>
+      </div>
     </div>
     <div class="main">
-      <div id="map">Loading map...</div>
-      <div id="gear-banner">Loading featured gear...</div>
+      <div id="map" role="region" aria-label="Interactive map of Alaska snow levels" tabindex="0">Loading map...</div>
+      <div id="gear-banner" aria-live="polite" role="region" aria-label="Featured Alaska-Tough Gear">Loading featured gear...</div>
     </div>
   </div>
+  <footer role="contentinfo">
+    <p>Contact: <a href="mailto:nick@tundratools.com">nick@tundratools.com</a> | <a href="https://x.com/YOUR_X_HANDLE">X</a> | Powered by NRCS SNOTEL</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
 </html>
