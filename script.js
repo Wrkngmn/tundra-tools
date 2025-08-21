@@ -321,9 +321,11 @@ function initSelects() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log("Starting tundra-tools initialization...");
   initMap();
   initSelects();
   fetchSnowData().then(() => {
+    console.log("Snow data fetched for tundra-tools...");
     updateMapMarkers();
     updateHighestSnow();
   });
