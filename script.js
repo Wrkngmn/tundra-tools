@@ -148,6 +148,7 @@ const alaskaStations = [
   {name: 'Paradise Hill', id: '2225', triplet: '2225:AK:SNTL', lat: 64.4, lng: -146.89, elev: 1400}
 ];
 let snowData = [];
+let townSnowData = {};
 let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let stationMarkers = [];
@@ -161,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("Selects initialized for tundra-tools...");
   fetchSnowData().then(() => {
     console.log("Snow data fetched for tundra-tools...");
+    updateTownSnowData();
     updateMapMarkers();
     console.log("Map markers updated for tundra-tools...");
     updateHighestSnow();
@@ -216,6 +218,24 @@ async function fetchSnowData() {
   }
 }
 
+function updateTownSnowData() {
+  townSnowData = {};
+  const townTriplets = Object.keys(townCoords).map(town => {
+    const station = alaskaStations.find(s => s.name === town || s.triplet.includes(town));
+    return station ? station.triplet : null;
+  }).filter(t => t);
+  snowData.forEach(data => {
+    const town = Object.keys(townCoords).find(t => {
+      const station = alaskaStations.find(s => s.triplet === data.station);
+      return station && (station.name === t || townTriplets.includes(data.station));
+    });
+    if (town) {
+      townSnowData[town] = data;
+    }
+  });
+  console.log("Town snow data mapped:", Object.keys(townSnowData).length, "towns");
+}
+
 async function getApiData(elementCd, beginDate, endDate, triplets) {
   const url = 'https://wcc.sc.egov.usda.gov/awdbWebService/services';
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -224,12 +244,12 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
   <soapenv:Body>
     <ns:getInstantaneousData>
       ${triplets.map(t => `<stationTriplets>${t}</stationTriplets>`).join('')}
-      <ns:elementCd>${elementCd}</ns:elementCd>
-      <ns:ordinal>1</ns:ordinal>
-      <ns:beginDate>${beginDate}</ns:beginDate>
-      <ns:endDate>${endDate}</ns:endDate>
-      <ns:filter>ALL</ns:filter>
-      <ns:unitSystem>ENGLISH</ns:unitSystem>
+      <elementCd>${elementCd}</elementCd>
+      <ordinal>1</ordinal>
+      <beginDate>${beginDate}</beginDate>
+      <endDate>${endDate}</endDate>
+      <filter>ALL</filter>
+      <unitSystem>ENGLISH</unitSystem>
     </ns:getInstantaneousData>
   </soapenv:Body>
 </soapenv:Envelope>`;
@@ -258,8 +278,11 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
 }
 
 function updateGearRecommendations(town) {
-  const townData = snowData.find(d => d.station.includes(town)) || { depth: 0 };
-  const depth = townData.depth || 0;
+  const data = townSnowData[town] || snowData.find(d => {
+    const station = alaskaStations.find(s => s.triplet === d.station);
+    return station && calculateDistance(townCoords[town], [station.lat, station.lng]) < 50;
+  }) || { depth: 0 };
+  const depth = data.depth || 0;
   const affiliateDiv = document.getElementById('affiliate');
   let gearRecommendation = '';
   if (depth > 24) {
@@ -269,40 +292,62 @@ function updateGearRecommendations(town) {
   } else {
     gearRecommendation = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Insulated Boots</a> for light snow (${depth}") #ad</p>`;
   }
-  affiliateDiv.innerHTML = `<h3>Prep for ${town}'s Snow</h3>${gearRecommendation}`;
+  const station = alaskaStations.find(s => s.triplet === (data.station || ''));
+  if (station && !Object.keys(townCoords).includes(station.name)) {
+    affiliateDiv.innerHTML = `<h3 style="color: red;">Data from ${station.name}</h3><h3>Prep for ${town}'s Snow</h3>${gearRecommendation}`;
+  } else {
+    affiliateDiv.innerHTML = `<h3>Prep for ${town}'s Snow</h3>${gearRecommendation}`;
+  }
 }
 
 function updateMapMarkers() {
   stationMarkers.forEach(marker => map.removeLayer(marker));
   stationMarkers = [];
-  snowData.forEach(data => {
-    const station = alaskaStations.find(s => s.triplet === data.station);
-    if (station) {
-      const depth = data.depth || 0;
-      let color = '#d2f8d2'; // Light
-      if (depth > 24) color = '#ffcccc'; // Extreme
-      else if (depth > 12) color = '#ffe5b4'; // Heavy
-      else if (depth > 6) color = '#d0ebff'; // Moderate
-      const marker = L.circleMarker([station.lat, station.lng], {
-        radius: 8,
-        fillColor: color,
-        color: '#333',
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-      }).bindPopup(`${station.name}: ${depth}" snow`);
-      marker.addTo(map);
-      stationMarkers.push(marker);
-    }
+  Object.keys(townCoords).forEach(town => {
+    const data = townSnowData[town] || snowData.find(d => {
+      const station = alaskaStations.find(s => s.triplet === d.station);
+      return station && calculateDistance(townCoords[town], [station.lat, station.lng]) < 50;
+    }) || { depth: 0 };
+    const depth = data.depth || 0;
+    let color = '#d2f8d2'; // Light
+    if (depth > 24) color = '#ffcccc'; // Extreme
+    else if (depth > 12) color = '#ffe5b4'; // Heavy
+    else if (depth > 6) color = '#d0ebff'; // Moderate
+    const station = alaskaStations.find(s => s.triplet === (data.station || ''));
+    const popupContent = station && !Object.keys(townCoords).includes(station.name)
+      ? `<span style="color: red;">Data from ${station.name}</span><br>${town}: ${depth}" snow`
+      : `${town}: ${depth}" snow`;
+    const marker = L.circleMarker(townCoords[town], {
+      radius: 8,
+      fillColor: color,
+      color: '#333',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).bindPopup(popupContent).addTo(map);
+    stationMarkers.push(marker);
   });
 }
 
 function updateHighestSnow() {
-  const highest = snowData.reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''});
+  const highest = Object.values(townSnowData).reduce((max, curr) => (curr.depth > max.depth ? curr : max), {depth: 0, station: ''});
   const station = alaskaStations.find(s => s.triplet === highest.station);
-  document.getElementById('highest-snow-content').innerHTML = station
-    ? `${station.name}: ${highest.depth}" on ${highest.lastUpdated}`
-    : 'No data available';
+  const content = station && !Object.keys(townCoords).includes(station.name)
+    ? `<span style="color: red;">Data from ${station.name}</span><br>${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`
+    : `${station.name || Object.keys(townSnowData).find(t => townSnowData[t].station === highest.station)}: ${highest.depth}" on ${highest.lastUpdated}`;
+  document.getElementById('highest-snow-content').innerHTML = content || 'No data available';
+}
+
+function calculateDistance(coord1, coord2) {
+  const R = 6371; // Earth's radius in km
+  const toRad = angle => angle * Math.PI / 180;
+  const dLat = toRad(coord2[0] - coord1[0]);
+  const dLon = toRad(coord2[1] - coord1[1]);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(coord1[0])) * Math.cos(toRad(coord2[0])) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
 }
 
 function initMap() {
@@ -337,16 +382,15 @@ function initSelects() {
       if (townMarker) map.removeLayer(townMarker);
       townMarker = L.marker(coords).addTo(map).bindPopup(`${value}`).openPopup();
       map.setView(coords, 8);
-      const nearestStation = alaskaStations.reduce((closest, station) => {
-        const dist = Math.sqrt(
-          Math.pow(station.lat - coords[0], 2) + Math.pow(station.lng - coords[1], 2)
-        );
-        return dist < closest.dist ? {station, dist} : closest;
-      }, {dist: Infinity}).station;
-      const data = snowData.find(d => d.station === nearestStation.triplet);
-      document.getElementById('data-container').innerHTML = data
-        ? `<table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`
-        : 'No data available';
+      const data = townSnowData[value] || snowData.find(d => {
+        const station = alaskaStations.find(s => s.triplet === d.station);
+        return station && calculateDistance(coords, [station.lat, station.lng]) < 50;
+      }) || { depth: 0 };
+      const station = alaskaStations.find(s => s.triplet === (data.station || ''));
+      const content = station && !Object.keys(townCoords).includes(station.name)
+        ? `<span style="color: red;">Data from ${station.name}</span><br><table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`
+        : `<table class="snow-table"><tr><th>Location</th><td>${value}</td></tr><tr><th>Snow Depth</th><td>${data.depth}"</td></tr><tr><th>SWE</th><td>${data.swe || 'N/A'}</td></tr><tr><th>Updated</th><td>${data.lastUpdated}</td></tr></table>`;
+      document.getElementById('data-container').innerHTML = content;
     }
   });
 }
