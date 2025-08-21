@@ -152,6 +152,22 @@ let map, townMarker = null;
 let regionSelect, townSelect, regionSelectTomSelect, townTomSelect;
 let stationMarkers = [];
 
+console.log("Tundra Tools script loaded.");
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Starting tundra-tools initialization...");
+  initMap();
+  console.log("Map initialized for tundra-tools...");
+  initSelects();
+  console.log("Selects initialized for tundra-tools...");
+  fetchSnowData().then(() => {
+    console.log("Snow data fetched for tundra-tools...");
+    updateMapMarkers();
+    console.log("Map markers updated for tundra-tools...");
+    updateHighestSnow();
+    console.log("Highest snow updated for tundra-tools...");
+  }).catch(err => console.error("Fetch failed for tundra-tools:", err));
+});
+
 async function fetchSnowData() {
   const cacheKey = 'snowData';
   const cached = localStorage.getItem(cacheKey);
@@ -199,6 +215,7 @@ async function fetchSnowData() {
     document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
 }
+
 async function getApiData(elementCd, beginDate, endDate, triplets) {
   const url = 'https://wcc.sc.egov.usda.gov/awdbWebService/services';
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -216,12 +233,15 @@ async function getApiData(elementCd, beginDate, endDate, triplets) {
     </ns:getInstantaneousData>
   </soapenv:Body>
 </soapenv:Envelope>`;
+  console.log("API request XML:", xml);
   const response = await fetch(url, {
     method: 'POST',
     headers: {'Content-Type': 'text/xml; charset=utf-8'},
     body: xml
   });
   const text = await response.text();
+  console.log("API raw response text:", text);
+  if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   const parser = new DOMParser();
   const doc = parser.parseFromString(text, 'text/xml');
   const values = Array.from(doc.getElementsByTagName('values') || []);
@@ -330,14 +350,3 @@ function initSelects() {
     }
   });
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("Starting tundra-tools initialization...");
-  initMap();
-  initSelects();
-  fetchSnowData().then(() => {
-    console.log("Snow data fetched for tundra-tools...");
-    updateMapMarkers();
-    updateHighestSnow();
-  });
-});
