@@ -179,8 +179,8 @@ async function fetchSnowData() {
     }));
     console.log("Processed snow data, length:", snowData.length);
     localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
-  } catch (err) {
-    console.error('Error fetching snow data for tundra-tools:', err);
+  } catch (err) 
+    [console.error('Error fetching snow data for tundra-tools:', err);
     document.getElementById('data-container').innerHTML = 'Error loading data.';
   }
 }
