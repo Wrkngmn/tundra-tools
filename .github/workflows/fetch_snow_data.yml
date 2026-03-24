@@ -2,37 +2,36 @@ name: Fetch Snow Data
 
 on:
   schedule:
-    - cron: '0 * * * *'   # Every hour
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    - cron: '0 * * * *'   # Run every hour
+  workflow_dispatch:      # Allows manual trigger from GitHub UI
 
 jobs:
-  fetch:
+  fetch-snow:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - # No external dependencies needed for fetch_snow_data.py
-requests
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run snow data fetch script
         run: python scripts/fetch_snow_data.py
 
-      - name: Commit and push updated data
+      - name: Commit and push updated snow_data.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/snow_data.json
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update snow data - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-            git push
-          fi
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update snow_data.json with latest SNOTEL data"
+          git push
