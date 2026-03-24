@@ -21,8 +21,8 @@ STATIONS = [
 ]
 
 def fetch_snotel_data():
-    base_url = "https://wcc.sc.egov.usda.gov/awdbRestApi/api/v1"
-    
+    base_url = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1"
+
     data = {
         "updated": datetime.utcnow().isoformat() + "Z",
         "data": []
@@ -30,18 +30,25 @@ def fetch_snotel_data():
 
     for triplet in STATIONS:
         try:
-            # Correct current endpoint for daily snow depth (SNWD)
-            url = f"{base_url}/data?station={triplet}&element=SNWD&beginDate=2026-03-20&endDate=2026-03-24&unit=english&ordinal=1"
-            
+            # Correct endpoint and parameter (stationTriplets, not station)
+            url = f"{base_url}/data?stationTriplets={triplet}&elements=SNWD&beginDate=2026-03-20&endDate=2026-03-24&unit=english&ordinal=1"
+
             resp = requests.get(url, timeout=20)
             resp.raise_for_status()
             values = resp.json()
 
             if not values or len(values) == 0:
-                print(f"✗ No data returned for {triplet}")
+                print(f"✗ No data for {triplet}")
                 continue
 
-            latest = values[-1]
+            # The response structure is a list of dicts with 'values'
+            station_data = values[0]
+            element_values = station_data.get('values', [])
+            if not element_values:
+                print(f"✗ No values for {triplet}")
+                continue
+
+            latest = element_values[-1]
             depth = latest.get("value")
 
             # Get station name
@@ -63,7 +70,6 @@ def fetch_snotel_data():
         except Exception as e:
             print(f"✗ Error with {triplet}: {e}")
 
-    # Save file
     with open("data/snow_data.json", "w") as f:
         json.dump(data, f, indent=2)
 
