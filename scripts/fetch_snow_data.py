@@ -24,17 +24,21 @@ def fetch_snotel_data():
         station_num = triplet.split(":")[0]
 
         try:
-            # Reliable Report Generator URL for daily SNWD (snow depth)
+            # Working JSON Report Generator URL (2026 version)
             url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value?outputFormat=json"
 
             resp = requests.get(url, timeout=20)
             print(f"Status for {friendly_name}: {resp.status_code}")
 
             if resp.status_code != 200:
-                print(f"   → Bad status, skipping")
                 continue
 
-            report = resp.json()
+            # Force JSON parsing - the site sometimes returns HTML even with json parameter
+            try:
+                report = resp.json()
+            except json.JSONDecodeError:
+                print(f"   → Not JSON (got HTML), skipping")
+                continue
 
             if not report or len(report) == 0:
                 print(f"   → Empty report")
