@@ -1,4 +1,8 @@
- const regionTownMap = {
+// =============================================
+// Tundra Tools Snow Tracker - script.js
+// =============================================
+
+const regionTownMap = {
   "Southcentral": ["Anchorage", "Wasilla", "Palmer", "Eagle River", "Girdwood", "Seward", "Kenai", "Soldotna", "Homer", "Cordova", "Valdez", "Whittier", "Talkeetna", "Glennallen"],
   "Interior": ["Fairbanks", "North Pole", "Delta Junction", "Tok", "Nenana", "Healy", "Fort Yukon", "Galena", "Bettles", "Manley Hot Springs", "Tanana", "Circle"],
   "Southeast": ["Juneau", "Sitka", "Ketchikan", "Petersburg", "Wrangell", "Haines", "Skagway", "Craig", "Metlakatla", "Thorne Bay", "Angoon", "Klawock", "Yakutat"],
@@ -62,7 +66,7 @@ function rotateGearBanner() {
     index = (index + 1) % gearItems.length;
   };
   rotate();
-  setInterval(rotate, 10000); // Rotate every 10 seconds
+  setInterval(rotate, 10000);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -76,17 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
     updateHighestSnow();
   }).catch(err => {
     console.error("Failed to load snow data:", err);
-    document.getElementById('data-container').innerHTML = '<p style="color:red;">Unable to load snow data at this time. Please try again later.</p>';
+    document.getElementById('data-container').innerHTML = 
+      '<p style="color: red;">Unable to load snow data right now.<br>Please refresh the page.</p>';
   });
 });
 
 async function fetchSnowData() {
   const cacheKey = 'snowData';
-  const cached = localStorage.getItem(cacheKey);
 
+  // Try cache first (1 hour)
+  const cached = localStorage.getItem(cacheKey);
   if (cached) {
     const cachedData = JSON.parse(cached);
-    if (Date.now() - cachedData.timestamp < 3600000) { // 1 hour cache
+    if (Date.now() - cachedData.timestamp < 3600000) {
       snowData = cachedData.data || [];
       console.log(`Using cached snow data (${snowData.length} stations)`);
       return;
@@ -94,21 +100,16 @@ async function fetchSnowData() {
   }
 
   try {
-    const response = await fetch('data/snow_data.json?v=' + Date.now()); // cache bust
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const response = await fetch('data/snow_data.json?v=' + Date.now());
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     
     const freshData = await response.json();
     snowData = freshData.data || [];
     
-    localStorage.setItem(cacheKey, JSON.stringify({
-      timestamp: Date.now(),
-      data: snowData
-    }));
-
-    console.log(`✅ Loaded ${snowData.length} snow stations from JSON`);
+    localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data: snowData }));
+    console.log(`✅ Loaded ${snowData.length} snow stations`);
   } catch (err) {
     console.error('Error loading snow_data.json:', err);
-    // Optional: fallback to dummy data if you want
     snowData = [];
   }
 }
@@ -116,23 +117,21 @@ async function fetchSnowData() {
 function updateTownSnowData() {
   townSnowData = {};
   snowData.forEach(item => {
-    // Match station to nearest town (within ~50km)
     let closestTown = null;
     let minDist = Infinity;
 
     Object.keys(townCoords).forEach(town => {
-      const dist = calculateDistance(townCoords[town], [item.lat || 0, item.lng || 0]); // add lat/lng to your JSON if possible
+      const dist = calculateDistance(townCoords[town], [item.lat || 61.2, item.lng || -149.9]);
       if (dist < minDist) {
         minDist = dist;
         closestTown = town;
       }
     });
 
-    if (closestTown && minDist < 80) { // ~50 miles tolerance
+    if (closestTown && minDist < 100) {
       townSnowData[closestTown] = item;
     }
   });
-  console.log(`Mapped snow data to ${Object.keys(townSnowData).length} towns`);
 }
 
 function updateMapMarkers() {
@@ -141,52 +140,68 @@ function updateMapMarkers() {
 
   Object.keys(townCoords).forEach(town => {
     const data = townSnowData[town] || { depth: 0 };
-    const depth = data.depth || 0;
+    const depth = parseFloat(data.depth) || 0;
     if (depth <= 0) return;
 
-    let color = '#d0ebff';
-    if (depth > 24) color = '#ffcccc';
-    else if (depth > 12) color = '#ffe5b4';
-    else if (depth > 6) color = '#d0ebff';
+    let color = '#a3d8ff';
+    if (depth > 24) color = '#ff8888';
+    else if (depth > 12) color = '#ffcc77';
+    else if (depth > 6) color = '#a3d8ff';
 
     const marker = L.circleMarker(townCoords[town], {
       radius: 9,
       fillColor: color,
-      color: '#333',
+      color: '#222',
       weight: 2,
       opacity: 1,
-      fillOpacity: 0.85
-    }).bindPopup(`<strong>${town}</strong><br>Snow Depth: ${depth}"`).addTo(map);
+      fillOpacity: 0.9
+    }).bindPopup(`<strong>${town}</strong><br>Snow Depth: <b>${depth}"</b>`).addTo(map);
 
     stationMarkers.push(marker);
   });
 }
 
 function updateHighestSnow() {
-  if (!snowData.length) {
-    document.getElementById('highest-snow-content').innerHTML = 'No data available';
-    return;
-  }
-  const highest = snowData.reduce((max, curr) => (curr.depth > (max.depth || 0) ? curr : max), {});
-  document.getElementById('highest-snow-content').innerHTML = 
-    `${highest.name || 'Unknown'}: <strong>${highest.depth || 0}"</strong> snow`;
+  const highest = snowData.reduce((max, curr) => 
+    (parseFloat(curr.depth) > (parseFloat(max.depth) || 0) ? curr : max), {}
+  );
+
+  const content = highest.depth 
+    ? `${highest.name || 'Unknown Station'}: <strong>${highest.depth}"</strong> snow`
+    : 'No data available';
+
+  document.getElementById('highest-snow-content').innerHTML = content;
 }
 
 function calculateDistance(coord1, coord2) {
-  if (!coord1 || !coord2) return Infinity;
   const R = 6371;
   const toRad = a => a * Math.PI / 180;
   const dLat = toRad(coord2[0] - coord1[0]);
   const dLon = toRad(coord2[1] - coord1[1]);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(coord1[0])) * Math.cos(toRad(coord2[0])) * Math.sin(dLon/2)**2;
+  const a = Math.sin(dLat/2)**2 + 
+            Math.cos(toRad(coord1[0])) * Math.cos(toRad(coord2[0])) * 
+            Math.sin(dLon/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function initMap() {
-  map = L.map('map').setView([64.0, -152.0], 4);
+  map = L.map('map', {
+    center: [64.0, -152.0],
+    zoom: 4
+  });
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
+
+  // Critical fix for GitHub Pages
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 100);
+
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 500);
 }
 
 function initSelects() {
@@ -207,16 +222,15 @@ function initSelects() {
     townSelectTomSelect.clear();
     townSelectTomSelect.clearOptions();
     townSelectTomSelect.addOptions(regionTownMap[value].map(t => ({value: t, text: t})));
-    map.setView(regionCoords[value] || [64.8378, -147.7164], 6);
+    map.setView(regionCoords[value], 6);
   });
 
   townSelectTomSelect.on('change', value => {
     if (!value) return;
 
     const data = townSnowData[value] || { depth: 0, swe: 'N/A', lastUpdated: '—' };
-    const depth = data.depth || 0;
+    const depth = parseFloat(data.depth) || 0;
 
-    // Update data panel
     document.getElementById('data-container').innerHTML = `
       <table class="snow-table">
         <tr><th>Location</th><td>${value}</td></tr>
@@ -228,22 +242,22 @@ function initSelects() {
 
     updateGearRecommendations(value);
 
-    // Center map on town
     if (townMarker) map.removeLayer(townMarker);
     townMarker = L.marker(townCoords[value]).addTo(map)
       .bindPopup(`<strong>${value}</strong><br>${depth}" snow`).openPopup();
+
     map.setView(townCoords[value], 8);
   });
 }
 
 function updateGearRecommendations(town) {
   const data = townSnowData[town] || { depth: 0 };
-  const depth = data.depth || 0;
+  const depth = parseFloat(data.depth) || 0;
   const affiliateDiv = document.getElementById('affiliate');
 
   let rec = '';
   if (depth > 24) {
-    rec = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Heavy-Duty Snow Shovel</a> recommended for extreme snow (${depth}") #ad</p>`;
+    rec = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Heavy-Duty Snow Shovel</a> for extreme snow (${depth}") #ad</p>`;
   } else if (depth > 12) {
     rec = `<p><a href="YOUR_AMAZON_AFFILIATE_LINK" target="_blank">Snow Shovel + Cleats</a> for heavy snow (${depth}") #ad</p>`;
   } else {
@@ -252,6 +266,3 @@ function updateGearRecommendations(town) {
 
   affiliateDiv.innerHTML = `<h3>Prep for ${town}'s Snow</h3>${rec}`;
 }
-
-// Make functions available globally if needed
-window.updateGearRecommendations = updateGearRecommendations;
