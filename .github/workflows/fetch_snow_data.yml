@@ -1,88 +1,37 @@
-import json
-import requests
-from datetime import datetime, timezone
+name: Fetch Snow Data
 
-# Key stations for Alaska (especially Interior / Fairbanks / North Pole area)
-STATIONS = {
-    "1302:AK:SNTL": "Creamers Field (Fairbanks)",
-    "1260:AK:SNTL": "Chena Lakes (North Pole area)",
-    "1074:AK:SNTL": "Tok",
-    "961:AK:SNTL":  "Fort Yukon",
-    "1182:AK:SNTL": "Bettles Field",
-    "957:AK:SNTL":  "Atigun Pass",
-    "1091:AK:SNTL": "Hatcher Pass",
-    "1070:AK:SNTL": "Anchorage Hillside",
-    "954:AK:SNTL":  "Turnagain Pass"
-}
+on:
+  schedule:
+    - cron: '0 * * * *'   # Run every hour
+  workflow_dispatch:      # Allows manual trigger
 
-def fetch_snotel_data():
-    data = {
-        "updated": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        "data": []
-    }
+jobs:
+  fetch-snow:
+    runs-on: ubuntu-latest
 
-    for triplet, friendly_name in STATIONS.items():
-        station_num = triplet.split(":")[0]  # e.g. 1302
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-        try:
-            # Official working Report Generator URL for daily snow depth (SNWD)
-            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/WTEQ::value,WTEQ::delta,SNWD::value,SNWD::delta?outputFormat=json"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
 
-            resp = requests.get(url, timeout=15)
-            print(f"Status for {friendly_name} ({triplet}): {resp.status_code}")
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-            if resp.status_code != 200:
-                print(f"   → Skipping (bad status)")
-                continue
+      - name: Run snow data fetch script
+        run: python scripts/fetch_snow_data.py
 
-            report = resp.json()
-
-            if not report or len(report) == 0:
-                print(f"   → No report data")
-                continue
-
-            # The data is in report[0]['data'] — list of daily rows
-            rows = report[0].get("data", []) if isinstance(report[0], dict) else []
-
-            if not rows:
-                print(f"   → No rows in data")
-                continue
-
-            # Take the most recent row
-            latest = rows[-1]
-
-            # Find SNWD value (snow depth in inches)
-            depth = None
-            for key, value in latest.items():
-                if "SNWD" in key or "Snow Depth" in key:
-                    try:
-                        depth = float(value)
-                        break
-                    except (ValueError, TypeError):
-                        pass
-
-            if depth is not None and depth >= 0:
-                entry = {
-                    "station": triplet,
-                    "name": friendly_name,
-                    "depth": round(depth, 1),
-                    "swe": None,
-                    "lastUpdated": latest.get("Date", "")
-                }
-                data["data"].append(entry)
-                print(f"✓ {friendly_name}: {depth} inches")
-            else:
-                print(f"   → No valid snow depth found")
-
-        except Exception as e:
-            print(f"✗ Error with {friendly_name} ({triplet}): {e}")
-
-    # Save the file (even if empty)
-    with open("data/snow_data.json", "w") as f:
-        json.dump(data, f, indent=2)
-
-    print(f"\n✅ Finished! Saved {len(data['data'])} stations to data/snow_data.json")
-
-
-if __name__ == "__main__":
-    fetch_snotel_data()
+      - name: Commit and push updated snow_data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/snow_data.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update snow_data.json with latest SNOTEL data"
+          git push
