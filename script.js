@@ -1,60 +1,43 @@
-// Tundra Tools - Original working script (dropdowns restored)
+// Tundra Tools - Minimal test version to restore dropdowns
 
 let map;
 
-// Initialize Leaflet Map
+// Initialize map
 function initMap() {
-    map = L.map('map', {
-        center: [64.8, -147.7],
-        zoom: 8
-    });
-
+    map = L.map('map', { center: [64.8, -147.7], zoom: 8 });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
+    console.log("Map loaded");
 }
 
-// Placeholder snow update (original version)
+// Simple update function
 function updateSnowInfo(townName) {
     document.getElementById('location').textContent = townName || "—";
-    document.getElementById('snow-depth').textContent = '0"';
-    const updatedEl = document.getElementById('last-updated');
-    if (updatedEl) updatedEl.textContent = '—';
+    document.getElementById('snow-depth').textContent = "0\"";
 }
 
-// Main initialization
+// Main setup
 document.addEventListener('DOMContentLoaded', function() {
-
     initMap();
 
-    // Initialize Tom-Select dropdowns (original setup)
-    if (typeof TomSelect !== "undefined") {
-        new TomSelect("#region-select", {
-            create: false,
-            sortField: "text"
+    // Native dropdowns - no Tom-Select
+    const townSelect = document.getElementById('town-select');
+    if (townSelect) {
+        townSelect.addEventListener('change', function() {
+            updateSnowInfo(this.value);
         });
-
-        const townSelect = new TomSelect("#town-select", {
-            create: false,
-            sortField: "text",
-            onChange: function(value) {
-                updateSnowInfo(value);
-            }
-        });
-
+        console.log("Town dropdown found and listener added");
         // Initial update
-        setTimeout(() => {
-            updateSnowInfo(townSelect.getValue() || "North Pole");
-        }, 500);
+        setTimeout(() => updateSnowInfo(townSelect.value || "North Pole"), 200);
     } else {
-        // Fallback
-        const townSelect = document.getElementById('town-select');
-        if (townSelect) {
-            townSelect.addEventListener('change', function() {
-                updateSnowInfo(this.value);
-            });
-        }
+        console.error("town-select element NOT found in HTML");
     }
 
-    console.log("✅ Original Tundra Tools script restored - dropdowns should work");
+    const regionSelect = document.getElementById('region-select');
+    if (regionSelect) {
+        console.log("Region dropdown found");
+    }
+
+    console.log("Minimal script loaded - dropdowns should appear now");
 });
