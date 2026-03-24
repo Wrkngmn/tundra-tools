@@ -1,10 +1,10 @@
-// Tundra Tools - Original dropdowns restored + Real snow data
-// Only snow loading/matching was changed
+// Tundra Tools - Native dropdown version (no Tom-Select) + Real snow data
+// March 24, 2026 - Keeps your original HTML untouched
 
 let map;
 let snowData = [];
 
-// Real snow data (March 24, 2026)
+// Real snow data (as of March 24, 2026)
 const STATIC_SNOW_DATA = [
     { station: "1302:AK:SNTL", name: "Creamers Field (Fairbanks)", depth: 24, swe: null, lastUpdated: "2026-03-24T23:15:12Z" },
     { station: "1260:AK:SNTL", name: "Chena Lakes (North Pole area)", depth: 24, swe: null, lastUpdated: "2026-03-24T23:15:12Z" },
@@ -13,7 +13,7 @@ const STATIC_SNOW_DATA = [
     { station: "1182:AK:SNTL", name: "Bettles Field", depth: 35, swe: null, lastUpdated: "2026-03-24T23:15:12Z" }
 ];
 
-// Initialize Map
+// Initialize Leaflet Map
 function initMap() {
     map = L.map('map', { center: [64.8, -147.7], zoom: 8 });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -28,7 +28,7 @@ function getSnowInfo(townName) {
 
     for (let station of snowData) {
         const sName = station.name.toLowerCase();
-        if (sName.includes(name) || 
+        if (sName.includes(name) ||
             (name.includes("north pole") && sName.includes("chena")) ||
             (name.includes("fairbanks") && sName.includes("creamers"))) {
             return station;
@@ -40,9 +40,8 @@ function getSnowInfo(townName) {
 // Update sidebar
 function updateSnowInfo(townName) {
     const info = getSnowInfo(townName);
-    
     document.getElementById('location').textContent = townName || "—";
-    
+
     if (info) {
         document.getElementById('snow-depth').textContent = info.depth + '"';
         const updatedEl = document.getElementById('last-updated');
@@ -54,44 +53,33 @@ function updateSnowInfo(townName) {
     }
 }
 
-// ==================== MAIN INIT (original style) ====================
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
 
+    // Load real snow data
     snowData = STATIC_SNOW_DATA;
     console.log("✅ Real snow data loaded");
 
-    // === Original Tom-Select setup (unchanged) ===
-    if (typeof TomSelect !== "undefined") {
-        new TomSelect("#region-select", {
-            create: false,
-            sortField: "text"
+    // Use native dropdowns (no Tom-Select needed)
+    const townSelect = document.getElementById('town-select');
+    if (townSelect) {
+        townSelect.addEventListener('change', function() {
+            updateSnowInfo(this.value);
         });
-
-        const townSelect = new TomSelect("#town-select", {
-            create: false,
-            sortField: "text",
-            onChange: function(value) {
-                updateSnowInfo(value);
-            }
-        });
-
-        // Initial update for North Pole
+        // Initial update
         setTimeout(() => {
-            updateSnowInfo(townSelect.getValue() || "North Pole");
-        }, 600);
-
-    } else {
-        // Fallback
-        const townSelect = document.getElementById('town-select');
-        if (townSelect) {
-            townSelect.addEventListener('change', function() {
-                updateSnowInfo(this.value);
-            });
-            setTimeout(() => updateSnowInfo(townSelect.value || "North Pole"), 300);
-        }
+            updateSnowInfo(townSelect.value || "North Pole");
+        }, 300);
     }
 
-    console.log("✅ Tundra Tools initialized");
+    const regionSelect = document.getElementById('region-select');
+    if (regionSelect) {
+        regionSelect.addEventListener('change', function() {
+            console.log("Region changed to", this.value);
+        });
+    }
+
+    console.log("✅ Tundra Tools loaded with native dropdowns");
 });
