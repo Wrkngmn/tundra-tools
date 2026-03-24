@@ -1,0 +1,2 @@
+# No external dependencies needed for fetch_snow_data.py
+requests
