@@ -2,79 +2,79 @@ import json
 import requests
 from datetime import datetime, timezone
 
-# Focused on reliable Interior Alaska stations (including Fairbanks area)
-STATIONS = [
-    "1302:AK:SNTL",  # Creamers Field - Fairbanks
-    "1260:AK:SNTL",  # Chena Lakes - near North Pole
-    "1074:AK:SNTL",  # Tok
-    "961:AK:SNTL",   # Fort Yukon
-    "1182:AK:SNTL",  # Bettles Field
-    "957:AK:SNTL",   # Atigun Pass
-    "1091:AK:SNTL",  # Hatcher Pass
-    "1070:AK:SNTL",  # Anchorage Hillside
-    "954:AK:SNTL",   # Turnagain Pass
-]
+# Stations we care about for Alaska (especially Interior / Fairbanks area)
+STATIONS = {
+    "1302:AK:SNTL": "Creamers Field (Fairbanks)",
+    "1260:AK:SNTL": "Chena Lakes (North Pole area)",
+    "1074:AK:SNTL": "Tok",
+    "961:AK:SNTL":  "Fort Yukon",
+    "1182:AK:SNTL": "Bettles Field",
+    "957:AK:SNTL":  "Atigun Pass",
+    "1091:AK:SNTL": "Hatcher Pass",
+    "1070:AK:SNTL": "Anchorage Hillside",
+    "954:AK:SNTL":  "Turnagain Pass"
+}
 
 def fetch_snotel_data():
-    # Current working base for the REST API
-    base_url = "https://wcc.sc.egov.usda.gov/awdbRestApi/api/v1"
-
     data = {
         "updated": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "data": []
     }
 
-    for triplet in STATIONS:
+    for triplet, friendly_name in STATIONS.items():
         try:
-            # This is the currently reliable endpoint format
-            url = (
-                f"{base_url}/data"
-                f"?stationTriplets={triplet}"
-                f"&elements=SNWD"
-                f"&beginDate=2026-03-20"
-                f"&endDate=2026-03-24"
-                f"&unit=english"
-            )
+            # Official Report Generator - very reliable for current daily snow depth
+            station_id = triplet.split(":")[0]   # e.g. 1302
+            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/custom/snowpack/siteReport?site={station_id}&report=daily&timeZone=AKST&outputFormat=json"
 
-            resp = requests.get(url, timeout=20)
-            print(f"Status for {triplet}: {resp.status_code}")
+            resp = requests.get(url, timeout=15)
+            print(f"Status for {friendly_name} ({triplet}): {resp.status_code}")
 
             if resp.status_code != 200:
                 continue
 
-            values = resp.json()
+            report = resp.json()
 
-            if not values or len(values) == 0:
-                print(f"✗ No data array for {triplet}")
+            # Navigate the report structure to find latest SNWD (snow depth)
+            if not report or len(report) == 0:
                 continue
 
-            # Parse the response structure
-            for station_entry in values:
-                element_values = station_entry.get("values", [])
-                if not element_values:
-                    continue
+            # Usually the first element contains the data rows
+            rows = report[0].get("data", []) if isinstance(report[0], dict) else []
 
-                latest = element_values[-1]
-                depth = latest.get("value")
+            if not rows:
+                print(f"✗ No rows for {friendly_name}")
+                continue
 
-                name = station_entry.get("stationName", triplet.split(":")[0])
+            # Take the most recent row
+            latest = rows[-1]
+            # Columns are usually: Date, Snow Depth (in), SWE (in), etc.
+            depth = None
+            for key, value in latest.items():
+                if "Snow Depth" in key or "SNWD" in key.upper():
+                    try:
+                        depth = float(value)
+                        break
+                    except (ValueError, TypeError):
+                        pass
 
-                if depth is not None:
-                    entry = {
-                        "station": triplet,
-                        "name": name,
-                        "depth": round(float(depth), 1),
-                        "swe": None,
-                        "lastUpdated": latest.get("date")
-                    }
-                    data["data"].append(entry)
-                    print(f"✓ {name}: {depth} inches")
-                    break
+            if depth is not None:
+                entry = {
+                    "station": triplet,
+                    "name": friendly_name,
+                    "depth": round(depth, 1),
+                    "swe": None,
+                    "lastUpdated": latest.get("Date", "")
+                }
+                data["data"].append(entry)
+                print(f"✓ {friendly_name}: {depth} inches")
+            else:
+                print(f"✗ Could not find Snow Depth in report for {friendly_name}")
 
         except Exception as e:
-            print(f"✗ Error with {triplet}: {e}")
+            print(f"✗ Error with {friendly_name} ({triplet}): {e}")
 
-    # Always write the file (even if empty, so site doesn't break)
+    # Always save the file so the site doesn't break
     with open("data/snow_data.json", "w") as f:
         json.dump(data, f, indent=2)
 
