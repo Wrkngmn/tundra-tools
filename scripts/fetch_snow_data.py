@@ -22,52 +22,42 @@ def fetch_snotel_data():
 
     for triplet, friendly_name in STATIONS.items():
         station_num = triplet.split(":")[0]
-
         try:
-            # Reliable CSV Report Generator (much more stable than JSON)
-            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value?outputFormat=csv"
+            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value"
 
             resp = requests.get(url, timeout=20)
             print(f"Status for {friendly_name}: {resp.status_code}")
 
             if resp.status_code != 200:
-                print(f"   → Bad status")
                 continue
 
-            lines = resp.text.strip().split('\n')
-            if len(lines) < 3:
-                print(f"   → Too few lines")
-                continue
+            # Parse the markdown-style table (what the site actually returns)
+            lines = [line.strip() for line in resp.text.splitlines() if '|' in line and '---' not in line]
 
-            # Skip header rows, find the last data row
-            latest_line = lines[-1]
-            if ',' not in latest_line:
-                print(f"   → No comma-separated data")
-                continue
+            depth = None
+            last_updated = ""
+            for line in reversed(lines):   # most recent first
+                parts = [p.strip() for p in line.split('|') if p.strip()]
+                if len(parts) >= 2:
+                    try:
+                        depth = float(parts[1])
+                        last_updated = parts[0]
+                        break
+                    except ValueError:
+                        continue
 
-            parts = latest_line.split(',')
-            if len(parts) >= 2:
-                try:
-                    # Usually column 1 is Date, column 2 is SNWD value
-                    depth_str = parts[1].strip()
-                    depth = float(depth_str) if depth_str not in ['---', ''] else None
-
-                    if depth is not None and depth >= 0:
-                        entry = {
-                            "station": triplet,
-                            "name": friendly_name,
-                            "depth": round(depth, 1),
-                            "swe": None,
-                            "lastUpdated": parts[0].strip() if len(parts) > 0 else ""
-                        }
-                        data["data"].append(entry)
-                        print(f"✓ {friendly_name}: {depth} inches")
-                    else:
-                        print(f"   → No valid depth")
-                except ValueError:
-                    print(f"   → Could not parse depth")
+            if depth is not None and depth >= 0:
+                entry = {
+                    "station": triplet,
+                    "name": friendly_name,
+                    "depth": round(depth, 1),
+                    "swe": None,
+                    "lastUpdated": last_updated
+                }
+                data["data"].append(entry)
+                print(f"✓ {friendly_name}: {depth} inches")
             else:
-                print(f"   → Not enough columns")
+                print(f"   → No depth found in table")
 
         except Exception as e:
             print(f"✗ Error with {friendly_name}: {e}")
