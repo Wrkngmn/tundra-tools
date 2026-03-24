@@ -1,15 +1,14 @@
-// Tundra Tools - Final Fixed Version (Dropdowns + Real Snow + Map Movement)
+// Tundra Tools - Minimal working version matching your current HTML
 
 let map;
-let snowData = [];
 
-// Real snow data (March 24, 2026)
+// Real snow data
 const STATIC_SNOW_DATA = [
-    { station: "1302:AK:SNTL", name: "Creamers Field (Fairbanks)", depth: 24, location: [64.87, -147.72] },
-    { station: "1260:AK:SNTL", name: "Chena Lakes (North Pole area)", depth: 24, location: [64.85, -147.10] },
-    { station: "1074:AK:SNTL", name: "Tok", depth: 18, location: [63.34, -142.99] },
-    { station: "961:AK:SNTL",  name: "Fort Yukon", depth: 30, location: [66.57, -145.25] },
-    { station: "1182:AK:SNTL", name: "Bettles Field", depth: 35, location: [66.92, -151.52] }
+    { name: "North Pole", depth: 24, location: [64.85, -147.10] },
+    { name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
+    { name: "Tok", depth: 18, location: [63.34, -142.99] },
+    { name: "Fort Yukon", depth: 30, location: [66.57, -145.25] },
+    { name: "Bettles Field", depth: 35, location: [66.92, -151.52] }
 ];
 
 // Initialize Map
@@ -20,23 +19,21 @@ function initMap() {
     }).addTo(map);
 }
 
-// Get snow info + location for map movement
+// Get snow info
 function getSnowInfo(townName) {
     if (!townName) return null;
     const name = townName.toLowerCase().trim();
 
-    for (let station of snowData) {
-        const sName = station.name.toLowerCase();
-        if (sName.includes(name) ||
-            (name.includes("north pole") && sName.includes("chena")) ||
-            (name.includes("fairbanks") && sName.includes("creamers"))) {
+    for (let station of STATIC_SNOW_DATA) {
+        if (station.name.toLowerCase().includes(name) || 
+            name.includes("north pole") && station.name.includes("North Pole")) {
             return station;
         }
     }
     return null;
 }
 
-// Update sidebar AND move map
+// Update sidebar and move map
 function updateSnowInfo(townName) {
     const info = getSnowInfo(townName);
     
@@ -44,58 +41,53 @@ function updateSnowInfo(townName) {
 
     if (info) {
         document.getElementById('snow-depth').textContent = info.depth + '"';
-        const updatedEl = document.getElementById('last-updated');
-        if (updatedEl) updatedEl.textContent = "March 24, 2026";
+        document.getElementById('last-updated').textContent = "March 24, 2026";
 
-        // Move and zoom map to the location
+        // Move map to the town
         if (map && info.location) {
             map.flyTo(info.location, 10, { duration: 1.5 });
         }
-        
-        console.log(`Updated: ${townName} → ${info.depth}" snow`);
     } else {
         document.getElementById('snow-depth').textContent = '0"';
         document.getElementById('last-updated').textContent = '—';
     }
 }
 
-// Populate dropdowns
-function populateDropdowns() {
-    const townSelect = document.getElementById('town-select');
-    if (!townSelect) return;
-
-    townSelect.innerHTML = '<option value="">Select a town...</option>';
-
-    const towns = ["North Pole", "Fairbanks", "Tok", "Fort Yukon", "Bettles Field", "Anchorage"];
-    towns.forEach(town => {
-        const option = document.createElement('option');
-        option.value = town;
-        option.textContent = town;
-        townSelect.appendChild(option);
-    });
-}
-
-// Main init
+// Main setup
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
-    snowData = STATIC_SNOW_DATA;
 
-    populateDropdowns();
-
-    // Town dropdown listener
+    // Populate town dropdown (native)
     const townSelect = document.getElementById('town-select');
     if (townSelect) {
+        townSelect.innerHTML = `
+            <option value="">Select a town...</option>
+            <option value="North Pole">North Pole</option>
+            <option value="Fairbanks">Fairbanks</option>
+            <option value="Tok">Tok</option>
+            <option value="Fort Yukon">Fort Yukon</option>
+            <option value="Bettles Field">Bettles Field</option>
+        `;
+
         townSelect.addEventListener('change', function() {
             updateSnowInfo(this.value);
         });
 
-        // Initial load - show North Pole
+        // Initial selection
         setTimeout(() => {
-            updateSnowInfo("North Pole");
             townSelect.value = "North Pole";
-        }, 400);
+            updateSnowInfo("North Pole");
+        }, 300);
     }
 
-    console.log("✅ Final Tundra Tools version loaded - dropdowns + snow + map movement");
+    // Region dropdown (keep it simple)
+    const regionSelect = document.getElementById('region-select');
+    if (regionSelect) {
+        regionSelect.innerHTML = `
+            <option value="Interior" selected>Interior</option>
+        `;
+    }
+
+    console.log("✅ Minimal script loaded - dropdowns + snow + map movement");
 });
