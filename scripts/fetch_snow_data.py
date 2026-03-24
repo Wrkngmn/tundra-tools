@@ -31,20 +31,24 @@ def fetch_snotel_data():
             if resp.status_code != 200:
                 continue
 
-            # Parse the markdown-style table (what the site actually returns)
-            lines = [line.strip() for line in resp.text.splitlines() if '|' in line and '---' not in line]
+            lines = resp.text.splitlines()
 
             depth = None
             last_updated = ""
-            for line in reversed(lines):   # most recent first
-                parts = [p.strip() for p in line.split('|') if p.strip()]
-                if len(parts) >= 2:
-                    try:
-                        depth = float(parts[1])
-                        last_updated = parts[0]
-                        break
-                    except ValueError:
-                        continue
+
+            # Look for lines that contain a date and a number (the data rows)
+            for line in reversed(lines):   # most recent at bottom
+                line = line.strip()
+                if '|' in line and any(c.isdigit() for c in line) and '---' not in line:
+                    parts = [p.strip() for p in line.split('|') if p.strip()]
+                    if len(parts) >= 2:
+                        try:
+                            # parts[0] = date, parts[1] = snow depth
+                            depth = float(parts[1])
+                            last_updated = parts[0]
+                            break
+                        except ValueError:
+                            continue
 
             if depth is not None and depth >= 0:
                 entry = {
@@ -57,7 +61,7 @@ def fetch_snotel_data():
                 data["data"].append(entry)
                 print(f"✓ {friendly_name}: {depth} inches")
             else:
-                print(f"   → No depth found in table")
+                print(f"   → No depth found")
 
         except Exception as e:
             print(f"✗ Error with {friendly_name}: {e}")
