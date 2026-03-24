@@ -24,7 +24,8 @@ def fetch_snotel_data():
         station_num = triplet.split(":")[0]
 
         try:
-            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value?outputFormat=json"
+            # Reliable CSV Report Generator (much more stable than JSON)
+            url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value?outputFormat=csv"
 
             resp = requests.get(url, timeout=20)
             print(f"Status for {friendly_name}: {resp.status_code}")
@@ -33,48 +34,40 @@ def fetch_snotel_data():
                 print(f"   → Bad status")
                 continue
 
-            # Try to parse as JSON
-            try:
-                report = resp.json()
-                print(f"   → Successfully parsed JSON for {friendly_name}")
-            except json.JSONDecodeError:
-                print(f"   → Not JSON (got HTML or error page)")
-                print("   → First 400 characters of response:")
-                print(repr(resp.text[:400]))
+            lines = resp.text.strip().split('\n')
+            if len(lines) < 3:
+                print(f"   → Too few lines")
                 continue
 
-            if not report or len(report) == 0:
-                print(f"   → Empty report")
+            # Skip header rows, find the last data row
+            latest_line = lines[-1]
+            if ',' not in latest_line:
+                print(f"   → No comma-separated data")
                 continue
 
-            rows = report[0].get("data", []) if isinstance(report[0], dict) else []
+            parts = latest_line.split(',')
+            if len(parts) >= 2:
+                try:
+                    # Usually column 1 is Date, column 2 is SNWD value
+                    depth_str = parts[1].strip()
+                    depth = float(depth_str) if depth_str not in ['---', ''] else None
 
-            if not rows:
-                print(f"   → No data rows")
-                continue
-
-            latest = rows[-1]
-            depth = None
-            for key, value in latest.items():
-                if "SNWD" in key or "Snow Depth" in key:
-                    try:
-                        depth = float(value)
-                        break
-                    except (ValueError, TypeError):
-                        pass
-
-            if depth is not None and depth >= 0:
-                entry = {
-                    "station": triplet,
-                    "name": friendly_name,
-                    "depth": round(depth, 1),
-                    "swe": None,
-                    "lastUpdated": latest.get("Date", "")
-                }
-                data["data"].append(entry)
-                print(f"✓ {friendly_name}: {depth} inches")
+                    if depth is not None and depth >= 0:
+                        entry = {
+                            "station": triplet,
+                            "name": friendly_name,
+                            "depth": round(depth, 1),
+                            "swe": None,
+                            "lastUpdated": parts[0].strip() if len(parts) > 0 else ""
+                        }
+                        data["data"].append(entry)
+                        print(f"✓ {friendly_name}: {depth} inches")
+                    else:
+                        print(f"   → No valid depth")
+                except ValueError:
+                    print(f"   → Could not parse depth")
             else:
-                print(f"   → No valid snow depth found")
+                print(f"   → Not enough columns")
 
         except Exception as e:
             print(f"✗ Error with {friendly_name}: {e}")
