@@ -24,20 +24,23 @@ def fetch_snotel_data():
         station_num = triplet.split(":")[0]
 
         try:
-            # Working JSON Report Generator URL (2026 version)
             url = f"https://wcc.sc.egov.usda.gov/reportGenerator/view/customSingleStationReport/daily/{station_num}:AK:SNTL|id=\"\"|name/-7,0/SNWD::value?outputFormat=json"
 
             resp = requests.get(url, timeout=20)
             print(f"Status for {friendly_name}: {resp.status_code}")
 
             if resp.status_code != 200:
+                print(f"   → Bad status")
                 continue
 
-            # Force JSON parsing - the site sometimes returns HTML even with json parameter
+            # Try to parse as JSON
             try:
                 report = resp.json()
+                print(f"   → Successfully parsed JSON for {friendly_name}")
             except json.JSONDecodeError:
-                print(f"   → Not JSON (got HTML), skipping")
+                print(f"   → Not JSON (got HTML or error page)")
+                print("   → First 400 characters of response:")
+                print(repr(resp.text[:400]))
                 continue
 
             if not report or len(report) == 0:
@@ -71,7 +74,7 @@ def fetch_snotel_data():
                 data["data"].append(entry)
                 print(f"✓ {friendly_name}: {depth} inches")
             else:
-                print(f"   → No valid depth found")
+                print(f"   → No valid snow depth found")
 
         except Exception as e:
             print(f"✗ Error with {friendly_name}: {e}")
@@ -79,7 +82,7 @@ def fetch_snotel_data():
     with open("data/snow_data.json", "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"\n✅ Finished! Saved {len(data['data'])} stations.")
+    print(f"\n✅ Finished! Saved {len(data['data'])} stations to data/snow_data.json")
 
 
 if __name__ == "__main__":
