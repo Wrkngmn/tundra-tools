@@ -1,9 +1,8 @@
 import json
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# List of Alaska SNOTEL stations (you can expand this later)
-ALASKA_STATIONS = [
+STATIONS = [
     "1070:AK:SNTL",  # Anchorage Hillside
     "1062:AK:SNTL",  # Anchor River Divide
     "957:AK:SNTL",   # Atigun Pass
@@ -14,58 +13,54 @@ ALASKA_STATIONS = [
     "1103:AK:SNTL",  # Mt. Alyeska
     "954:AK:SNTL",   # Turnagain Pass
     "1074:AK:SNTL",  # Tok
-    # Add more triplets here as needed
+    "1302:AK:SNTL",  # Creamers Field (Fairbanks)
+    "1260:AK:SNTL",  # Chena Lakes
+    "1099:AK:SNTL",  # Independence Mine
+    "1064:AK:SNTL",  # Mt. Eyak
+    "1303:AK:SNTL"   # Dahl Creek
 ]
 
 def fetch_snotel_data():
     base_url = "https://wcc.sc.egov.usda.gov/awdbRestApi/api/v1"
-    end_date = datetime.utcnow()
-    begin_date = end_date - timedelta(days=2)  # Get last 48 hours to be safe
-
     data = {
-        "updated": end_date.isoformat() + "Z",
+        "updated": datetime.utcnow().isoformat() + "Z",
         "data": []
     }
 
-    for triplet in ALASKA_STATIONS:
+    for triplet in STATIONS:
         try:
-            # Fetch Snow Depth (SNWD)
-            depth_url = f"{base_url}/station/{triplet}/element/SNWD?beginDate={begin_date.date()}&endDate={end_date.date()}&unit=english"
-            depth_resp = requests.get(depth_url, timeout=15)
-            depth_resp.raise_for_status()
-            depth_values = depth_resp.json()
+            url = f"{base_url}/station/{triplet}/element/SNWD?beginDate=2026-03-20&endDate=2026-03-24&unit=english"
+            resp = requests.get(url, timeout=20)
+            resp.raise_for_status()
+            values = resp.json()
 
-            # Fetch Snow Water Equivalent (WTEQ)
-            swe_url = f"{base_url}/station/{triplet}/element/WTEQ?beginDate={begin_date.date()}&endDate={end_date.date()}&unit=english"
-            swe_resp = requests.get(swe_url, timeout=15)
-            swe_values = swe_resp.json()
+            if not values:
+                continue
 
-            latest_depth = depth_values[-1]["value"] if depth_values else None
-            latest_swe = swe_values[-1]["value"] if swe_values else None
-            latest_date = depth_values[-1]["date"] if depth_values else None
+            latest = values[-1]
+            depth = latest.get("value")
 
-            # Get friendly station name
-            station_info = requests.get(f"{base_url}/station/{triplet}", timeout=10).json()
-            name = station_info.get("name", triplet.split(":")[0])
+            # Get station name
+            info = requests.get(f"{base_url}/station/{triplet}", timeout=10).json()
+            name = info.get("name", triplet.split(":")[0])
 
             data["data"].append({
                 "station": triplet,
                 "name": name,
-                "depth": round(latest_depth, 1) if latest_depth is not None else None,
-                "swe": round(latest_swe, 1) if latest_swe is not None else None,
-                "lastUpdated": latest_date
+                "depth": round(depth, 1) if depth is not None else 0,
+                "swe": None,
+                "lastUpdated": latest.get("date")
             })
 
-        except Exception as e:
-            print(f"Error fetching {triplet}: {e}")
-            continue
+            print(f"✓ {name}: {depth} inches")
 
-    # Save to file
+        except Exception as e:
+            print(f"✗ Error with {triplet}: {e}")
+
     with open("data/snow_data.json", "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"✅ Successfully fetched data for {len(data['data'])} stations at {datetime.utcnow()}")
+    print(f"\n✅ Finished! Saved {len(data['data'])} stations.")
 
 if __name__ == "__main__":
     fetch_snotel_data()
-
