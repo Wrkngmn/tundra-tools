@@ -1,10 +1,10 @@
-// Tundra Tools - Only placeholder fix (nothing else changed)
+// Tundra Tools - Placeholder fix only (nothing else changed)
 
 let map;
 let currentMarker = null;
 let snowData = [];
 
-// Expanded snow data
+// Snow data (unchanged)
 const STATIC_SNOW_DATA = [
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -43,7 +43,7 @@ function getSnowInfo(townName) {
     return null;
 }
 
-// Update sidebar and move map + pin
+// Update sidebar, move map, and add pin
 function updateSnowInfo(townName) {
     const info = getSnowInfo(townName);
     const container = document.getElementById('data-container');
@@ -71,21 +71,21 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - ONLY placeholder fix
+// Main initialization - Placeholder fix only
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown with proper placeholder
+        // Region dropdown with placeholder
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
             placeholder: "Select Region..."
         });
 
-        // Town dropdown with proper placeholder
+        // Town dropdown with placeholder
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Populate Regions
+        // Populate regions
         const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
         regions.forEach(r => regionTS.addOption({ value: r, text: r }));
         regionTS.setValue("Interior");
@@ -122,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Placeholders fixed - Select Region... and Select a town...");
+    console.log("✅ Placeholders should now show correctly");
 });
