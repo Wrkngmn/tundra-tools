@@ -1,9 +1,10 @@
-// Tundra Tools - Reliable dropdown population fix
+// Tundra Tools - Final polish: Proper placeholders + dropdown arrow fix
 
 let map;
+let currentMarker = null;
 let snowData = [];
 
-// Expanded snow data with many towns
+// Expanded snow data
 const STATIC_SNOW_DATA = [
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -34,17 +35,23 @@ function getSnowInfo(townName) {
     const name = townName.toLowerCase().trim();
 
     for (let station of snowData) {
-        if (station.name.toLowerCase().includes(name) || name.includes("north pole")) {
+        if (station.name.toLowerCase().includes(name) || 
+            (name.includes("north pole") && station.name === "North Pole")) {
             return station;
         }
     }
     return null;
 }
 
-// Update sidebar and move map
+// Update sidebar, move map, and add pin
 function updateSnowInfo(townName) {
     const info = getSnowInfo(townName);
     const container = document.getElementById('data-container');
+
+    if (currentMarker) {
+        map.removeLayer(currentMarker);
+        currentMarker = null;
+    }
 
     if (info) {
         container.innerHTML = `
@@ -55,6 +62,9 @@ function updateSnowInfo(townName) {
 
         if (map && info.location) {
             map.flyTo(info.location, 10, { duration: 1.5 });
+
+            currentMarker = L.marker(info.location).addTo(map);
+            currentMarker.bindPopup(`<b>${townName}</b><br>Snow Depth: ${info.depth}"`).openPopup();
         }
     } else {
         container.innerHTML = `<p>Select a town to see snow data.</p>`;
@@ -68,16 +78,18 @@ document.addEventListener('DOMContentLoaded', function() {
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region Tom-Select
+        // Region dropdown with placeholder
         const regionTS = new TomSelect("#region-select", {
             create: false,
-            sortField: "text"
+            sortField: "text",
+            placeholder: "Select Region..."
         });
 
-        // Town Tom-Select
+        // Town dropdown with placeholder
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
+            placeholder: "Select a town...",
             onChange: function(value) {
                 updateSnowInfo(value);
             }
@@ -85,17 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Populate Regions
         const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
-        regions.forEach(r => {
-            regionTS.addOption({ value: r, text: r });
-        });
+        regions.forEach(r => regionTS.addOption({ value: r, text: r }));
         regionTS.setValue("Interior");
 
-        // Populate Towns based on region
-        function updateTowns(selectedRegion) {
+        // Update towns when region changes
+        function updateTowns(region) {
             townTS.clearOptions();
             townTS.addOption({ value: "", text: "Select a town..." });
 
-            const filtered = snowData.filter(s => s.region === selectedRegion);
+            const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
                 townTS.addOption({ value: station.name, text: station.name });
             });
@@ -105,15 +115,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Listen for region change
         regionTS.on('change', updateTowns);
-
-        // Initial population
         updateTowns("Interior");
 
     } else {
-        console.warn("TomSelect not loaded - using native selects");
+        console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Dropdowns should now be populated");
+    console.log("✅ Dropdowns with proper placeholders loaded");
 });
