@@ -1,4 +1,4 @@
-// Tundra Tools - Strong placeholder fix (only dropdowns changed)
+// Tundra Tools - Placeholder fix (added after initialization, with forced order)
 
 let map;
 let currentMarker = null;
@@ -71,21 +71,21 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Strong placeholder fix
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown
+        // Region Tom-Select
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
             placeholder: "Select Region..."
         });
 
-        // Town dropdown
+        // Town Tom-Select
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
@@ -95,19 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Force placeholders first
-        regionTS.addOption({ value: "", text: "Select Region..." });
-        townTS.addOption({ value: "", text: "Select a town..." });
-
-        // Populate regions
+        // Populate regions AFTER placeholder
         const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
         regions.forEach(r => regionTS.addOption({ value: r, text: r }));
         regionTS.setValue("Interior");
 
-        // Update towns when region changes
+        // Populate towns AFTER placeholder
         function updateTowns(region) {
             townTS.clearOptions();
-            townTS.addOption({ value: "", text: "Select a town..." });
+            townTS.addOption({ value: "", text: "Select a town..." });   // Force placeholder first
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
@@ -126,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Strong placeholder fix applied");
+    console.log("✅ Placeholder fix - added after initialization");
 });
