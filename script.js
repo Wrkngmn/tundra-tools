@@ -1,10 +1,9 @@
-// Tundra Tools - Complete Working Script (March 24, 2026)
-// Matches your exact index.html with Tom-Select, real snow data, map movement
+// Tundra Tools - Final Working Script (Matches your index.html exactly)
 
 let map;
 let snowData = [];
 
-// Real snow data (from your snow_data.json)
+// Real snow data from your snow_data.json
 const STATIC_SNOW_DATA = [
     { name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -21,14 +20,13 @@ function initMap() {
     }).addTo(map);
 }
 
-// Get snow info for a town
+// Get snow info
 function getSnowInfo(townName) {
     if (!townName) return null;
     const name = townName.toLowerCase().trim();
 
     for (let station of STATIC_SNOW_DATA) {
-        if (station.name.toLowerCase().includes(name) || 
-            (name.includes("north pole") && station.name === "North Pole")) {
+        if (station.name.toLowerCase().includes(name) || name.includes("north pole")) {
             return station;
         }
     }
@@ -47,34 +45,27 @@ function updateSnowInfo(townName) {
             <p><strong>Last Updated:</strong> March 24, 2026</p>
         `;
 
-        // Move map
         if (map && info.location) {
             map.flyTo(info.location, 10, { duration: 1.5 });
         }
-
-        // Update Highest Snow Depth
-        const highest = Math.max(...STATIC_SNOW_DATA.map(s => s.depth));
-        const highestEl = document.getElementById('highest-snow-content');
-        if (highestEl) highestEl.innerHTML = `<strong>${highest}"</strong> at Bettles Field`;
     } else {
         container.innerHTML = `<p>Select a town to see snow data.</p>`;
     }
 }
 
-// Populate dropdowns with Tom-Select
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
 
-    // Initialize Tom-Select
+    // Initialize Tom-Select for Region
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown
         new TomSelect("#region-select", {
             create: false,
             sortField: "text"
         });
 
-        // Town dropdown
+        // Initialize Tom-Select for Town
         const townSelect = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
@@ -83,20 +74,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Add town options
+        // Populate the Town dropdown
         const towns = ["North Pole", "Fairbanks", "Tok", "Fort Yukon", "Bettles Field"];
         towns.forEach(town => {
             townSelect.addOption({ value: town, text: town });
         });
 
-        // Initial selection
+        // Set default to North Pole
         setTimeout(() => {
             townSelect.setValue("North Pole");
+            updateSnowInfo("North Pole");
         }, 600);
 
     } else {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Tundra Tools fully working with real snow data");
+    console.log("✅ Tundra Tools loaded with populated dropdowns and real snow data");
 });
