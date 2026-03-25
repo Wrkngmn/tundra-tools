@@ -1,10 +1,10 @@
-// Tundra Tools - Placeholder fix (only dropdowns changed, everything else untouched)
+// Tundra Tools - Final placeholder fix (forced at top)
 
 let map;
 let currentMarker = null;
 let snowData = [];
 
-// Snow data (unchanged)
+// Snow data
 const STATIC_SNOW_DATA = [
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -71,31 +71,31 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Placeholder fix only
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown with placeholder
+        // Region dropdown
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select Region..."     // ← Correct way
+            placeholder: "Select Region..."
         });
 
-        // Town dropdown with placeholder
+        // Town dropdown
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select a town...",    // ← Correct way
+            placeholder: "Select a town...",
             onChange: function(value) {
                 updateSnowInfo(value);
             }
         });
 
-        // Populate regions (no dummy placeholder option)
+        // Populate Regions
         const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
         regions.forEach(r => regionTS.addOption({ value: r, text: r }));
         regionTS.setValue("Interior");
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update towns when region changes
         function updateTowns(region) {
             townTS.clearOptions();
-            // Do NOT add placeholder as an option - it is already set in constructor
+            townTS.addOption({ value: "", text: "Select a town..." }); // Force placeholder first
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
@@ -122,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Placeholder fix applied correctly");
+    console.log("✅ Placeholder forced at top");
 });
