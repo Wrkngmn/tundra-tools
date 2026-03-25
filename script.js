@@ -1,4 +1,4 @@
-// Tundra Tools - Placeholder + sorting fix
+// Tundra Tools - Strong placeholder fix (only dropdowns changed)
 
 let map;
 let currentMarker = null;
@@ -71,7 +71,7 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Placeholder fix
+// Main initialization - Strong placeholder fix
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
@@ -95,7 +95,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Populate Regions
+        // Force placeholders first
+        regionTS.addOption({ value: "", text: "Select Region..." });
+        townTS.addOption({ value: "", text: "Select a town..." });
+
+        // Populate regions
         const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
         regions.forEach(r => regionTS.addOption({ value: r, text: r }));
         regionTS.setValue("Interior");
@@ -103,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update towns when region changes
         function updateTowns(region) {
             townTS.clearOptions();
-            townTS.addOption({ value: "", text: "Select a town..." });   // Force placeholder first
+            townTS.addOption({ value: "", text: "Select a town..." });
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
@@ -122,5 +126,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Placeholder fix applied");
+    console.log("✅ Strong placeholder fix applied");
 });
