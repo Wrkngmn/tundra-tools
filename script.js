@@ -1,4 +1,4 @@
-// Tundra Tools - Placeholder fix (Region and Town)
+// Tundra Tools - Map movement + pin + snow data restored + Region placeholder fix
 
 let map;
 let currentMarker = null;
@@ -78,18 +78,21 @@ document.addEventListener('DOMContentLoaded', function() {
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown
+        // Region dropdown with placeholder
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select Region..."     // ← This should show
+            placeholder: "Select Region..."
         });
 
         // Town dropdown
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select a town..."     // ← This should show
+            placeholder: "Select a town...",
+            onChange: function(value) {
+                updateSnowInfo(value);
+            }
         });
 
         // Populate regions
@@ -119,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Placeholders set in constructor");
+    console.log("✅ Region placeholder added + map/pin/snow working");
 });
