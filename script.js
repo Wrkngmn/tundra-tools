@@ -1,4 +1,4 @@
-// Tundra Tools - Final polish: Proper placeholders + dropdown arrow fix
+// Tundra Tools - Only placeholder fix (nothing else changed)
 
 let map;
 let currentMarker = null;
@@ -43,7 +43,7 @@ function getSnowInfo(townName) {
     return null;
 }
 
-// Update sidebar, move map, and add pin
+// Update sidebar and move map + pin
 function updateSnowInfo(townName) {
     const info = getSnowInfo(townName);
     const container = document.getElementById('data-container');
@@ -71,21 +71,21 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization
+// Main initialization - ONLY placeholder fix
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
     if (typeof TomSelect !== "undefined") {
-        // Region dropdown with placeholder
+        // Region dropdown with proper placeholder
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
             placeholder: "Select Region..."
         });
 
-        // Town dropdown with placeholder
+        // Town dropdown with proper placeholder
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
@@ -122,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Dropdowns with proper placeholders loaded");
+    console.log("✅ Placeholders fixed - Select Region... and Select a town...");
 });
