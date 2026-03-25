@@ -1,4 +1,4 @@
-// Tundra Tools - Region placeholder added (simple version)
+// Tundra Tools - Placeholder fix (Region and Town)
 
 let map;
 let currentMarker = null;
@@ -71,7 +71,7 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Simple placeholder for Region
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
@@ -82,17 +82,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const regionTS = new TomSelect("#region-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select Region..."
+            placeholder: "Select Region..."     // ← This should show
         });
 
-        // Town dropdown (keeps current behavior)
+        // Town dropdown
         const townTS = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
-            placeholder: "Select a town...",
-            onChange: function(value) {
-                updateSnowInfo(value);
-            }
+            placeholder: "Select a town..."     // ← This should show
         });
 
         // Populate regions
@@ -122,5 +119,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Region placeholder added");
+    console.log("✅ Placeholders set in constructor");
 });
