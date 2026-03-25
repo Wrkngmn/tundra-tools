@@ -1,9 +1,8 @@
-// Tundra Tools - Final Working Script (Matches your index.html exactly)
+// Tundra Tools - Safe Restore with Tom-Select + Real Snow Data
 
 let map;
-let snowData = [];
 
-// Real snow data from your snow_data.json
+// Real snow data
 const STATIC_SNOW_DATA = [
     { name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -58,14 +57,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
 
-    // Initialize Tom-Select for Region
+    // Tom-Select for Region
     if (typeof TomSelect !== "undefined") {
         new TomSelect("#region-select", {
             create: false,
             sortField: "text"
         });
 
-        // Initialize Tom-Select for Town
+        // Tom-Select for Town
         const townSelect = new TomSelect("#town-select", {
             create: false,
             sortField: "text",
@@ -74,21 +73,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Populate the Town dropdown
+        // Populate towns
         const towns = ["North Pole", "Fairbanks", "Tok", "Fort Yukon", "Bettles Field"];
         towns.forEach(town => {
             townSelect.addOption({ value: town, text: town });
         });
 
-        // Set default to North Pole
+        // Default to North Pole
         setTimeout(() => {
             townSelect.setValue("North Pole");
-            updateSnowInfo("North Pole");
-        }, 600);
+        }, 800);
 
     } else {
-        console.warn("TomSelect not loaded");
+        console.warn("TomSelect not found");
     }
 
-    console.log("✅ Tundra Tools loaded with populated dropdowns and real snow data");
+    console.log("✅ Script loaded - Tom-Select dropdowns should be populated");
 });
