@@ -1,4 +1,4 @@
-// Tundra Tools - Final version with correct default placeholders
+// Tundra Tools - Town placeholder fix (Region stays as working)
 
 let map;
 let currentMarker = null;
@@ -71,56 +71,56 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Correct placeholder handling
+// Main initialization - Town placeholder fix
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
-    // Region dropdown
-    const regionSelect = document.getElementById('region-select');
-    if (regionSelect) {
-        regionSelect.innerHTML = `
-            <option value="">Select Region...</option>
-            <option value="Interior">Interior</option>
-            <option value="Southcentral">Southcentral</option>
-            <option value="Southeast">Southeast</option>
-            <option value="Northern">Northern</option>
-        `;
-        regionSelect.value = "";   // Force placeholder to show
-    }
+    if (typeof TomSelect !== "undefined") {
+        // Region dropdown (already working)
+        const regionTS = new TomSelect("#region-select", {
+            create: false,
+            sortField: "text",
+            placeholder: "Select Region..."
+        });
 
-    // Town dropdown
-    const townSelect = document.getElementById('town-select');
-    if (townSelect) {
+        // Town dropdown with forced placeholder
+        const townTS = new TomSelect("#town-select", {
+            create: false,
+            sortField: "text",
+            placeholder: "Select a town...",
+            onChange: function(value) {
+                updateSnowInfo(value);
+            }
+        });
+
+        // Populate regions
+        const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
+        regions.forEach(r => regionTS.addOption({ value: r, text: r }));
+        regionTS.setValue("Interior");
+
+        // Update towns when region changes
         function updateTowns(region) {
-            townSelect.innerHTML = `<option value="">Select a town...</option>`;
+            townTS.clearOptions();
+            townTS.addOption({ value: "", text: "Select a town..." }); // Force placeholder first
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
-                const option = document.createElement('option');
-                option.value = station.name;
-                option.textContent = station.name;
-                townSelect.appendChild(option);
+                townTS.addOption({ value: station.name, text: station.name });
             });
 
             if (filtered.length > 0) {
-                townSelect.value = filtered[0].name;
-                updateSnowInfo(filtered[0].name);
+                townTS.setValue(filtered[0].name);
             }
         }
 
-        townSelect.addEventListener('change', function() {
-            updateSnowInfo(this.value);
-        });
-
-        regionSelect.addEventListener('change', function() {
-            updateTowns(this.value);
-        });
-
-        // Initial load
+        regionTS.on('change', updateTowns);
         updateTowns("Interior");
+
+    } else {
+        console.warn("TomSelect not loaded");
     }
 
-    console.log("✅ Native dropdowns with correct placeholders");
+    console.log("✅ Town placeholder forced at top");
 });
