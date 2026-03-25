@@ -1,10 +1,10 @@
-// Tundra Tools - Native dropdowns (matches your index.html exactly)
+// Tundra Tools - Final version with correct default placeholders
 
 let map;
 let currentMarker = null;
 let snowData = [];
 
-// Snow data with regions
+// Snow data
 const STATIC_SNOW_DATA = [
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -71,13 +71,13 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Native dropdowns with proper placeholders
+// Main initialization - Correct placeholder handling
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
-    // Region dropdown (native)
+    // Region dropdown
     const regionSelect = document.getElementById('region-select');
     if (regionSelect) {
         regionSelect.innerHTML = `
@@ -87,10 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <option value="Southeast">Southeast</option>
             <option value="Northern">Northern</option>
         `;
-        regionSelect.value = "Interior";
+        regionSelect.value = "";   // Force placeholder to show
     }
 
-    // Town dropdown (native)
+    // Town dropdown
     const townSelect = document.getElementById('town-select');
     if (townSelect) {
         function updateTowns(region) {
@@ -122,5 +122,5 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTowns("Interior");
     }
 
-    console.log("✅ Native dropdowns with proper placeholders loaded");
+    console.log("✅ Native dropdowns with correct placeholders");
 });
