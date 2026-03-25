@@ -1,10 +1,10 @@
-// Tundra Tools - Map movement + pin + snow data restored + Region placeholder fix
+// Tundra Tools - Native dropdowns (matches your index.html exactly)
 
 let map;
 let currentMarker = null;
 let snowData = [];
 
-// Snow data
+// Snow data with regions
 const STATIC_SNOW_DATA = [
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
@@ -71,56 +71,56 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization
+// Main initialization - Native dropdowns with proper placeholders
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
-    if (typeof TomSelect !== "undefined") {
-        // Region dropdown with placeholder
-        const regionTS = new TomSelect("#region-select", {
-            create: false,
-            sortField: "text",
-            placeholder: "Select Region..."
-        });
+    // Region dropdown (native)
+    const regionSelect = document.getElementById('region-select');
+    if (regionSelect) {
+        regionSelect.innerHTML = `
+            <option value="">Select Region...</option>
+            <option value="Interior">Interior</option>
+            <option value="Southcentral">Southcentral</option>
+            <option value="Southeast">Southeast</option>
+            <option value="Northern">Northern</option>
+        `;
+        regionSelect.value = "Interior";
+    }
 
-        // Town dropdown
-        const townTS = new TomSelect("#town-select", {
-            create: false,
-            sortField: "text",
-            placeholder: "Select a town...",
-            onChange: function(value) {
-                updateSnowInfo(value);
-            }
-        });
-
-        // Populate regions
-        const regions = ["Interior", "Southcentral", "Southeast", "Northern"];
-        regions.forEach(r => regionTS.addOption({ value: r, text: r }));
-        regionTS.setValue("Interior");
-
-        // Update towns when region changes
+    // Town dropdown (native)
+    const townSelect = document.getElementById('town-select');
+    if (townSelect) {
         function updateTowns(region) {
-            townTS.clearOptions();
-            townTS.addOption({ value: "", text: "Select a town..." });
+            townSelect.innerHTML = `<option value="">Select a town...</option>`;
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
-                townTS.addOption({ value: station.name, text: station.name });
+                const option = document.createElement('option');
+                option.value = station.name;
+                option.textContent = station.name;
+                townSelect.appendChild(option);
             });
 
             if (filtered.length > 0) {
-                townTS.setValue(filtered[0].name);
+                townSelect.value = filtered[0].name;
+                updateSnowInfo(filtered[0].name);
             }
         }
 
-        regionTS.on('change', updateTowns);
-        updateTowns("Interior");
+        townSelect.addEventListener('change', function() {
+            updateSnowInfo(this.value);
+        });
 
-    } else {
-        console.warn("TomSelect not loaded");
+        regionSelect.addEventListener('change', function() {
+            updateTowns(this.value);
+        });
+
+        // Initial load
+        updateTowns("Interior");
     }
 
-    console.log("✅ Region placeholder added + map/pin/snow working");
+    console.log("✅ Native dropdowns with proper placeholders loaded");
 });
