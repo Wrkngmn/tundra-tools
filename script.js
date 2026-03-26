@@ -1,4 +1,4 @@
-// Tundra Tools - Native dropdowns (reliable placeholders)
+// Tundra Tools - Default placeholder in the box (final fix)
 
 let map;
 let currentMarker = null;
@@ -71,7 +71,7 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Native dropdowns with proper placeholders
+// Main initialization - Default placeholder in the box
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const regionSelect = document.getElementById('region-select');
     if (regionSelect) {
         regionSelect.innerHTML = `
-            <option value="">Select Region...</option>
-            <option value="Interior" selected>Interior</option>
+            <option value="" selected>Select Region...</option>
+            <option value="Interior">Interior</option>
             <option value="Southcentral">Southcentral</option>
             <option value="Southeast">Southeast</option>
             <option value="Northern">Northern</option>
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const townSelect = document.getElementById('town-select');
     if (townSelect) {
         function updateTowns(region) {
-            townSelect.innerHTML = `<option value="">Select a town...</option>`;
+            townSelect.innerHTML = `<option value="" selected>Select a town...</option>`;
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
@@ -121,5 +121,5 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTowns("Interior");
     }
 
-    console.log("✅ Native dropdowns with proper placeholders");
+    console.log("✅ Default placeholders set in the box");
 });
