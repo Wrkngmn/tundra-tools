@@ -1,4 +1,4 @@
-// Tundra Tools - Native dropdowns (simple and reliable)
+// Tundra Tools - Native dropdowns (reliable placeholders)
 
 let map;
 let currentMarker = null;
@@ -71,7 +71,7 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Native dropdowns
+// Main initialization - Native dropdowns with proper placeholders
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
@@ -82,12 +82,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (regionSelect) {
         regionSelect.innerHTML = `
             <option value="">Select Region...</option>
-            <option value="Interior">Interior</option>
+            <option value="Interior" selected>Interior</option>
             <option value="Southcentral">Southcentral</option>
             <option value="Southeast">Southeast</option>
             <option value="Northern">Northern</option>
         `;
-        regionSelect.value = "Interior";
     }
 
     // Town dropdown (native)
