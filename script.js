@@ -1,20 +1,25 @@
-// Tundra Tools - Expanded Southeast towns
+// Tundra Tools - Expanded with popular destinations (Option 1)
 
 let map;
 let currentMarker = null;
 let snowData = [];
 
-// Expanded snow data
+// Expanded snow data with popular destinations
 const STATIC_SNOW_DATA = [
-    // Interior
+    // Interior Alaska
     { region: "Interior", name: "North Pole", depth: 24, location: [64.85, -147.10] },
     { region: "Interior", name: "Fairbanks", depth: 24, location: [64.84, -147.72] },
     { region: "Interior", name: "Badger", depth: 22, location: [64.80, -147.53] },
     { region: "Interior", name: "Tok", depth: 18, location: [63.34, -142.99] },
     { region: "Interior", name: "Fort Yukon", depth: 30, location: [66.57, -145.25] },
     { region: "Interior", name: "Bettles Field", depth: 35, location: [66.92, -151.52] },
+    { region: "Interior", name: "Delta Junction", depth: 20, location: [63.99, -145.72] },
+    { region: "Interior", name: "Nenana", depth: 19, location: [64.56, -149.09] },
+    { region: "Interior", name: "Denali / Cantwell", depth: 35, location: [63.39, -148.95] },
+    { region: "Interior", name: "Healy", depth: 32, location: [63.85, -148.96] },
+    { region: "Interior", name: "Paxson", depth: 28, location: [63.05, -145.45] },
 
-    // Southcentral
+    // Southcentral / Mat-Su / Kenai
     { region: "Southcentral", name: "Anchorage", depth: 12, location: [61.22, -149.90] },
     { region: "Southcentral", name: "Wasilla", depth: 14, location: [61.58, -149.45] },
     { region: "Southcentral", name: "Palmer", depth: 15, location: [61.60, -149.10] },
@@ -22,8 +27,12 @@ const STATIC_SNOW_DATA = [
     { region: "Southcentral", name: "Soldotna", depth: 13, location: [60.48, -151.07] },
     { region: "Southcentral", name: "Homer", depth: 10, location: [59.64, -151.54] },
     { region: "Southcentral", name: "Kodiak", depth: 16, location: [57.79, -152.41] },
+    { region: "Southcentral", name: "Girdwood", depth: 45, location: [60.94, -149.17] },
+    { region: "Southcentral", name: "Talkeetna", depth: 28, location: [62.32, -150.11] },
+    { region: "Southcentral", name: "Seward", depth: 20, location: [60.12, -149.43] },
+    { region: "Southcentral", name: "Valdez", depth: 40, location: [61.13, -146.36] },
 
-    // Southeast - Expanded
+    // Southeast Alaska
     { region: "Southeast", name: "Juneau", depth: 8, location: [58.30, -134.42] },
     { region: "Southeast", name: "Sitka", depth: 6, location: [57.05, -135.33] },
     { region: "Southeast", name: "Ketchikan", depth: 5, location: [55.34, -131.65] },
@@ -32,9 +41,14 @@ const STATIC_SNOW_DATA = [
     { region: "Southeast", name: "Craig", depth: 4, location: [55.48, -133.15] },
     { region: "Southeast", name: "Haines", depth: 9, location: [59.24, -135.43] },
     { region: "Southeast", name: "Skagway", depth: 5, location: [59.45, -135.31] },
+    { region: "Southeast", name: "Glacier Bay (Gustavus)", depth: 12, location: [58.42, -135.70] },
 
-    // Northern
-    { region: "Northern", name: "Utqiagvik", depth: 9, location: [71.29, -156.79] }
+    // Northern / Arctic / The Slope
+    { region: "Northern", name: "Utqiagvik", depth: 9, location: [71.29, -156.79] },
+    { region: "Northern", name: "Kotzebue", depth: 14, location: [66.90, -162.60] },
+    { region: "Northern", name: "Nome", depth: 18, location: [64.50, -165.40] },
+    { region: "Northern", name: "Prudhoe Bay / Deadhorse", depth: 10, location: [70.26, -148.72] },
+    { region: "Northern", name: "Coldfoot", depth: 25, location: [67.25, -150.18] }
 ];
 
 // Initialize Map
@@ -52,7 +66,8 @@ function getSnowInfo(townName) {
 
     for (let station of snowData) {
         if (station.name.toLowerCase().includes(name) || 
-            (name.includes("north pole") && station.name === "North Pole")) {
+            (name.includes("north pole") && station.name === "North Pole") ||
+            (name.includes("denali") && station.name.includes("Denali"))) {
             return station;
         }
     }
@@ -132,5 +147,5 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTowns("Interior");
     }
 
-    console.log("✅ Expanded Southeast towns added");
+    console.log("✅ Expanded with popular destinations loaded");
 });
