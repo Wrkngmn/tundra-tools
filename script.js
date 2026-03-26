@@ -1,4 +1,4 @@
-// Tundra Tools - Default placeholder in the box (final fix)
+// Tundra Tools - Final Town placeholder fix
 
 let map;
 let currentMarker = null;
@@ -71,13 +71,13 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Default placeholder in the box
+// Main initialization - Town placeholder fix
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
     snowData = STATIC_SNOW_DATA;
 
-    // Region dropdown (native)
+    // Region dropdown (already working)
     const regionSelect = document.getElementById('region-select');
     if (regionSelect) {
         regionSelect.innerHTML = `
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Town dropdown (native)
+    // Town dropdown - force placeholder as default
     const townSelect = document.getElementById('town-select');
     if (townSelect) {
         function updateTowns(region) {
@@ -121,5 +121,5 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTowns("Interior");
     }
 
-    console.log("✅ Default placeholders set in the box");
+    console.log("✅ Town placeholder forced as default");
 });
