@@ -1,4 +1,4 @@
-// Tundra Tools - Final Town default placeholder fix
+// Tundra Tools - Town placeholder changed to "Select Town"
 
 let map;
 let currentMarker = null;
@@ -71,7 +71,7 @@ function updateSnowInfo(townName) {
     }
 }
 
-// Main initialization - Force Town placeholder as default
+// Main initialization
 document.addEventListener('DOMContentLoaded', function() {
 
     initMap();
@@ -89,11 +89,11 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Town dropdown - force placeholder as default selected
+    // Town dropdown - changed to "Select Town"
     const townSelect = document.getElementById('town-select');
     if (townSelect) {
         function updateTowns(region) {
-            townSelect.innerHTML = `<option value="" selected>Select a town...</option>`;
+            townSelect.innerHTML = `<option value="" selected>Select Town</option>`;
 
             const filtered = snowData.filter(s => s.region === region);
             filtered.forEach(station => {
@@ -103,7 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 townSelect.appendChild(option);
             });
 
-            // Do NOT auto-select first town - keep placeholder
+            if (filtered.length > 0) {
+                townSelect.value = filtered[0].name;
+                updateSnowInfo(filtered[0].name);
+            }
         }
 
         townSelect.addEventListener('change', function() {
@@ -114,9 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateTowns(this.value);
         });
 
-        // Initial load - keep placeholder
+        // Initial load
         updateTowns("Interior");
     }
 
-    console.log("✅ Town placeholder forced as default");
+    console.log("✅ Town placeholder changed to 'Select Town'");
 });
