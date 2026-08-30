@@ -1,40 +1,40 @@
 {
-  "updated": "2026-08-30T10:19:42.524674Z",
+  "updated": "2026-08-30T15:12:40.643490Z",
   "data": [
     {
       "station": "1302:AK:SNTL",
       "name": "Creamers Field (Fairbanks)",
       "depth": 24,
       "swe": null,
-      "lastUpdated": "2026-08-30T10:19:42.524674Z"
+      "lastUpdated": "2026-08-30T15:12:40.643490Z"
     },
     {
       "station": "1260:AK:SNTL",
       "name": "Chena Lakes (North Pole area)",
       "depth": 24,
       "swe": null,
-      "lastUpdated": "2026-08-30T10:19:42.524674Z"
+      "lastUpdated": "2026-08-30T15:12:40.643490Z"
     },
     {
       "station": "1074:AK:SNTL",
       "name": "Tok",
       "depth": 18,
       "swe": null,
-      "lastUpdated": "2026-08-30T10:19:42.524674Z"
+      "lastUpdated": "2026-08-30T15:12:40.643490Z"
     },
     {
       "station": "961:AK:SNTL",
       "name": "Fort Yukon",
       "depth": 30,
       "swe": null,
-      "lastUpdated": "2026-08-30T10:19:42.524674Z"
+      "lastUpdated": "2026-08-30T15:12:40.643490Z"
     },
     {
       "station": "1182:AK:SNTL",
       "name": "Bettles Field",
       "depth": 35,
       "swe": null,
-      "lastUpdated": "2026-08-30T10:19:42.524674Z"
+      "lastUpdated": "2026-08-30T15:12:40.643490Z"
     }
   ]
 }
